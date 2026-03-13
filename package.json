@@ -9,7 +9,8 @@
     "format": "prettier . --write --config .twp/config/.prettierrc.json --ignore-path .twp/config/.prettierignore",
     "format:check": "prettier . --check --config .twp/config/.prettierrc.json --ignore-path .twp/config/.prettierignore",
     "check:all": "pnpm lint:js && pnpm lint:css && pnpm format:check",
-    "dev": "shopify theme dev --environment au"
+    "dev": "shopify theme dev --environment au",
+    "push": "shopify theme push --environment au"
   },
   "keywords": [],
   "author": "The Working Party",
