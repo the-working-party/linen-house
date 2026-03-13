@@ -1,0 +1,7 @@
+[environments.development]
+store = "linen-housse-au.myshopify.com"
+password = "shptka_your_dev_token"
+
+[environments.au]
+store = "linen-house-au.myshopify.com"
+password = "shptka_your_prod_token"

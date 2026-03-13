@@ -1,0 +1,30 @@
+{
+  "name": "linen-house",
+  "version": "1.0.0",
+  "description": "This is the Website for Linen House",
+  "type": "module",
+  "scripts": {
+    "lint:js": "eslint . --config .twp/config/eslint.config.js",
+    "lint:css": "stylelint \"**/*.css\" --config .twp/config/.stylelintrc.json --ignore-path .twp/config/.stylelintignore",
+    "format": "prettier . --write --config .twp/config/.prettierrc.json --ignore-path .twp/config/.prettierignore",
+    "format:check": "prettier . --check --config .twp/config/.prettierrc.json --ignore-path .twp/config/.prettierignore",
+    "check:all": "pnpm lint:js && pnpm lint:css && pnpm format:check",
+    "dev": "shopify theme dev --environment au"
+  },
+  "keywords": [],
+  "author": "The Working Party",
+  "license": "ISC",
+  "devDependencies": {
+    "@eslint/js": "^9.35.0",
+    "@eslint/markdown": "^7.2.0",
+    "@shopify/prettier-plugin-liquid": "^1.10.0",
+    "eslint": "^9.35.0",
+    "eslint-plugin-jsonc": "^2.20.1",
+    "globals": "^16.4.0",
+    "prettier": "^3.6.2",
+    "stylelint": "^16.24.0",
+    "stylelint-config-standard": "^39.0.0"
+  },
+  "templateVersion": "1.11.0",
+  "packageManager": "pnpm@10.7.0"
+}
