@@ -11,13 +11,49 @@ Auto-attached when working in `locales/` directory.
 
 ```
 locales/
-├── en.default.json     # English (required)
-├── es.json             # Spanish
-├── fr.json             # French
-└── de.json             # German
+├── en.default.json          # English (required)
+├── en.default.schema.json   # English (required)
+├── es.json                  # Spanish
+├── es.schema.json           # Spanish
+├── fr.json                  # French
+├── fr.schema.json           # French
+└── pt-BR.json               # Portuguese
+└── pt-BR.schema.json        # Portuguese
 ```
 
-## Key Organization
+### Locale files
+
+Locale files are JSON files containing translations for all the text strings used throughout a Shopify theme and its editor. They let merchants easily update and localise repeated words and phrases, making it possible to translate store content and settings into multiple languages for international customers. These files provide a centralised way to manage and edit translations.
+
+**Example:**
+```json
+{
+  "general": {
+    "cart": "Cart",
+    "checkout": "Checkout"
+  },
+  "products": {
+    "add_to_cart": "Add to Cart"
+  }
+}
+```
+
+### Schema locale files
+
+Schema locale files, saved with a `.schema.json` extension, store translation strings specifically for theme editor setting schemas. They follow a structured organisation — category, group, and description — to give context to each translation, enabling accurate localisation of editor content. Schema locale files must use the IETF language tag format in their naming, such as `en-GB.schema.json` for British English or `fr-CA.schema.json` for Canadian French.
+
+**Example:**
+```json
+{
+  "products": {
+    "card": {
+      "description": "Product card layout"
+    }
+  }
+}
+```
+
+## Key Organisation
 
 **Hierarchical Structure:**
 ```json

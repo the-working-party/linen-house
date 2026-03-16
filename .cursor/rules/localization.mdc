@@ -9,7 +9,7 @@ alwaysApply: false
 
 - **Every user-facing text** must use translation filters
 - **Update `locales/en.default.json`** with all new keys
-- **Use descriptive, hierarchical keys** for organization
+- **Use descriptive, hierarchical keys** for organisation
 - **Only add English text** - translators handle other languages
 
 ## Translation Filter Usage
@@ -57,11 +57,11 @@ alwaysApply: false
 
 **Content Guidelines:**
 - Write clear, concise text
-- Use sentence case for UI elements
+- **Use sentence case** for all user-facing text, including titles, headings, and button labels (capitalise only the first word and proper nouns; e.g., `Featured collection`, not `Featured Collection`)
 - Be consistent with terminology
 - Consider character limits for UI elements
 
 **Variable Usage:**
 - Use interpolation rather than appending strings together
-- Naming should be prioritize clarity over brevity
-- Escape variables whenever they aren't expected to output HTML: `{{ variable | escape }}`
+- Prioritise clarity over brevity for variable naming
+- Escape variables unless they output HTML: `{{ variable | escape }}`
