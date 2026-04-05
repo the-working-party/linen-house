@@ -1,4 +1,66 @@
+# Linen House Group — Shopify Horizon Theme
+
 🚨 MANDATORY: YOU MUST CALL "learn_shopify_api" ONCE WHEN WORKING WITH LIQUID THEMES.
+
+## Stores
+
+This theme serves two brands from one codebase:
+
+- **Linen House** (`linen-house`) — premium bed linen and homewares
+- **Aura Home** (`aura-home`) — contemporary home textiles and decor
+
+Brand differentiation is handled via design tokens in theme settings. See `shopify.toml` for store configuration.
+
+## Token Standards
+
+Design tokens are managed through Figma variable caches and synced into Shopify theme settings. No CSS namespace layer exists — brand differentiation is handled by Shopify's colour scheme system.
+
+### Token architecture
+
+1. **Figma token caches** — `tokens/figma-variables.json` (Linen House) and `tokens/aura-home-variables.json` (Aura Home) hold extracted Figma variable values using Figma-native names
+2. **Sync script** — `node scripts/sync-figma-tokens.js` maps tokens to Shopify Horizon settings (colour schemes, typography, border-radius) in `config/settings_data.json`
+3. **Colour schemes** — each brand defines 9 schemes (light, dark, accent, promo, header, nav, etc.) that Shopify applies via `color-{{ section.settings.color_scheme }}` classes
+4. **CSS custom properties** — Horizon exposes tokens as `var(--color-foreground)`, `var(--color-background)`, `var(--color-primary)`, etc., scoped by colour scheme. Use these in component CSS — never hardcode colour values
+
+### Token workflow
+
+```bash
+node scripts/sync-figma-tokens.js                        # Sync Linen House tokens (default)
+node scripts/sync-figma-tokens.js --brand=aura-home      # Sync Aura Home tokens
+node scripts/sync-figma-tokens.js --preview               # Preview without writing
+```
+
+### Rules
+
+- All CSS colour values must use Horizon's scheme-scoped custom properties (`var(--color-foreground)`, `var(--color-background)`, etc.)
+- Spacing, border-radius, and typography values come from the sync script output in `settings_data.json` — reference them via Horizon's built-in CSS variables
+- If a design property has no matching Horizon variable, flag it explicitly rather than hardcoding a value
+- Before adding a raw value to CSS, check whether `sync-figma-tokens.js` already maps it to a setting
+
+## Commands
+
+```bash
+shopify theme dev --store linen-house    # Local dev server (Linen House)
+shopify theme dev --store aura-home      # Local dev server (Aura Home)
+shopify theme push --store linen-house   # Push to Linen House
+shopify theme push --store aura-home     # Push to Aura Home
+shopify theme check                      # Lint/validate theme
+```
+
+### Token sync
+
+```bash
+node scripts/sync-figma-tokens.js                        # Sync Linen House tokens
+node scripts/sync-figma-tokens.js --brand=aura-home      # Sync Aura Home tokens
+node scripts/sync-figma-tokens.js --preview               # Preview without writing
+```
+
+## Dual-Brand Constraints
+
+- **One codebase, two brands** — all Liquid, CSS, and JavaScript is shared. Brand differentiation comes only from theme settings (colour schemes, typography, radius)
+- **Always check both designs** — every component must be verified against both Linen House and Aura Home Figma files before implementation is complete
+- **Never hardcode colours** — use `var(--color-*)` CSS custom properties. Raw hex values will not adapt when switching brands
+- **Sync before push** — always run the sync script for the correct brand immediately before pushing to that store
 
 ## Theme Architecture
 
