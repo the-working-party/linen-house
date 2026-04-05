@@ -2287,5 +2287,17 @@
         "default": "equal-width-buttons"
       }
     ]
+  },
+  {
+    "name": "Brand",
+    "settings": [
+      {
+        "type": "text",
+        "id": "brand",
+        "label": "Brand identifier",
+        "info": "Set by the token sync script. Do not change manually.",
+        "default": "linen-house"
+      }
+    ]
   }
 ]
