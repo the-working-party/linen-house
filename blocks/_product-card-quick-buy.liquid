@@ -1,0 +1,187 @@
+{%- comment -%}
+  _product-card-quick-buy.liquid
+
+  Smart quick-buy child block. Two render paths:
+
+  1. Direct — single-variant products get a direct add-to-cart button
+     (AJAX, no modal, no page fetch). Uses Horizon's AddToCartComponent
+     + ProductFormComponent.
+
+  2. Modal — multi-variant products open Horizon's quick-add modal.
+     Fetches the product page and renders in a dialog.
+
+  Smart mode (default) picks the path automatically. "Always modal"
+  forces the modal for all products.
+
+  No new JavaScript — reuses Horizon's existing JS infrastructure.
+{%- endcomment -%}
+
+{%- liquid
+  assign product = closest.product
+
+  unless settings.quick_add and product != blank and product.available
+    break
+  endunless
+
+  assign mode = block.settings.quick_buy_mode
+  assign button_style = block.settings.button_style
+  assign show_on_mobile = block.settings.show_on_mobile
+  assign variant = product.selected_or_first_available_variant
+  assign variant_count = product.variants.size
+
+  comment
+    Determine the rendering path based on mode and product complexity.
+    Smart mode: direct for single-variant, modal for multi-variant.
+  endcomment
+  assign render_path = 'modal'
+  if mode != 'always_modal' and variant_count == 1
+    assign render_path = 'direct'
+  endif
+-%}
+
+<div
+  class="
+    product-card-quick-buy
+    product-card-quick-buy--{{ button_style }}
+    product-card-quick-buy--{{ render_path }}
+    product-card-quick-buy--x-{{ block.settings.x_alignment }}
+    {%- unless show_on_mobile %}
+      product-card-quick-buy--desktop-only
+    {%- endunless %}
+  "
+  {{ block.shopify_attributes }}
+>
+  {%- case render_path -%}
+
+    {%- when 'direct' -%}
+      <product-form-component
+        on:submit="/handleSubmit"
+        data-product-id="{{ product.id }}"
+        data-quantity-default="1"
+      >
+        <form action="{{ routes.cart_add_url }}" method="post">
+          <input type="hidden" name="id" value="{{ variant.id }}" ref="variantId">
+          <input type="hidden" name="quantity" value="1">
+          {%- render 'add-to-cart-button',
+            can_add_to_cart: true,
+            product: product,
+            class: 'product-card-quick-buy__button product-card-quick-buy__button--' | append: button_style,
+            icon_only_on_mobile: true
+          -%}
+          <div ref="liveRegion" class="visually-hidden" aria-live="polite" aria-atomic="true"></div>
+        </form>
+      </product-form-component>
+
+    {%- when 'modal' -%}
+      {%- comment -%}
+        Complex product: use Horizon's existing quick-add modal.
+        Fetches the product page and renders in a dialog.
+      {%- endcomment -%}
+      {%- render 'quick-add', product: product, section_id: section.id -%}
+
+  {%- endcase -%}
+</div>
+
+{% stylesheet %}
+  .product-card-quick-buy {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: var(--gap-xs, 0.5rem);
+  }
+
+  .product-card-quick-buy--x-left {
+    align-items: flex-start;
+  }
+
+  .product-card-quick-buy--x-centre {
+    align-items: center;
+  }
+
+  .product-card-quick-buy--x-right {
+    align-items: flex-end;
+  }
+
+  .product-card-quick-buy--x-stretch .product-card-quick-buy__button {
+    width: 100%;
+  }
+
+  .product-card-quick-buy--desktop-only {
+    display: none;
+  }
+
+  @media (min-width: 750px) {
+    .product-card-quick-buy--desktop-only {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Product card quick buy",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Quick buy behaviour"
+    },
+    {
+      "type": "select",
+      "id": "quick_buy_mode",
+      "label": "Quick buy mode",
+      "options": [
+        { "value": "smart", "label": "Smart (recommended)" },
+        { "value": "always_modal", "label": "Always use modal" }
+      ],
+      "default": "smart",
+      "info": "Smart mode adds single-variant products directly to cart. Multi-variant products open the quick-add modal."
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "select",
+      "id": "button_style",
+      "label": "Button style",
+      "options": [
+        { "value": "primary", "label": "Primary" },
+        { "value": "secondary", "label": "Secondary" },
+        { "value": "outline", "label": "Outline" }
+      ],
+      "default": "primary"
+    },
+    {
+      "type": "select",
+      "id": "x_alignment",
+      "label": "Horizontal alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "centre", "label": "Centre" },
+        { "value": "right", "label": "Right" },
+        { "value": "stretch", "label": "Stretch to full width" }
+      ],
+      "default": "stretch"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_on_mobile",
+      "label": "Show on mobile",
+      "default": false
+    },
+    {
+      "type": "paragraph",
+      "content": "Requires the \"Enable quick add\" setting in your theme's global settings. The quick buy button is hidden when this global setting is off or when the product is sold out."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product card quick buy",
+      "category": "Product"
+    }
+  ]
+}
+{% endschema %}

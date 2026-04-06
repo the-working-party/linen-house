@@ -1,0 +1,233 @@
+{%- comment -%}
+  _product-card-swatches.liquid
+
+  Variant swatch display child block for the product card. Detects
+  colour-type options across multiple languages and renders swatches
+  using a dual-source approach: Shopify native swatches first, then
+  falling back to asset-based swatch images.
+
+  Visual-only in v0.1 — swatches do not trigger variant switching.
+  Merchants who need full variant switching should use Horizon's
+  built-in swatches block. Variant switching is planned for v0.2.
+
+  Multi-language colour detection:
+    color, colour, colore, farbe, couleur, cor
+{%- endcomment -%}
+
+{%- liquid
+  assign product = closest.product
+
+  # Guard: nothing to render without a product
+  if product == blank
+    break
+  endif
+
+  assign swatch_limit = block.settings.swatch_limit
+  assign swatch_size = block.settings.swatch_size
+  assign swatch_shape = block.settings.swatch_shape
+  assign show_tooltip = block.settings.show_tooltip
+  assign colour_values = nil
+
+  # Multi-language colour option detection
+  for option in product.options_with_values
+    assign option_name_lower = option.name | downcase
+    if option_name_lower == 'color'
+      or option_name_lower == 'colour'
+      or option_name_lower == 'colore'
+      or option_name_lower == 'farbe'
+      or option_name_lower == 'couleur'
+      or option_name_lower == 'cor'
+      assign colour_values = option.values
+      break
+    endif
+  endfor
+-%}
+
+{%- if colour_values != blank and colour_values.size > 0 -%}
+  {%- assign total_count = colour_values.size -%}
+  {%- assign overflow = total_count | minus: swatch_limit -%}
+
+  <div
+    class="
+      product-card-swatches
+      product-card-swatches--{{ swatch_shape }}
+      product-card-swatches--x-{{ block.settings.x_alignment }}
+    "
+    style="
+      --swatch-size: {{ swatch_size }}px;
+    "
+    {{ block.shopify_attributes }}
+  >
+    {%- for value in colour_values limit: swatch_limit -%}
+      {%- assign swatch_bg = '' -%}
+
+      {%- comment -%} Dual swatch source: native first, then asset fallback {%- endcomment -%}
+      {%- if value.swatch -%}
+        {%- if value.swatch.image -%}
+          {%- assign swatch_image_url = value.swatch.image | image_url: width: 64 -%}
+          {%- assign swatch_bg = 'url(' | append: swatch_image_url | append: ') center / cover' -%}
+        {%- elsif value.swatch.color -%}
+          {%- assign swatch_bg = value.swatch.color -%}
+        {%- endif -%}
+      {%- else -%}
+        {%- comment -%} Fallback: asset-based swatch image {%- endcomment -%}
+        {%- assign swatch_handle = value | handleize -%}
+        {%- assign swatch_filename = 'swatch-' | append: swatch_handle | append: '.jpg' -%}
+        {%- assign swatch_asset = images[swatch_filename] -%}
+        {%- if swatch_asset -%}
+          {%- assign swatch_asset_url = swatch_asset | image_url: width: 64 -%}
+          {%- assign swatch_bg = 'url(' | append: swatch_asset_url | append: ') center / cover' -%}
+        {%- else -%}
+          {%- comment -%} Last resort: use the handleised value as a CSS colour name {%- endcomment -%}
+          {%- assign swatch_bg = value | handleize | replace: '-', '' -%}
+        {%- endif -%}
+      {%- endif -%}
+
+      <span
+        class="product-card-swatches__swatch"
+        style="
+          {%- if swatch_bg contains 'url(' -%}
+            background: {{ swatch_bg }};
+          {%- else -%}
+            background-color: {{ swatch_bg }};
+          {%- endif -%}
+        "
+        {%- if show_tooltip -%}
+          title="{{ value | escape }}"
+          aria-label="{{ value | escape }}"
+        {%- endif -%}
+      ></span>
+    {%- endfor -%}
+
+    {%- if overflow > 0 -%}
+      <span class="product-card-swatches__overflow">+{{ overflow }}</span>
+    {%- endif -%}
+  </div>
+{%- elsif request.design_mode and product == blank -%}
+  {%- comment -%} Placeholder swatches for the theme editor {%- endcomment -%}
+  <div
+    class="product-card-swatches product-card-swatches--{{ swatch_shape | default: 'circle' }}"
+    style="--swatch-size: {{ swatch_size | default: 20 }}px;"
+    {{ block.shopify_attributes }}
+  >
+    <span class="product-card-swatches__swatch" style="background-color: #333;"></span>
+    <span class="product-card-swatches__swatch" style="background-color: #8b4513;"></span>
+    <span class="product-card-swatches__swatch" style="background-color: #f5f5dc;"></span>
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  .product-card-swatches {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .product-card-swatches--x-left {
+    justify-content: flex-start;
+  }
+
+  .product-card-swatches--x-centre {
+    justify-content: center;
+  }
+
+  .product-card-swatches--x-right {
+    justify-content: flex-end;
+  }
+
+  .product-card-swatches__swatch {
+    display: inline-block;
+    width: var(--swatch-size, 20px);
+    height: var(--swatch-size, 20px);
+    border: 1px solid rgb(0 0 0 / 0.15);
+    flex-shrink: 0;
+    cursor: default;
+  }
+
+  /* Shape variants */
+  .product-card-swatches--circle .product-card-swatches__swatch {
+    border-radius: 50%;
+  }
+
+  .product-card-swatches--square .product-card-swatches__swatch {
+    border-radius: 0;
+  }
+
+  .product-card-swatches--rounded .product-card-swatches__swatch {
+    border-radius: 4px;
+  }
+
+  .product-card-swatches__overflow {
+    font-size: var(--font-size--xs, 0.75rem);
+    color: rgb(var(--color-foreground-rgb, 0 0 0) / 0.5);
+    line-height: var(--swatch-size, 20px);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Product card swatches",
+  "tag": null,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Displays colour swatches from product variant options. Visual-only in v0.1 — swatches do not switch variants. Use Horizon's built-in swatches block for full variant switching."
+    },
+    {
+      "type": "range",
+      "id": "swatch_size",
+      "label": "Swatch size",
+      "min": 12,
+      "max": 44,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "swatch_limit",
+      "label": "Maximum visible swatches",
+      "info": "Remaining swatches show as a +N count.",
+      "min": 1,
+      "max": 20,
+      "step": 1,
+      "default": 6
+    },
+    {
+      "type": "select",
+      "id": "swatch_shape",
+      "label": "Swatch shape",
+      "options": [
+        { "value": "circle", "label": "Circle" },
+        { "value": "square", "label": "Square" },
+        { "value": "rounded", "label": "Rounded square" }
+      ],
+      "default": "circle"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_tooltip",
+      "label": "Show colour name on hover",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "x_alignment",
+      "label": "Horizontal alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "centre", "label": "Centre" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product card swatches",
+      "category": "Product"
+    }
+  ]
+}
+{% endschema %}

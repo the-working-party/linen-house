@@ -1,0 +1,302 @@
+{%- comment -%}
+  _product-card-badges.liquid
+
+  Badge display child block for the product card. Supports five badge
+  types: sold-out, sale/savings, low stock, tag-based, and metafield-based.
+  All conditions are pure Liquid — no JavaScript required.
+
+  Badge types evaluated in order:
+    1. Sold-out — product.available == false
+    2. Sale/savings — compare_at_price > price (percentage or absolute)
+    3. Low stock — total inventory > 0 and <= threshold
+    4. Tag-based — product tags matching a configurable prefix
+    5. Metafield-based — comma-separated namespace.key pairs
+{%- endcomment -%}
+
+{%- liquid
+  assign product = closest.product
+
+  # Guard: nothing to render without a product
+  if product == blank
+    break
+  endif
+
+  # Collect badges into a pipe-delimited string
+  assign badge_list = ''
+  assign badge_separator = '|||'
+
+  # ── 1. Sold-out badge ──────────────────────────────────────
+  if block.settings.show_sold_out_badge
+    unless product.available
+      assign badge_list = badge_list | append: 'Sold out' | append: badge_separator
+    endunless
+  endif
+
+  # ── 2. Sale / savings badge ────────────────────────────────
+  # Only show savings when product is available (sold-out takes precedence)
+  if block.settings.savings_badge != 'none' and product.available
+    if product.compare_at_price > product.price
+      if block.settings.savings_badge == 'percent'
+        assign savings_diff = product.compare_at_price | minus: product.price
+        assign savings_pct = savings_diff | times: 100 | divided_by: product.compare_at_price | round
+        assign badge_text = 'Save ' | append: savings_pct | append: '%'
+        assign badge_list = badge_list | append: badge_text | append: badge_separator
+      else
+        assign savings_amount = product.compare_at_price | minus: product.price | money
+        assign badge_text = 'Save ' | append: savings_amount
+        assign badge_list = badge_list | append: badge_text | append: badge_separator
+      endif
+    endif
+  endif
+
+  # ── 3. Low stock badge ─────────────────────────────────────
+  if block.settings.stock_threshold > 0
+    assign total_inventory = 0
+    for variant in product.variants
+      if variant.inventory_quantity > 0
+        assign total_inventory = total_inventory | plus: variant.inventory_quantity
+      endif
+    endfor
+    if total_inventory > 0 and total_inventory <= block.settings.stock_threshold
+      assign stock_text = 'Only ' | append: total_inventory | append: ' left'
+      assign badge_list = badge_list | append: stock_text | append: badge_separator
+    endif
+  endif
+
+  # ── 4. Tag-based badges ────────────────────────────────────
+  assign tag_prefix = block.settings.tag_prefix | default: 'badge_'
+  for tag in product.tags
+    if tag contains tag_prefix
+      assign tag_badge = tag | remove_first: tag_prefix
+      if tag_badge != blank
+        assign badge_list = badge_list | append: tag_badge | append: badge_separator
+      endif
+    endif
+  endfor
+
+  # ── 5. Metafield-based badges ──────────────────────────────
+  if block.settings.metafield_badges != blank
+    assign metafield_entries = block.settings.metafield_badges | split: ','
+    for entry in metafield_entries
+      assign entry_stripped = entry | strip
+      assign meta_parts = entry_stripped | split: '.'
+      if meta_parts.size == 2
+        assign ns = meta_parts[0] | strip
+        assign key = meta_parts[1] | strip
+        assign meta_value = product.metafields[ns][key].value
+        if meta_value != blank
+          assign badge_list = badge_list | append: meta_value | append: badge_separator
+        endif
+      endif
+    endfor
+  endif
+
+  # Split collected badges
+  assign badges = badge_list | split: badge_separator
+-%}
+
+{%- if badges.size > 0 -%}
+  <div
+    class="
+      product-card-badges
+      product-card-badges--{{ block.settings.display_type }}
+      product-card-badges--x-{{ block.settings.x_alignment }}
+      {%- if block.settings.enable_overlay %}
+        product-card-badges--overlay
+        product-card-badges--y-{{ block.settings.y_alignment }}
+      {%- endif %}
+    "
+    {{ block.shopify_attributes }}
+  >
+    {%- for badge in badges -%}
+      {%- assign badge_text = badge | strip -%}
+      {%- if badge_text != blank -%}
+        {%- if block.settings.display_type == 'text' -%}
+          <span class="product-card-badges__item">{{ badge_text }}</span>
+        {%- else -%}
+          <span class="product-card-badges__pill">{{ badge_text }}</span>
+        {%- endif -%}
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  .product-card-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    z-index: 2;
+  }
+
+  /* Overlay positioning */
+  .product-card-badges--overlay {
+    position: absolute;
+    padding: 8px;
+  }
+
+  .product-card-badges--overlay.product-card-badges--y-top {
+    top: 0;
+  }
+
+  .product-card-badges--overlay.product-card-badges--y-bottom {
+    bottom: 0;
+  }
+
+  .product-card-badges--x-left {
+    justify-content: flex-start;
+  }
+
+  .product-card-badges--overlay.product-card-badges--x-left {
+    left: 0;
+  }
+
+  .product-card-badges--x-centre {
+    justify-content: center;
+  }
+
+  .product-card-badges--overlay.product-card-badges--x-centre {
+    left: 0;
+    right: 0;
+  }
+
+  .product-card-badges--x-right {
+    justify-content: flex-end;
+  }
+
+  .product-card-badges--overlay.product-card-badges--x-right {
+    right: 0;
+  }
+
+  /* Badge styles */
+  .product-card-badges__item {
+    font-size: var(--font-size--xs, 0.75rem);
+  }
+
+  .product-card-badges__pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    font-size: var(--font-size--xs, 0.75rem);
+    background: var(--color-foreground, #000);
+    color: var(--color-background, #fff);
+    border-radius: 9999px;
+    line-height: 1.4;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Product card badges",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Badge types"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sold_out_badge",
+      "label": "Show sold out badge",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "savings_badge",
+      "label": "Savings badge",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "percent", "label": "Percentage (e.g. Save 20%)" },
+        { "value": "amount", "label": "Amount (e.g. Save $10.00)" }
+      ],
+      "default": "percent"
+    },
+    {
+      "type": "range",
+      "id": "stock_threshold",
+      "label": "Low stock threshold",
+      "info": "Show a low stock badge when total inventory is at or below this number. Set to 0 to disable.",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "paragraph",
+      "content": "Displays an \"Only N left\" badge when total inventory across all variants is above zero but at or below this threshold.",
+      "visible_if": "{{ block.settings.stock_threshold > 0 }}"
+    },
+    {
+      "type": "text",
+      "id": "tag_prefix",
+      "label": "Tag prefix",
+      "info": "Product tags starting with this prefix will appear as badges. The prefix is stripped from the display text.",
+      "default": "badge_"
+    },
+    {
+      "type": "text",
+      "id": "metafield_badges",
+      "label": "Metafield badges",
+      "info": "Comma-separated namespace.key pairs (e.g. custom.badge,custom.featured)"
+    },
+    {
+      "type": "paragraph",
+      "content": "Each entry must be in namespace.key format. The metafield value is displayed as the badge text. Invalid entries are silently skipped.",
+      "visible_if": "{{ block.settings.metafield_badges != blank }}"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "select",
+      "id": "display_type",
+      "label": "Display type",
+      "options": [
+        { "value": "text", "label": "Plain text" },
+        { "value": "badge", "label": "Badge pill" }
+      ],
+      "default": "badge"
+    },
+    {
+      "type": "header",
+      "content": "Position"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_overlay",
+      "label": "Overlay on media",
+      "info": "Position badges absolutely over the product image.",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "x_alignment",
+      "label": "Horizontal alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "centre", "label": "Centre" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "select",
+      "id": "y_alignment",
+      "label": "Vertical alignment",
+      "options": [
+        { "value": "top", "label": "Top" },
+        { "value": "bottom", "label": "Bottom" }
+      ],
+      "default": "top",
+      "visible_if": "{{ block.settings.enable_overlay == true }}"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product card badges",
+      "category": "Product"
+    }
+  ]
+}
+{% endschema %}
