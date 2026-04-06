@@ -1,0 +1,222 @@
+{% doc %}
+  Renders a <style> block from typography_preset metaobjects.
+
+  Supports three modes per entry:
+    preset   — outputs :root custom properties (--typo-{handle}-*)
+    override — outputs root variable remaps and/or selector-targeted rules
+    both     — outputs both preset vars AND override rules
+
+  @example
+  {% render 'typography-system' %}
+{% enddoc %}
+
+{%- assign newline = "
+" -%}
+
+{%- comment -%} Collect enabled entries {%- endcomment -%}
+{%- assign all_entries = metaobjects.typography_preset.values -%}
+{%- assign entry_count = 0 -%}
+{%- for entry in all_entries -%}
+  {%- unless entry.enabled.value == false -%}
+    {%- assign entry_count = entry_count | plus: 1 -%}
+  {%- endunless -%}
+{%- endfor -%}
+
+{%- if entry_count > 0 -%}
+<style>
+/* Typography System — generated from metaobjects */
+{%- for entry in all_entries -%}
+  {%- unless entry.enabled.value == false -%}
+    {%- assign handle = entry.system.handle -%}
+    {%- assign mode = entry.mode.value -%}
+
+    {%- comment -%} ============================================================
+      PRESET MODE — output :root custom properties
+    ============================================================ {%- endcomment -%}
+    {%- if mode == 'preset' or mode == 'both' -%}
+      {%- comment -%} Check if any CSS property fields are populated {%- endcomment -%}
+      {%- assign has_preset = false -%}
+      {%- if entry.font_size.value != blank %}{% assign has_preset = true %}{% endif -%}
+      {%- if entry.font_family.value != blank %}{% assign has_preset = true %}{% endif -%}
+      {%- if entry.font_weight.value != blank %}{% assign has_preset = true %}{% endif -%}
+      {%- if entry.line_height.value != blank %}{% assign has_preset = true %}{% endif -%}
+      {%- if entry.letter_spacing.value != blank %}{% assign has_preset = true %}{% endif -%}
+      {%- if entry.word_spacing.value != blank %}{% assign has_preset = true %}{% endif -%}
+      {%- if entry.text_transform.value != blank %}{% assign has_preset = true %}{% endif -%}
+      {%- if entry.text_wrap.value != blank %}{% assign has_preset = true %}{% endif -%}
+      {%- if entry.font_variant.value != blank %}{% assign has_preset = true %}{% endif -%}
+      {%- if entry.font_feature_settings.value != blank %}{% assign has_preset = true %}{% endif -%}
+      {%- if entry.orphans.value != blank %}{% assign has_preset = true %}{% endif -%}
+      {%- if entry.widows.value != blank %}{% assign has_preset = true %}{% endif -%}
+      {%- if entry.max_width.value != blank %}{% assign has_preset = true %}{% endif -%}
+      {%- if has_preset -%}
+
+/* Preset: {{ handle }} */
+:root {
+        {%- if entry.font_size.value != blank %}
+  --typo-{{ handle }}-font-size: {{ entry.font_size.value }};
+        {%- endif -%}
+        {%- if entry.font_family.value != blank %}
+  --typo-{{ handle }}-font-family: {{ entry.font_family.value }};
+        {%- endif -%}
+        {%- if entry.font_weight.value != blank %}
+  --typo-{{ handle }}-font-weight: {{ entry.font_weight.value }};
+        {%- endif -%}
+        {%- if entry.line_height.value != blank %}
+  --typo-{{ handle }}-line-height: {{ entry.line_height.value }};
+        {%- endif -%}
+        {%- if entry.letter_spacing.value != blank %}
+  --typo-{{ handle }}-letter-spacing: {{ entry.letter_spacing.value }};
+        {%- endif -%}
+        {%- if entry.word_spacing.value != blank %}
+  --typo-{{ handle }}-word-spacing: {{ entry.word_spacing.value }};
+        {%- endif -%}
+        {%- if entry.text_transform.value != blank %}
+  --typo-{{ handle }}-text-transform: {{ entry.text_transform.value }};
+        {%- endif -%}
+        {%- if entry.text_wrap.value != blank %}
+  --typo-{{ handle }}-text-wrap: {{ entry.text_wrap.value }};
+        {%- endif -%}
+        {%- if entry.font_variant.value != blank %}
+  --typo-{{ handle }}-font-variant: {{ entry.font_variant.value }};
+        {%- endif -%}
+        {%- if entry.font_feature_settings.value != blank %}
+  --typo-{{ handle }}-font-feature-settings: {{ entry.font_feature_settings.value }};
+        {%- endif -%}
+        {%- if entry.orphans.value != blank %}
+  --typo-{{ handle }}-orphans: {{ entry.orphans.value }};
+        {%- endif -%}
+        {%- if entry.widows.value != blank %}
+  --typo-{{ handle }}-widows: {{ entry.widows.value }};
+        {%- endif -%}
+        {%- if entry.max_width.value != blank %}
+  --typo-{{ handle }}-max-width: {{ entry.max_width.value }};
+        {%- endif %}
+}
+      {%- endif -%}
+    {%- endif -%}
+
+    {%- comment -%} ============================================================
+      OVERRIDE MODE — root variable remaps
+    ============================================================ {%- endcomment -%}
+    {%- if mode == 'override' or mode == 'both' -%}
+      {%- if entry.root_variables.value != blank -%}
+        {%- assign root_vars = entry.root_variables.value | strip | split: newline -%}
+
+/* Root variable overrides: {{ handle }} */
+:root {
+        {%- for var in root_vars -%}
+          {%- assign var_name = var | strip -%}
+          {%- if var_name != blank -%}
+            {%- if var_name contains 'font-size' and entry.font_size.value != blank %}
+  {{ var_name }}: {{ entry.font_size.value }};
+            {%- endif -%}
+            {%- if var_name contains 'font-family' and entry.font_family.value != blank %}
+  {{ var_name }}: {{ entry.font_family.value }};
+            {%- endif -%}
+            {%- if var_name contains 'font-weight' and entry.font_weight.value != blank %}
+  {{ var_name }}: {{ entry.font_weight.value }};
+            {%- endif -%}
+            {%- if var_name contains 'line-height' and entry.line_height.value != blank %}
+  {{ var_name }}: {{ entry.line_height.value }};
+            {%- endif -%}
+            {%- if var_name contains 'letter-spacing' and entry.letter_spacing.value != blank %}
+  {{ var_name }}: {{ entry.letter_spacing.value }};
+            {%- endif -%}
+            {%- if var_name contains 'word-spacing' and entry.word_spacing.value != blank %}
+  {{ var_name }}: {{ entry.word_spacing.value }};
+            {%- endif -%}
+            {%- if var_name contains 'text-transform' and entry.text_transform.value != blank %}
+  {{ var_name }}: {{ entry.text_transform.value }};
+            {%- endif -%}
+            {%- if var_name contains 'text-wrap' and entry.text_wrap.value != blank %}
+  {{ var_name }}: {{ entry.text_wrap.value }};
+            {%- endif -%}
+            {%- if var_name contains 'font-variant' and entry.font_variant.value != blank %}
+  {{ var_name }}: {{ entry.font_variant.value }};
+            {%- endif -%}
+            {%- if var_name contains 'font-feature-settings' and entry.font_feature_settings.value != blank %}
+  {{ var_name }}: {{ entry.font_feature_settings.value }};
+            {%- endif -%}
+            {%- if var_name contains 'orphans' and entry.orphans.value != blank %}
+  {{ var_name }}: {{ entry.orphans.value }};
+            {%- endif -%}
+            {%- if var_name contains 'widows' and entry.widows.value != blank %}
+  {{ var_name }}: {{ entry.widows.value }};
+            {%- endif -%}
+            {%- if var_name contains 'max-width' and entry.max_width.value != blank %}
+  {{ var_name }}: {{ entry.max_width.value }};
+            {%- endif -%}
+          {%- endif -%}
+        {%- endfor %}
+}
+      {%- endif -%}
+
+      {%- comment -%} ============================================================
+        OVERRIDE MODE — selector-targeted rules
+      ============================================================ {%- endcomment -%}
+      {%- if entry.selectors.value != blank -%}
+        {%- assign selector_list = entry.selectors.value | strip | split: newline -%}
+        {%- comment -%} Strip whitespace from each selector {%- endcomment -%}
+        {%- assign clean_selectors = '' -%}
+        {%- for sel in selector_list -%}
+          {%- assign sel_stripped = sel | strip -%}
+          {%- if sel_stripped != blank -%}
+            {%- if clean_selectors == '' -%}
+              {%- assign clean_selectors = sel_stripped -%}
+            {%- else -%}
+              {%- assign clean_selectors = clean_selectors | append: newline | append: sel_stripped -%}
+            {%- endif -%}
+          {%- endif -%}
+        {%- endfor -%}
+        {%- assign selector_array = clean_selectors | split: newline -%}
+
+/* Selector overrides: {{ handle }} */
+{{ selector_array | join: ', ' }} {
+        {%- if entry.font_size.value != blank %}
+  font-size: {{ entry.font_size.value }};
+        {%- endif -%}
+        {%- if entry.font_family.value != blank %}
+  font-family: {{ entry.font_family.value }};
+        {%- endif -%}
+        {%- if entry.font_weight.value != blank %}
+  font-weight: {{ entry.font_weight.value }};
+        {%- endif -%}
+        {%- if entry.line_height.value != blank %}
+  line-height: {{ entry.line_height.value }};
+        {%- endif -%}
+        {%- if entry.letter_spacing.value != blank %}
+  letter-spacing: {{ entry.letter_spacing.value }};
+        {%- endif -%}
+        {%- if entry.word_spacing.value != blank %}
+  word-spacing: {{ entry.word_spacing.value }};
+        {%- endif -%}
+        {%- if entry.text_transform.value != blank %}
+  text-transform: {{ entry.text_transform.value }};
+        {%- endif -%}
+        {%- if entry.text_wrap.value != blank %}
+  text-wrap: {{ entry.text_wrap.value }};
+        {%- endif -%}
+        {%- if entry.font_variant.value != blank %}
+  font-variant: {{ entry.font_variant.value }};
+        {%- endif -%}
+        {%- if entry.font_feature_settings.value != blank %}
+  font-feature-settings: {{ entry.font_feature_settings.value }};
+        {%- endif -%}
+        {%- if entry.orphans.value != blank %}
+  orphans: {{ entry.orphans.value }};
+        {%- endif -%}
+        {%- if entry.widows.value != blank %}
+  widows: {{ entry.widows.value }};
+        {%- endif -%}
+        {%- if entry.max_width.value != blank %}
+  max-width: {{ entry.max_width.value }};
+        {%- endif %}
+}
+      {%- endif -%}
+    {%- endif -%}
+
+  {%- endunless -%}
+{%- endfor %}
+</style>
+{%- endif -%}
