@@ -1,0 +1,15 @@
+<div ref="marqueeItems" {{ block.shopify_attributes }} class="layout-marquee-item">
+  {% content_for 'blocks' %}
+</div>
+
+{% schema %}
+{
+  "name": "Marquee Item",
+  "tag": null,
+  "settings": [],
+  "blocks": [
+    { "type": "@theme" },
+    { "type": "@app" }
+  ]
+}
+{% endschema %}
