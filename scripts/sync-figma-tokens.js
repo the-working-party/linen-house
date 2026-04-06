@@ -149,11 +149,11 @@ function mapLinenHouseTokens(tokenMap) {
   settings.badge_corner_radius            = get('badge/radius') ?? 64;
 
   // ── Typography ───────────────────────────────────────────────────────────
-  // TT Commons Pro — Shopify font picker IDs
-  settings.type_heading_font    = 'tt_commons_pro_n5'; // Medium 500
-  settings.type_subheading_font = 'tt_commons_pro_n5'; // Medium 500
-  settings.type_body_font       = 'tt_commons_pro_n4'; // Regular 400
-  settings.type_accent_font     = 'tt_commons_pro_n6'; // SemiBold 600
+  // Shopify font picker fallbacks (actual fonts loaded via custom-fonts.liquid)
+  settings.type_heading_font    = 'work_sans_n5';
+  settings.type_subheading_font = 'work_sans_n5';
+  settings.type_body_font       = 'work_sans_n4';
+  settings.type_accent_font     = 'work_sans_n5';
 
   settings.type_size_paragraph        = '14';
   settings.type_line_height_paragraph = 'body-loose';
@@ -263,11 +263,11 @@ function mapAuraHomeTokens(tokenMap) {
   settings.badge_corner_radius            = get('badge/radius') ?? 4;
 
   // ── Typography ───────────────────────────────────────────────────────────
-  // Futura PT — Shopify font picker IDs
-  settings.type_heading_font    = 'futura_pt_n5'; // Medium 500
-  settings.type_subheading_font = 'futura_pt_n4'; // Book/Regular 400
-  settings.type_body_font       = 'futura_pt_n4'; // Book/Regular 400
-  settings.type_accent_font     = 'futura_pt_n5'; // Medium 500
+  // Shopify font picker fallbacks (actual fonts loaded via custom-fonts.liquid)
+  settings.type_heading_font    = 'work_sans_n5';
+  settings.type_subheading_font = 'work_sans_n4';
+  settings.type_body_font       = 'work_sans_n4';
+  settings.type_accent_font     = 'work_sans_n5';
 
   settings.type_size_paragraph        = '14';
   settings.type_line_height_paragraph = 'body-loose';
