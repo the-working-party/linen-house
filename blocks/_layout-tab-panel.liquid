@@ -1,0 +1,40 @@
+{%- comment -%}
+  _layout-tab-panel.liquid
+  Private child block for layout-tabs. Each instance becomes one tab panel.
+  The parent layout-tabs block's JS reads data-tab-label to generate
+  the corresponding tab trigger button at runtime.
+
+  Source: extension-layouts v0.1
+  Spec: figma-horizon/components/blocks/layout-tabs.md (v0.2)
+{%- endcomment -%}
+
+<div
+  ref="panels[]"
+  role="tabpanel"
+  data-tab-label="{{ block.settings.label }}"
+  {{ block.shopify_attributes }}
+  class="layout-tab-panel"
+>
+  {%- content_for 'blocks' -%}
+</div>
+
+{% schema %}
+{
+  "name": "Tab panel",
+  "tag": "div",
+  "class": "layout-tab-panel-wrapper",
+  "settings": [
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Tab label",
+      "info": "Text shown on the tab trigger button.",
+      "default": "Tab"
+    }
+  ],
+  "blocks": [
+    { "type": "@theme" },
+    { "type": "@app" }
+  ]
+}
+{% endschema %}

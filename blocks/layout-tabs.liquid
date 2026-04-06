@@ -1,0 +1,341 @@
+{%- comment -%}
+  layout-tabs.liquid
+  A tabbed content layout primitive. Child _layout-tab-panel blocks
+  become tab panels, with configurable tab style, alignment, and mobile
+  collapse behaviour. The companion JS (layout-tabs-component.js)
+  generates tab trigger buttons at runtime from panel labels and
+  implements the full WAI-ARIA Authoring Practices tabs pattern.
+
+  Source: extension-layouts v0.1
+  Spec: figma-horizon/components/blocks/layout-tabs.md (v0.2)
+  Reference: https://www.w3.org/WAI/ARIA/apg/patterns/tabs/
+{%- endcomment -%}
+
+<layout-tabs-component
+  id="layout-tabs-{{ block.id }}"
+  {{ block.shopify_attributes }}
+  class="layout-tabs"
+  data-tab-style="{{ block.settings.tab_style }}"
+  data-tab-alignment="{{ block.settings.tab_alignment }}"
+  data-mobile-behaviour="{{ block.settings.mobile_behaviour }}"
+  data-default-tab-index="{{ block.settings.default_tab_index }}"
+  data-remember-last-tab="{{ block.settings.remember_last_tab }}"
+  style="
+    --layout-tabs-alignment: {{ block.settings.tab_alignment }};
+    --layout-tabs-style: {{ block.settings.tab_style }};
+  "
+>
+  {%- comment -%}
+    The tablist container. Tab trigger buttons are injected here by JS
+    at runtime — the Liquid template does not generate them because the
+    tab count and labels come from _layout-tab-panel children which are
+    enumerated dynamically.
+  {%- endcomment -%}
+  <div ref="tablist" role="tablist" class="layout-tabs__tablist"></div>
+
+  {%- comment -%}
+    Render child _layout-tab-panel blocks. In the theme editor
+    (request.design_mode) all panels are visible so merchandisers can
+    configure content without switching tabs.
+  {%- endcomment -%}
+  <div class="layout-tabs__panels">
+    {%- content_for 'blocks' -%}
+  </div>
+</layout-tabs-component>
+
+{% stylesheet %}
+  /* ── Layout Tabs ─────────────────────────────────────────────────── */
+
+  .layout-tabs {
+    display: block;
+    width: 100%;
+  }
+
+  /* ── Tablist ──────────────────────────────────────────────────────── */
+
+  .layout-tabs__tablist {
+    display: flex;
+    gap: var(--spacing-sm, 0.5rem);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .layout-tabs__tablist::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Tab alignment */
+  .layout-tabs[data-tab-alignment="start"] .layout-tabs__tablist {
+    justify-content: flex-start;
+  }
+
+  .layout-tabs[data-tab-alignment="center"] .layout-tabs__tablist {
+    justify-content: center;
+  }
+
+  .layout-tabs[data-tab-alignment="end"] .layout-tabs__tablist {
+    justify-content: flex-end;
+  }
+
+  .layout-tabs[data-tab-alignment="stretch"] .layout-tabs__tablist {
+    justify-content: stretch;
+  }
+
+  .layout-tabs[data-tab-alignment="stretch"] .layout-tabs__tablist [role="tab"] {
+    flex: 1;
+  }
+
+  /* ── Tab buttons (base) ──────────────────────────────────────────── */
+
+  .layout-tabs__tablist [role="tab"] {
+    appearance: none;
+    border: none;
+    background: none;
+    cursor: pointer;
+    padding: var(--spacing-xs, 0.25rem) var(--spacing-sm, 0.5rem);
+    font: inherit;
+    color: inherit;
+    white-space: nowrap;
+    position: relative;
+    transition: color 0.15s ease, background-color 0.15s ease;
+  }
+
+  .layout-tabs__tablist [role="tab"]:focus-visible {
+    outline: 2px solid var(--color-focus-ring, currentColor);
+    outline-offset: 2px;
+    border-radius: var(--border-radius-sm, 0.25rem);
+  }
+
+  /* ── Tab style: underline ────────────────────────────────────────── */
+
+  .layout-tabs[data-tab-style="underline"] .layout-tabs__tablist {
+    border-block-end: 1px solid var(--color-border, #e5e5e5);
+  }
+
+  .layout-tabs[data-tab-style="underline"] .layout-tabs__tablist [role="tab"] {
+    padding-block-end: var(--spacing-sm, 0.5rem);
+    margin-block-end: -1px;
+  }
+
+  .layout-tabs[data-tab-style="underline"] .layout-tabs__tablist [role="tab"][aria-selected="true"] {
+    border-block-end: 2px solid currentColor;
+  }
+
+  /* ── Tab style: pill ─────────────────────────────────────────────── */
+
+  .layout-tabs[data-tab-style="pill"] .layout-tabs__tablist [role="tab"] {
+    border-radius: var(--border-radius-full, 999px);
+    padding: var(--spacing-xs, 0.25rem) var(--spacing-md, 1rem);
+  }
+
+  .layout-tabs[data-tab-style="pill"] .layout-tabs__tablist [role="tab"][aria-selected="true"] {
+    background-color: var(--color-foreground, #000);
+    color: var(--color-background, #fff);
+  }
+
+  /* ── Tab style: segmented ────────────────────────────────────────── */
+
+  .layout-tabs[data-tab-style="segmented"] .layout-tabs__tablist {
+    background-color: var(--color-background-secondary, #f5f5f5);
+    border-radius: var(--border-radius-sm, 0.25rem);
+    padding: 2px;
+    gap: 2px;
+  }
+
+  .layout-tabs[data-tab-style="segmented"] .layout-tabs__tablist [role="tab"] {
+    border-radius: var(--border-radius-sm, 0.25rem);
+    padding: var(--spacing-xs, 0.25rem) var(--spacing-md, 1rem);
+  }
+
+  .layout-tabs[data-tab-style="segmented"] .layout-tabs__tablist [role="tab"][aria-selected="true"] {
+    background-color: var(--color-background, #fff);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  }
+
+  /* ── Tab style: minimal ──────────────────────────────────────────── */
+
+  .layout-tabs[data-tab-style="minimal"] .layout-tabs__tablist [role="tab"] {
+    opacity: 0.6;
+  }
+
+  .layout-tabs[data-tab-style="minimal"] .layout-tabs__tablist [role="tab"][aria-selected="true"] {
+    opacity: 1;
+    font-weight: bold;
+  }
+
+  /* ── Panel visibility ────────────────────────────────────────────── */
+
+  .layout-tabs__panels [role="tabpanel"][hidden] {
+    display: none;
+  }
+
+  /* ── Accordion mode (mobile) ─────────────────────────────────────── */
+
+  .layout-tabs-accordion-trigger {
+    display: block;
+    width: 100%;
+    appearance: none;
+    border: none;
+    background: none;
+    padding: var(--spacing-sm, 0.5rem) 0;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+    text-align: start;
+    border-block-end: 1px solid var(--color-border, #e5e5e5);
+  }
+
+  .layout-tabs-accordion-trigger:focus-visible {
+    outline: 2px solid var(--color-focus-ring, currentColor);
+    outline-offset: 2px;
+  }
+
+  /* ── Dropdown mode (mobile) ──────────────────────────────────────── */
+
+  .layout-tabs-dropdown {
+    display: block;
+    width: 100%;
+    padding: var(--spacing-sm, 0.5rem);
+    font: inherit;
+    border: 1px solid var(--color-border, #e5e5e5);
+    border-radius: var(--border-radius-sm, 0.25rem);
+    background-color: var(--color-background, #fff);
+    color: inherit;
+    cursor: pointer;
+  }
+
+  .layout-tabs-dropdown:focus-visible {
+    outline: 2px solid var(--color-focus-ring, currentColor);
+    outline-offset: 2px;
+  }
+{% endstylesheet %}
+
+<script src="{{ 'layout-tabs-component.js' | asset_url }}" type="module"></script>
+
+{% schema %}
+{
+  "name": "Layout Tabs",
+  "tag": "div",
+  "class": "layout-tabs-block",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Tab style"
+    },
+    {
+      "type": "select",
+      "id": "tab_style",
+      "label": "Tab style",
+      "info": "Visual treatment of the tab trigger buttons.",
+      "options": [
+        { "value": "underline", "label": "Underline" },
+        { "value": "pill", "label": "Pill" },
+        { "value": "segmented", "label": "Segmented control" },
+        { "value": "minimal", "label": "Minimal (text only)" }
+      ],
+      "default": "underline"
+    },
+    {
+      "type": "select",
+      "id": "tab_alignment",
+      "label": "Tab alignment",
+      "info": "Horizontal alignment of the tab row.",
+      "options": [
+        { "value": "start", "label": "Start" },
+        { "value": "center", "label": "Centre" },
+        { "value": "end", "label": "End" },
+        { "value": "stretch", "label": "Stretch to fit" }
+      ],
+      "default": "start"
+    },
+    {
+      "type": "header",
+      "content": "Behaviour"
+    },
+    {
+      "type": "select",
+      "id": "mobile_behaviour",
+      "label": "Mobile behaviour",
+      "info": "How tabs adapt on small viewports.",
+      "options": [
+        { "value": "scroll", "label": "Horizontally scrollable" },
+        { "value": "accordion", "label": "Collapse to accordion" },
+        { "value": "dropdown", "label": "Collapse to dropdown" }
+      ],
+      "default": "scroll"
+    },
+    {
+      "type": "paragraph",
+      "content": "\"Scroll\" keeps the tab row but scrolls horizontally. \"Accordion\" converts tabs to stacked disclosure buttons with a different ARIA pattern. \"Dropdown\" replaces the tab row with a select element."
+    },
+    {
+      "type": "range",
+      "id": "default_tab_index",
+      "label": "Default active tab",
+      "info": "Zero-based index of the tab active on initial render.",
+      "min": 0,
+      "max": 10,
+      "step": 1,
+      "default": 0
+    },
+    {
+      "type": "checkbox",
+      "id": "remember_last_tab",
+      "label": "Remember last tab",
+      "info": "Persist the active tab across page loads via localStorage.",
+      "default": false
+    },
+    {
+      "type": "paragraph",
+      "content": "When enabled, the visitor's last selected tab is saved in their browser and restored on return visits. The storage key is scoped to this block instance.",
+      "visible_if": "{{ block.settings.remember_last_tab }}"
+    }
+  ],
+  "blocks": [
+    { "type": "_layout-tab-panel" }
+  ],
+  "presets": [
+    {
+      "name": "Product detail tabs",
+      "category": "Layout",
+      "settings": {
+        "tab_style": "underline",
+        "tab_alignment": "start",
+        "mobile_behaviour": "accordion",
+        "default_tab_index": 0,
+        "remember_last_tab": false
+      }
+    },
+    {
+      "name": "Feature showcase",
+      "category": "Layout",
+      "settings": {
+        "tab_style": "pill",
+        "tab_alignment": "center",
+        "mobile_behaviour": "scroll",
+        "default_tab_index": 0
+      }
+    },
+    {
+      "name": "FAQ categories",
+      "category": "Layout",
+      "settings": {
+        "tab_style": "segmented",
+        "tab_alignment": "center",
+        "mobile_behaviour": "dropdown",
+        "remember_last_tab": true
+      }
+    },
+    {
+      "name": "Size and fit guide",
+      "category": "Layout",
+      "settings": {
+        "tab_style": "minimal",
+        "tab_alignment": "start",
+        "mobile_behaviour": "accordion"
+      }
+    }
+  ]
+}
+{% endschema %}

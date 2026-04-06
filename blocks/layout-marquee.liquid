@@ -1,0 +1,230 @@
+{%- comment -%}
+  layout-marquee.liquid
+  A continuously scrolling marquee container. Children (private
+  _layout-marquee-item blocks) scroll in the chosen direction at a
+  constant speed. Pause-on-hover and prefers-reduced-motion are
+  handled by the companion layout-marquee-component.js custom element.
+
+  Companion spec: figma-horizon/components/blocks/layout-marquee.md
+  See that spec for the authoritative definition of every setting.
+{%- endcomment -%}
+
+<script
+  src="{{ 'layout-marquee-component.js' | asset_url }}"
+  type="module"
+  fetchpriority="low"
+></script>
+
+{%- liquid
+  assign direction = block.settings.direction
+  assign speed = block.settings.speed
+  assign gap = block.settings.gap
+  assign pause_on_hover = block.settings.pause_on_hover
+  assign respect_reduced_motion = block.settings.respect_reduced_motion
+-%}
+
+{%- if request.design_mode -%}
+  {%- comment -%}
+    In the theme editor, render static content so merchants can
+    configure the block and its children without animation distraction.
+  {%- endcomment -%}
+  <div {{ block.shopify_attributes }} class="layout-marquee layout-marquee--editor" style="--layout-marquee-gap: {{ gap }}px;">
+    <div class="layout-marquee__content">
+      {% content_for 'blocks' %}
+    </div>
+  </div>
+{%- else -%}
+  <layout-marquee-component
+    {{ block.shopify_attributes }}
+    class="layout-marquee"
+    style="--layout-marquee-gap: {{ gap }}px; --marquee-speed: {{ speed }}s; --marquee-direction: {% if direction == 'right' %}reverse{% else %}normal{% endif %};"
+    data-direction="{{ direction }}"
+    data-speed-factor="{{ speed }}"
+    data-pause-on-hover="{{ pause_on_hover }}"
+    data-respect-reduced-motion="{{ respect_reduced_motion }}"
+  >
+    <div
+      class="layout-marquee__wrapper"
+      ref="wrapper"
+    >
+      <div
+        class="layout-marquee__content"
+        ref="content"
+      >
+        {% content_for 'blocks' %}
+      </div>
+    </div>
+  </layout-marquee-component>
+{%- endif -%}
+
+{% stylesheet %}
+  .layout-marquee {
+    display: block;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .layout-marquee--editor .layout-marquee__content {
+    display: flex;
+    gap: var(--layout-marquee-gap);
+    align-items: center;
+  }
+
+  .layout-marquee__wrapper {
+    display: flex;
+    gap: var(--layout-marquee-gap);
+    width: fit-content;
+    white-space: nowrap;
+  }
+
+  .layout-marquee__content {
+    min-width: max-content;
+    display: flex;
+    gap: var(--layout-marquee-gap);
+  }
+
+  .layout-marquee__content :is(p, h1, h2, h3, h4, h5, h6) {
+    white-space: nowrap;
+  }
+
+  .layout-marquee__content .layout-marquee-item * {
+    max-width: none;
+  }
+
+  .layout-marquee-item {
+    min-width: max-content;
+    display: flex;
+    gap: var(--layout-marquee-gap);
+    align-items: center;
+    justify-content: center;
+  }
+
+  .layout-marquee-item > * {
+    align-content: center;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    layout-marquee-component:not([data-disabled]) .layout-marquee__wrapper {
+      animation: layout-marquee-motion var(--marquee-speed) linear infinite var(--marquee-direction);
+    }
+  }
+
+  @keyframes layout-marquee-motion {
+    to {
+      transform: translate3d(calc(-50% - (var(--layout-marquee-gap) / 2)), 0, 0);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Layout Marquee",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Direction and speed"
+    },
+    {
+      "type": "paragraph",
+      "content": "Controls the scroll direction and how long one full cycle takes. Lower speed values produce faster scrolling."
+    },
+    {
+      "type": "select",
+      "id": "direction",
+      "label": "Direction",
+      "options": [
+        { "value": "left", "label": "Right to left" },
+        { "value": "right", "label": "Left to right" },
+        { "value": "up", "label": "Bottom to top" },
+        { "value": "down", "label": "Top to bottom" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "label": "Speed",
+      "info": "Seconds to complete one full cycle",
+      "min": 5,
+      "max": 105,
+      "step": 1,
+      "unit": "s",
+      "default": 30
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Gap between items",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "header",
+      "content": "Interaction and accessibility"
+    },
+    {
+      "type": "paragraph",
+      "content": "Pause on hover stops the marquee while the pointer is over it. Respecting reduced motion freezes the marquee for visitors who have prefers-reduced-motion enabled."
+    },
+    {
+      "type": "checkbox",
+      "id": "pause_on_hover",
+      "label": "Pause on hover",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "respect_reduced_motion",
+      "label": "Respect reduced motion",
+      "info": "Freeze the marquee when the visitor has prefers-reduced-motion set",
+      "default": true
+    }
+  ],
+  "blocks": [
+    { "type": "_layout-marquee-item" }
+  ],
+  "presets": [
+    {
+      "name": "Announcement marquee",
+      "category": "Layout",
+      "settings": {
+        "direction": "left",
+        "speed": 30,
+        "gap": 48,
+        "pause_on_hover": true,
+        "respect_reduced_motion": true
+      }
+    },
+    {
+      "name": "Logo marquee",
+      "category": "Layout",
+      "settings": {
+        "direction": "left",
+        "speed": 40,
+        "gap": 64,
+        "pause_on_hover": false,
+        "respect_reduced_motion": true
+      }
+    },
+    {
+      "name": "Press quotes marquee",
+      "category": "Layout",
+      "settings": {
+        "direction": "left",
+        "speed": 60,
+        "gap": 80,
+        "pause_on_hover": true,
+        "respect_reduced_motion": true
+      }
+    }
+  ]
+}
+{% endschema %}

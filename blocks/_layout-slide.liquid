@@ -1,0 +1,34 @@
+{%- comment -%}
+  _layout-slide.liquid
+  Private child block for layout-slider. Provides the DOM wrapper that
+  Horizon's Slideshow class expects — ref="slides[]" and a slide-id
+  attribute for state tracking.
+
+  This block has no settings of its own. It exists solely to give the
+  JS a consistent slide wrapper and to let merchants add @theme / @app
+  blocks inside each slide via the theme editor.
+
+  Companion to layout-slider.liquid and the layout-slider.md spec in
+  the-working-party/figma-horizon.
+{%- endcomment -%}
+
+<div
+  ref="slides[]"
+  slide-id="{{ block.id }}"
+  {{ block.shopify_attributes }}
+  class="layout-slide"
+>
+  {%- content_for 'blocks' -%}
+</div>
+
+{% schema %}
+{
+  "name": "Slide",
+  "tag": null,
+  "blocks": [
+    { "type": "@theme" },
+    { "type": "@app" }
+  ],
+  "settings": []
+}
+{% endschema %}
