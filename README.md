@@ -1,7 +1,9 @@
 # Cayenne — Linen House Group
 
+[Extensions](#extensions) |
 [Brands](#brands) |
 [Getting started](#getting-started) |
+[Deployment](#deployment) |
 [Token sync](#token-sync) |
 [Staying up to date with Horizon changes](#staying-up-to-date-with-horizon-changes) |
 [Developer tools](#developer-tools) |
@@ -9,12 +11,50 @@
 
 A multi-brand Shopify Horizon theme serving **Linen House** and **Aura Home** from a single codebase. Brand differentiation is handled entirely through design tokens (colour schemes, typography, border radii) — all Liquid, CSS, and JavaScript is shared.
 
-Based on Horizon, the flagship of a new generation of first party Shopify themes. It incorporates the latest Liquid Storefronts features, including [theme blocks](https://shopify.dev/docs/storefronts/themes/architecture/blocks/theme-blocks/quick-start?framework=liquid).
+Based on Horizon **v3.5.1**, the flagship of a new generation of first party Shopify themes. It incorporates the latest Liquid Storefronts features, including [theme blocks](https://shopify.dev/docs/storefronts/themes/architecture/blocks/theme-blocks/quick-start?framework=liquid).
 
 - **Web-native in its purest form:** Themes run on the [evergreen web](https://www.w3.org/2001/tag/doc/evergreen-web/). We leverage the latest web browsers to their fullest, while maintaining support for the older ones through progressive enhancement—not polyfills.
 - **Lean, fast, and reliable:** Functionality and design defaults to “no” until it meets this requirement. Code ships on quality. Themes must be built with purpose. They shouldn’t support each and every feature in Shopify.
 - **Server-rendered:** HTML must be rendered by Shopify servers using Liquid. Business logic and platform primitives such as translations and money formatting don’t belong on the client. Async and on-demand rendering of parts of the page is OK, but we do it sparingly as a progressive enhancement.
 - **Functional, not pixel-perfect:** The Web doesn’t require each page to be rendered pixel-perfect by each browser engine. Using semantic markup, progressive enhancement, and clever design, we ensure that themes remain functional regardless of the browser.
+
+## Extensions
+
+The following extensions have been added on top of the base Horizon theme:
+
+### Multi-brand token sync
+
+A Figma-to-Shopify token pipeline that automates design token synchronisation for both brands. Reads Figma variable caches from JSON files and maps them into Shopify colour schemes, typography, and border-radius settings.
+
+- `scripts/sync-figma-tokens.js` — sync script with `--brand` and `--preview` flags
+- `tokens/figma-variables.json` — Linen House token cache
+- `tokens/aura-home-variables.json` — Aura Home token cache
+
+### Custom font loading and typography
+
+Brand-aware custom font loading with a metaobject-driven typography system. Linen House uses self-hosted TT Commons Pro; Aura Home uses Futura PT via Adobe Typekit.
+
+- `snippets/custom-fonts.liquid` — `@font-face` declarations and CSS variable overrides per brand
+- `snippets/typography-system.liquid` — renders typography presets and overrides from metaobjects
+
+### Composable product card
+
+A modular product card system built from independent child blocks. All display logic is pure Liquid with no JavaScript required.
+
+- `blocks/product-card.liquid` — parent container block
+- `blocks/_product-card.liquid` — core card component
+- `blocks/_product-card-media.liquid` — media display
+- `blocks/_product-card-badges.liquid` — badge system (sold out, sale, low stock, tag-based, metafield-based)
+- `blocks/_product-card-swatches.liquid` — variant swatches
+- `blocks/_product-card-quick-buy.liquid` — quick purchase
+
+### Layout primitives
+
+Slider, marquee, and tabs layout blocks powered by custom web components.
+
+- `blocks/layout-slider.liquid` + `assets/layout-slider-component.js` — carousel/slider container
+- `blocks/layout-marquee.liquid` + `assets/layout-marquee-component.js` — scrolling marquee
+- `blocks/layout-tabs.liquid` + `assets/layout-tabs-component.js` — tabbed content
 
 ## Brands
 
@@ -33,6 +73,60 @@ Install the [Shopify CLI](https://shopify.dev/docs/storefronts/themes/tools/cli)
 shopify theme dev --store linen-house    # Linen House
 shopify theme dev --store aura-home      # Aura Home
 ```
+
+## Deployment
+
+Both brands are deployed from the same codebase using the Shopify CLI. Each brand requires its own token sync before pushing.
+
+### Environment setup
+
+Copy the example config and add your credentials for each store:
+
+```bash
+cp shopify.theme.example.toml shopify.theme.toml
+```
+
+Configure environments for both brands in `shopify.theme.toml`:
+
+```toml
+[environments.linen-house-dev]
+store = "linen-house-au.myshopify.com"
+password = "shptka_your_dev_token"
+
+[environments.linen-house-prod]
+store = "linen-house-au.myshopify.com"
+password = "shptka_your_prod_token"
+
+[environments.aura-home-dev]
+store = "aura-home-au.myshopify.com"
+password = "shptka_your_dev_token"
+
+[environments.aura-home-prod]
+store = "aura-home-au.myshopify.com"
+password = "shptka_your_prod_token"
+```
+
+### Pushing to a store
+
+Always sync tokens for the target brand immediately before pushing:
+
+```bash
+# Linen House
+node scripts/sync-figma-tokens.js
+shopify theme push --store linen-house
+
+# Aura Home
+node scripts/sync-figma-tokens.js --brand=aura-home
+shopify theme push --store aura-home
+```
+
+To target a specific environment:
+
+```bash
+shopify theme push --environment linen-house-dev
+```
+
+> **Important:** The token sync writes brand-specific values to `config/settings_data.json`. Pushing to the wrong store without re-syncing will apply the wrong brand's tokens.
 
 ## Token sync
 
@@ -107,4 +201,4 @@ Horizon runs [Theme Check](#Theme-Check) on every commit via [Shopify/theme-chec
 
 ## License
 
-Based on Horizon. Copyright (c) 2025-present Shopify Inc. See [LICENSE](/LICENSE.md) for further details.
+Based on Horizon v3.5.1. Copyright (c) 2025-present Shopify Inc. See [LICENSE](/LICENSE.md) for further details.
