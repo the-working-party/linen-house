@@ -1,0 +1,361 @@
+{%- comment -%}
+  _product-card-media.liquid
+
+  Product image display child block. Supports two modes:
+    - Single: featured image with optional hover swap (default)
+    - Carousel: CSS scroll-snap gallery of product images
+
+  Automatically handles lazy/eager loading based on section position,
+  following the TWP Web Performance Manual guidelines:
+    - section.index <= 2: first image eager (above the fold)
+    - section.index == 1: first image also gets fetchpriority="high" (LCP candidate)
+    - section.index > 2 or nil: all images lazy
+    - Carousel images beyond the first: ALWAYS lazy (off-screen until scroll)
+
+  No JavaScript required. Carousel uses CSS scroll-snap for zero
+  per-card JS overhead on collection grids.
+{%- endcomment -%}
+
+{%- liquid
+  assign product = closest.product
+  assign image = product.featured_image
+  assign ratio = block.settings.image_ratio
+  assign fit = block.settings.object_fit
+  assign radius = block.settings.border_radius
+  assign mode = block.settings.media_mode
+  assign max_images = block.settings.max_images
+  assign show_hover = block.settings.show_second_image_on_hover
+
+  comment
+    Smart loading: determine eager vs lazy based on section position.
+    Per TWP Web Performance Manual — 82.4% of Shopify pages incorrectly
+    lazy-load their LCP image. We fix this automatically.
+  endcomment
+  assign first_image_loading = 'lazy'
+  assign first_image_fetchpriority = 'auto'
+  if section.index != blank and section.index <= 2
+    assign first_image_loading = 'eager'
+    if section.index == 1
+      assign first_image_fetchpriority = 'high'
+    endif
+  endif
+-%}
+
+{%- if product != blank and image != blank -%}
+  <div
+    class="product-card-media{% if mode == 'carousel' %} product-card-media--carousel{% endif %}"
+    style="
+      --media-radius: {{ radius }}px;
+      --media-fit: {{ fit }};
+      {%- case ratio -%}
+        {%- when 'portrait' -%}
+          --media-ratio: 4 / 5;
+        {%- when 'square' -%}
+          --media-ratio: 1 / 1;
+        {%- when 'landscape' -%}
+          --media-ratio: 16 / 9;
+        {%- when 'adapt' -%}
+          --media-ratio: {{ image.width }} / {{ image.height }};
+      {%- endcase -%}
+    "
+    {{ block.shopify_attributes }}
+  >
+    {%- if mode == 'carousel' -%}
+      {%- comment -%} Carousel mode: CSS scroll-snap gallery {%- endcomment -%}
+      <div class="product-card-media__track">
+        {%- assign image_count = 0 -%}
+        {%- for media in product.media -%}
+          {%- if media.media_type == 'image' and image_count < max_images -%}
+            {%- assign image_count = image_count | plus: 1 -%}
+
+            {%- comment -%}
+              First image follows section-based loading strategy.
+              All subsequent carousel images are ALWAYS lazy — they are
+              off-screen until the visitor scrolls the carousel.
+            {%- endcomment -%}
+            {%- if image_count == 1 -%}
+              {%- assign img_loading = first_image_loading -%}
+              {%- assign img_fetchpriority = first_image_fetchpriority -%}
+            {%- else -%}
+              {%- assign img_loading = 'lazy' -%}
+              {%- assign img_fetchpriority = 'auto' -%}
+            {%- endif -%}
+
+            <div class="product-card-media__slide">
+              <img
+                src="{{ media | image_url: width: 600 }}"
+                srcset="
+                  {{ media | image_url: width: 300 }} 300w,
+                  {{ media | image_url: width: 450 }} 450w,
+                  {{ media | image_url: width: 600 }} 600w,
+                  {{ media | image_url: width: 900 }} 900w,
+                  {{ media | image_url: width: 1200 }} 1200w
+                "
+                sizes="(max-width: 749px) calc(50vw - 24px), (max-width: 1199px) calc(33vw - 24px), 300px"
+                alt="{{ media.alt | default: product.title | escape }}"
+                loading="{{ img_loading }}"
+                fetchpriority="{{ img_fetchpriority }}"
+                width="{{ media.preview_image.width }}"
+                height="{{ media.preview_image.height }}"
+                class="product-card-media__image"
+              >
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+
+      {%- if image_count > 1 -%}
+        <div class="product-card-media__dots" aria-hidden="true">
+          {%- for i in (1..image_count) -%}
+            <span class="product-card-media__dot{% if forloop.first %} product-card-media__dot--active{% endif %}"></span>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+
+    {%- else -%}
+      {%- comment -%} Single mode: featured image with optional hover swap {%- endcomment -%}
+      <img
+        src="{{ image | image_url: width: 600 }}"
+        srcset="
+          {{ image | image_url: width: 300 }} 300w,
+          {{ image | image_url: width: 450 }} 450w,
+          {{ image | image_url: width: 600 }} 600w,
+          {{ image | image_url: width: 900 }} 900w,
+          {{ image | image_url: width: 1200 }} 1200w
+        "
+        sizes="(max-width: 749px) calc(50vw - 24px), (max-width: 1199px) calc(33vw - 24px), 300px"
+        alt="{{ image.alt | escape }}"
+        loading="{{ first_image_loading }}"
+        fetchpriority="{{ first_image_fetchpriority }}"
+        width="{{ image.width }}"
+        height="{{ image.height }}"
+        class="product-card-media__primary"
+      >
+
+      {%- assign second_image = product.media[1] -%}
+      {%- if show_hover and second_image != blank and second_image.media_type == 'image' -%}
+        <img
+          src="{{ second_image | image_url: width: 600 }}"
+          srcset="
+            {{ second_image | image_url: width: 300 }} 300w,
+            {{ second_image | image_url: width: 450 }} 450w,
+            {{ second_image | image_url: width: 600 }} 600w,
+            {{ second_image | image_url: width: 900 }} 900w,
+            {{ second_image | image_url: width: 1200 }} 1200w
+          "
+          sizes="(max-width: 749px) calc(50vw - 24px), (max-width: 1199px) calc(33vw - 24px), 300px"
+          alt="{{ second_image.alt | default: image.alt | escape }}"
+          loading="lazy"
+          width="{{ second_image.preview_image.width }}"
+          height="{{ second_image.preview_image.height }}"
+          class="product-card-media__hover"
+        >
+      {%- endif -%}
+    {%- endif -%}
+  </div>
+{%- elsif request.design_mode -%}
+  <div
+    class="product-card-media product-card-media--placeholder"
+    style="--media-ratio: 4 / 5;"
+    {{ block.shopify_attributes }}
+  >
+    {{ 'product-1' | placeholder_svg_tag: 'product-card-media__placeholder-svg' }}
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  /* ── Base ──────────────────────────────────────────────── */
+
+  .product-card-media {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: var(--media-ratio, 4 / 5);
+    border-radius: var(--media-radius, 0);
+  }
+
+  .product-card-media img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: var(--media-fit, cover);
+  }
+
+  /* ── Single mode: hover swap ──────────────────────────── */
+
+  .product-card-media__hover {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .product-card-media:hover .product-card-media__hover {
+    opacity: 1;
+  }
+
+  /* ── Carousel mode: CSS scroll-snap ───────────────────── */
+
+  .product-card-media__track {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Firefox */
+    gap: 0;
+    height: 100%;
+  }
+
+  .product-card-media__track::-webkit-scrollbar {
+    display: none; /* Chrome, Safari */
+  }
+
+  .product-card-media__slide {
+    flex: 0 0 100%;
+    scroll-snap-align: start;
+    min-width: 0;
+  }
+
+  .product-card-media__slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: var(--media-fit, cover);
+  }
+
+  /* ── Dot indicators ───────────────────────────────────── */
+
+  .product-card-media__dots {
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 4px;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  .product-card-media__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(0, 0, 0, 0.15);
+  }
+
+  .product-card-media__dot--active {
+    background: rgba(255, 255, 255, 0.9);
+  }
+
+  /* ── Placeholder ──────────────────────────────────────── */
+
+  .product-card-media--placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-background, #f5f5f5);
+  }
+
+  .product-card-media__placeholder-svg {
+    width: 60%;
+    height: auto;
+    opacity: 0.4;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Product card media",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Display mode"
+    },
+    {
+      "type": "select",
+      "id": "media_mode",
+      "label": "Media mode",
+      "options": [
+        { "value": "single", "label": "Single image" },
+        { "value": "carousel", "label": "Image carousel" }
+      ],
+      "default": "single",
+      "info": "Carousel uses CSS scroll-snap — zero JavaScript, swipe-friendly."
+    },
+    {
+      "type": "range",
+      "id": "max_images",
+      "label": "Maximum images in carousel",
+      "min": 2,
+      "max": 10,
+      "step": 1,
+      "default": 4,
+      "visible_if": "{{ block.settings.media_mode == 'carousel' }}"
+    },
+    {
+      "type": "paragraph",
+      "content": "The carousel displays up to this many product images in a horizontal scroll-snap track. Only image media types are included — videos are skipped.",
+      "visible_if": "{{ block.settings.media_mode == 'carousel' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_second_image_on_hover",
+      "label": "Show second image on hover",
+      "default": true,
+      "info": "Only applies in single image mode.",
+      "visible_if": "{{ block.settings.media_mode == 'single' }}"
+    },
+    {
+      "type": "header",
+      "content": "Image settings"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Aspect ratio",
+      "options": [
+        { "value": "adapt", "label": "Adapt to image" },
+        { "value": "portrait", "label": "Portrait (4:5)" },
+        { "value": "square", "label": "Square (1:1)" },
+        { "value": "landscape", "label": "Landscape (16:9)" }
+      ],
+      "default": "portrait"
+    },
+    {
+      "type": "select",
+      "id": "object_fit",
+      "label": "Image fit",
+      "options": [
+        { "value": "cover", "label": "Cover (crop to fill)" },
+        { "value": "contain", "label": "Contain (show entire image)" }
+      ],
+      "default": "cover"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Border radius",
+      "min": 0,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Performance"
+    },
+    {
+      "type": "paragraph",
+      "content": "Image loading is handled automatically based on section position. Images in the first two sections load eagerly (above the fold); images lower on the page load lazily. Carousel images beyond the first are always lazy-loaded regardless of position. The first image in the first section also receives fetchpriority=\"high\" as an LCP candidate. No configuration needed — this follows the TWP Web Performance Manual guidelines."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product card media",
+      "category": "Product"
+    }
+  ]
+}
+{% endschema %}
