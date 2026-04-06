@@ -1,14 +1,14 @@
-{%- comment -%}
-  typography-system.liquid
+{% doc %}
   Renders a <style> block from typography_preset metaobjects.
 
-  Modes:
+  Supports three modes per entry:
     preset   — outputs :root custom properties (--typo-{handle}-*)
     override — outputs root variable remaps and/or selector-targeted rules
     both     — outputs both preset vars AND override rules
 
-  Usage: {% render 'typography-system' %}
-{%- endcomment -%}
+  @example
+  {% render 'typography-system' %}
+{% enddoc %}
 
 {%- assign newline = "
 " -%}
@@ -172,7 +172,7 @@
         {%- assign selector_array = clean_selectors | split: newline -%}
 
 /* Selector overrides: {{ handle }} */
-{{ selector_array | join: ',\n' }} {
+{{ selector_array | join: ', ' }} {
         {%- if entry.font_size.value != blank %}
   font-size: {{ entry.font_size.value }};
         {%- endif -%}
