@@ -70,8 +70,8 @@ Slider, marquee, and tabs layout blocks powered by custom web components.
 Install the [Shopify CLI](https://shopify.dev/docs/storefronts/themes/tools/cli), then run the local dev server for either brand:
 
 ```bash
-shopify theme dev --store linen-house    # Linen House
-shopify theme dev --store aura-home      # Aura Home
+shopify theme dev -e linen-house-dev     # Linen House
+shopify theme dev -e aura-home-dev       # Aura Home
 ```
 
 ## Deployment
@@ -113,11 +113,11 @@ Always sync tokens for the target brand immediately before pushing:
 ```bash
 # Linen House
 node scripts/sync-figma-tokens.js
-shopify theme push --store linen-house
+shopify theme push -e linen-house-prod
 
 # Aura Home
 node scripts/sync-figma-tokens.js --brand=aura-home
-shopify theme push --store aura-home
+shopify theme push -e aura-home-prod
 ```
 
 To target a specific environment:
