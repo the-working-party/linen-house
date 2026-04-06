@@ -40,10 +40,10 @@ node scripts/sync-figma-tokens.js --preview               # Preview without writ
 ## Commands
 
 ```bash
-shopify theme dev --store linen-house    # Local dev server (Linen House)
-shopify theme dev --store aura-home      # Local dev server (Aura Home)
-shopify theme push --store linen-house   # Push to Linen House
-shopify theme push --store aura-home     # Push to Aura Home
+shopify theme dev -e linen-house-dev     # Local dev server (Linen House)
+shopify theme dev -e aura-home-dev       # Local dev server (Aura Home)
+shopify theme push -e linen-house-prod   # Push to Linen House
+shopify theme push -e aura-home-prod     # Push to Aura Home
 shopify theme check                      # Lint/validate theme
 ```
 

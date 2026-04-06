@@ -1,7 +1,19 @@
-[environments.development]
-store = "linen-housse-au.myshopify.com"
+[environments.linen-house-dev]
+store = "linen-house-au.myshopify.com"
 password = "shptka_your_dev_token"
+# theme = "123456789012"
 
-[environments.au]
+[environments.linen-house-prod]
 store = "linen-house-au.myshopify.com"
 password = "shptka_your_prod_token"
+# theme = "123456789012"
+
+[environments.aura-home-dev]
+store = "aura-home-au.myshopify.com"
+password = "shptka_your_dev_token"
+# theme = "123456789012"
+
+[environments.aura-home-prod]
+store = "aura-home-au.myshopify.com"
+password = "shptka_your_prod_token"
+# theme = "123456789012"
