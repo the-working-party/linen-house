@@ -23,39 +23,22 @@
   assign respect_reduced_motion = block.settings.respect_reduced_motion
 -%}
 
-{%- if request.design_mode -%}
-  {%- comment -%}
-    In the theme editor, render static content so merchants can
-    configure the block and its children without animation distraction.
-  {%- endcomment -%}
-  <div {{ block.shopify_attributes }} class="layout-marquee layout-marquee--editor" style="--layout-marquee-gap: {{ gap }}px;">
-    <div class="layout-marquee__content">
+<layout-marquee-component
+  {{ block.shopify_attributes }}
+  class="layout-marquee{% if request.design_mode %} layout-marquee--editor{% endif %}"
+  style="--layout-marquee-gap: {{ gap }}px; --marquee-speed: {{ speed }}s; --marquee-direction: {% if direction == 'right' %}reverse{% else %}normal{% endif %};"
+  data-direction="{{ direction }}"
+  data-speed-factor="{{ speed }}"
+  data-pause-on-hover="{{ pause_on_hover }}"
+  data-respect-reduced-motion="{{ respect_reduced_motion }}"
+  {% if request.design_mode %}data-disabled{% endif %}
+>
+  <div class="layout-marquee__wrapper" ref="wrapper">
+    <div class="layout-marquee__content" ref="content">
       {% content_for 'blocks' %}
     </div>
   </div>
-{%- else -%}
-  <layout-marquee-component
-    {{ block.shopify_attributes }}
-    class="layout-marquee"
-    style="--layout-marquee-gap: {{ gap }}px; --marquee-speed: {{ speed }}s; --marquee-direction: {% if direction == 'right' %}reverse{% else %}normal{% endif %};"
-    data-direction="{{ direction }}"
-    data-speed-factor="{{ speed }}"
-    data-pause-on-hover="{{ pause_on_hover }}"
-    data-respect-reduced-motion="{{ respect_reduced_motion }}"
-  >
-    <div
-      class="layout-marquee__wrapper"
-      ref="wrapper"
-    >
-      <div
-        class="layout-marquee__content"
-        ref="content"
-      >
-        {% content_for 'blocks' %}
-      </div>
-    </div>
-  </layout-marquee-component>
-{%- endif -%}
+</layout-marquee-component>
 
 {% stylesheet %}
   .layout-marquee {
