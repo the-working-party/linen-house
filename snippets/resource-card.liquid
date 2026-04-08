@@ -53,6 +53,24 @@
       {{ resource.title }}
     </span>
   </a>
+  <div class="resource-card__content">
+    <p class="resource-card__title{% if style == 'overlay' %} h5{%else %} paragraph{% endif %}">
+      {{- resource.title -}}
+    </p>
+
+    {% if resource_type == 'product' %}
+      {% render 'price', product_resource: resource, show_unit_price: true %}
+    {% elsif resource_type == 'collection' and single_thumbnail_collection == false %}
+      <p class="resource-card__subtext paragraph">
+        {{- 'content.search_results_resource_products_count' | t: count: resource.all_products_count -}}
+      </p>
+    {% else %}
+      <p class="resource-card__subtext paragraph">
+        {{- resource.excerpt | default: resource.content | strip_html | truncate: 65 -}}
+      </p>
+    {% endif %}
+  </div>
+
   <div
     class="resource-card__media"
     style="--resource-card-aspect-ratio: {{ ratio }};"
@@ -136,24 +154,10 @@
         </div>
       {%- endif -%}
     {%- endif -%}
-  </div>
 
-  <div class="resource-card__content">
-    <p class="resource-card__title{% if style == 'overlay' %} h5{%else %} paragraph{% endif %}">
-      {{- resource.title -}}
-    </p>
-
-    {% if resource_type == 'product' %}
-      {% render 'price', product_resource: resource, show_unit_price: true %}
-    {% elsif resource_type == 'collection' and single_thumbnail_collection == false %}
-      <p class="resource-card__subtext paragraph">
-        {{- 'content.search_results_resource_products_count' | t: count: resource.all_products_count -}}
-      </p>
-    {% else %}
-      <p class="resource-card__subtext paragraph">
-        {{- resource.excerpt | default: resource.content | strip_html | truncate: 65 -}}
-      </p>
-    {% endif %}
+    <span class="resource-card__shop-now" aria-hidden="true">
+      {{- 'general.shop_now' | t -}}
+    </span>
   </div>
 </div>
 {%- if resource_type == 'product' and settings.transition_to_main_product -%}
@@ -207,6 +211,26 @@
   .resource-card[data-resource-type='article'] .resource-card__content,
   .resource-card[data-resource-type='page'] .resource-card__content {
     gap: var(--padding-xs);
+  }
+
+  .resource-card__media {
+    position: relative;
+  }
+
+  .resource-card__shop-now {
+    position: absolute;
+    bottom: var(--padding-sm);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--color-background);
+    color: var(--color-foreground);
+    padding: var(--padding-xs) var(--padding-xl);
+    border-radius: var(--style-border-radius-buttons-primary);
+    font-family: var(--button-font-family-primary);
+    font-size: var(--font-size--sm);
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: var(--layer-raised);
   }
 
   .resource-card__image {

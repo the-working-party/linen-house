@@ -684,5 +684,14 @@
     --cart-secondary-font-family: var(--font-{{ settings.cart_price_font }}--family);
     --cart-secondary-font-style: var(--font-{{ settings.cart_price_font }}--style);
     --cart-secondary-font-weight: var(--font-{{ settings.cart_price_font }}--weight);
-  }
+
+    --navigation-font-weight: 500;
+    --navigation-base: 14px;
+    --text-tertiary: #999;
+
+    {% if settings.brand == 'linen-house' %}
+      --navigation-letter-spacing: 0.2px;
+    {% else %}
+      --navigation-letter-spacing: 0.5px;
+    {% endif %}
 {% endstyle %}
