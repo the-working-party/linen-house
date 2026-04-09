@@ -9,6 +9,7 @@
 {%- enddoc -%}
 
 {% assign block_settings = block.settings %}
+{% assign show_icon = block_settings.show_icon %}
 
 <a
   {% if link == blank %}
@@ -21,6 +22,7 @@
     size-style
     {{ block_settings.style_class }}
     {{ block_settings.style_class }}--{{ block.id }}
+    {% if show_icon %}button--with-icon{% endif %}
   "
   style="{% render 'size-style', settings: block_settings %}"
   {%- if block_settings.open_in_new_tab -%}
@@ -29,17 +31,98 @@
   {%- endif -%}
   {{ block.shopify_attributes }}
 >
-  {{ block_settings.label }}
+  <span>{{ block_settings.label }}</span>
+  {%- if show_icon -%}
+    <span class="button__icon svg-wrapper" aria-hidden="true">
+      {{- 'icon-arrow.svg' | inline_asset_content -}}
+    </span>
+  {%- endif -%}
 </a>
 
 {% stylesheet %}
+  /* ───────────────────────────────────────────────────────────────────────
+     ZONE 1 — Button type tokens
+     All per-type design decisions live here.
+     To add a new property: define the token in each block below,
+     then consume it once in the shared rule in assets/base.css (Zone 2).
+  ──────────────────────────────────────────────────────────────────────── */
+
+  /* ─── Primary ────────────────────────────────────────────────────────── */
+  .button {
+    --button-color: var(--button-dark-content-default);
+    --button-background-color: var(--color-primary-button-background);
+    --button-border-color: var(--color-primary-button-border);
+    --button-border-width: var(--style-border-width-primary);
+    --button-radius: var(--style-border-radius-buttons-primary);
+    --button-font: var(--button-font-family-primary);
+    --button-text-case: var(--button-text-case-primary);
+    --button-padding-block: var(--button-margin);
+    --button-padding-inline: var(--button-margin);
+  }
+
+  .button:hover {
+    --button-color: var(--color-primary-button-hover-text);
+    --button-background-color: var(--color-primary-button-hover-background);
+    --button-border-color: var(--color-primary-button-hover-border);
+  }
+
+  /* ─── Secondary ──────────────────────────────────────────────────────── */
+  .button-secondary {
+    --button-color: var(--color-secondary-button-text);
+    --button-background-color: var(--color-secondary-button-background);
+    --button-border-color: var(--color-secondary-button-border);
+    --button-border-width: var(--style-border-width-secondary);
+    --button-radius: var(--style-border-radius-buttons-secondary);
+    --button-font: var(--button-font-family-secondary);
+    --button-text-case: var(--button-text-case-secondary);
+  }
+
+  .button-secondary:hover {
+    --button-color: var(--color-secondary-button-hover-text);
+    --button-background-color: var(--color-secondary-button-hover-background);
+    --button-border-color: var(--color-secondary-button-hover-border);
+  }
+
+  /* ─── Link ───────────────────────────────────────────────────────────── */
   .link {
+    --link-color: currentcolor;
+    --link-color-hover: var(--color-primary-hover);
+
+    color: var(--link-color);
     text-decoration: none;
     text-decoration-color: currentcolor;
 
     &:hover {
-      color: var(--color-primary-hover);
+      color: var(--link-color-hover);
       text-decoration-color: transparent;
     }
+  }
+
+  /* ─── Ghost ──────────────────────────────────────────────────────────── */
+  .button-ghost {
+    --ghost-color: currentcolor;
+    --ghost-color-hover: var(--color-primary-hover);
+
+    color: var(--ghost-color);
+    text-decoration: none;
+    text-decoration-color: currentcolor;
+
+    &:hover {
+      color: var(--ghost-color-hover);
+      text-decoration-color: transparent;
+    }
+  }
+
+  /* ─── Icon layout ────────────────────────────────────────────────────── */
+  .button--with-icon {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-xs);
+  }
+
+  .button__icon {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
   }
 {% endstylesheet %}

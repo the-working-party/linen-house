@@ -1,4 +1,3 @@
-
 {% render 'button', link: block.settings.link %}
 
 {% schema %}
@@ -39,9 +38,20 @@
         {
           "value": "link",
           "label": "t:options.link"
+        },
+        {
+          "value": "button-ghost",
+          "label": "t:options.ghost"
         }
       ],
       "default": "button"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_icon",
+      "label": "t:settings.show_icon",
+      "default": false,
+      "visible_if": "{{ block.settings.style_class == 'button' or block.settings.style_class == 'button-secondary' }}"
     },
     {
       "type": "header",
