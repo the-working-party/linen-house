@@ -685,7 +685,9 @@
     --cart-secondary-font-style: var(--font-{{ settings.cart_price_font }}--style);
     --cart-secondary-font-weight: var(--font-{{ settings.cart_price_font }}--weight);
 
+      /* Additional vars not extracted via Figma integration */
     --text-default: #0E0E0E;
+    --text-tertiary: #999;
 
     --navigation-font-weight: 500;
     --navigation-base: 14px;
@@ -695,16 +697,53 @@
     --subheading-weight: 500;
     --subheading-spacing: 0.2px;
 
-    --button-dark-content-inverse: #0E0E0E;
-    --button-dark-content-hover: #666666;
+
+    --button-dark-background-disabled: #F7F7F7;
+    --button-dark-content-disabled: #D5D5D5;
+    --button-dark-stroke-disabled: #D5D5D5;
+    --button-margin: 16px;
+    --button-large: 40px;
+    --button-spaced: 24px;
 
     --component-margin: 16px;
 
-    --text-tertiary: #999;
-
+      /* Additional [Brand Specific] vars not extracted via Figma integration */
     {% if settings.brand == 'linen-house' %}
       --navigation-letter-spacing: 0.2px;
+
+      --button-radius: 64px;
+
+      --button-light-content-default: #0E0E0E;
+      --button-light-background-default: ##F9F8F5;
+      --button-light-background-hover: #E4E1D6;
+      --button-light-content-inverse: #F9F8F5;
+      --button-light-content-hover: #E4E1D6;
+      --button-light-stroke-hover: #E4E1D6;
+
+      --button-dark-stroke-default: #0E0E0E;
+      --button-dark-content-hover: #666666;
+      --button-dark-stroke-hover: #666666;
+      --button-dark-background-default: #0E0E0E;
+      --button-dark-background-hover: #333333;
+      --button-dark-content-inverse: #0E0E0E;
+
+
     {% else %}
       --navigation-letter-spacing: 0.5px;
+
+      --button-radius: 4px;
+      --button-light-content-default: #333333;
+      --button-light-background-default: #FFFFFF;
+      --button-light-background-hover: #E7E7E7;
+      --button-light-content-inverse: #FFFFFF;
+      --button-light-content-hover: #D5D5D5;
+      --button-light-stroke-hover: #D5D5D5;
+
+      --button-dark-stroke-default: #333333;
+      --button-dark-content-hover: #999999;
+      --button-dark-stroke-hover: #999999;
+      --button-dark-background-default: #333333;
+      --button-dark-background-hover: #666666;
+      --button-dark-content-inverse: #333333;
     {% endif %}
 {% endstyle %}
