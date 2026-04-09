@@ -12,7 +12,7 @@
     "logo": "shopify://shop_images/Linen_House_Logo_Black.svg",
     "logo_inverse": "shopify://shop_images/Linen_House_Logo_White.svg",
     "logo_height": 16,
-    "logo_height_mobile": 28,
+    "logo_height_mobile": 12,
     "favicon": "shopify://shop_images/favicon.svg",
     "type_body_font": "work_sans_n4",
     "type_subheading_font": "work_sans_n5",
