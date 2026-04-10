@@ -1326,10 +1326,11 @@ button.shopify-payment-button__button--unbranded {
   border-radius: var(--button-radius);
   font-family: var(--button-font);
   font-style: var(--font-paragraph--style);
-  font-weight: var(--font-paragraph--weight);
+  font-weight: var(--button-font-weight, var(--font-paragraph--weight));
   font-size: var(--font-paragraph--size);
   line-height: var(--font-paragraph--line-height);
   text-transform: var(--button-text-case);
+  letter-spacing: var(--button-letter-spacing);
   box-shadow: inset 0 0 0 var(--button-border-width) var(--button-border-color);
   transition:
     color var(--animation-speed) var(--animation-easing),

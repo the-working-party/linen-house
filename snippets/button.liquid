@@ -50,50 +50,64 @@
   /* ─── Primary ────────────────────────────────────────────────────────── */
   .button {
     --button-color: var(--button-dark-content-default);
-    --button-background-color: var(--color-primary-button-background);
-    --button-border-color: var(--color-primary-button-border);
-    --button-border-width: var(--style-border-width-primary);
-    --button-radius: var(--style-border-radius-buttons-primary);
+    --button-background-color: var(--button-dark-background-default);
+    --button-radius: var(--button-radius-default);
     --button-font: var(--button-font-family-primary);
+    --button-border-color: var(--button-dark-background-default);
+    --button-font-weight: var(--navigation-font-weight);
     --button-text-case: var(--button-text-case-primary);
     --button-padding-block: var(--button-margin);
     --button-padding-inline: var(--button-margin);
+    --button-letter-spacing: var(--navigation-letter-spacing);
   }
 
   .button:hover {
-    --button-color: var(--color-primary-button-hover-text);
-    --button-background-color: var(--color-primary-button-hover-background);
-    --button-border-color: var(--color-primary-button-hover-border);
+    --button-color: var(--button-dark-content-default);
+    --button-background-color: var(--button-dark-background-hover);
+    --button-border-color: var(--button-dark-background-hover);
+  }
+
+  .button:disabled {
+    --button-color: var(--button-dark-content-disabled);
+    --button-background-color: var(--button-dark-background-disabled);
+    --button-border-color: var(--button-dark-stroke-disabled);
   }
 
   /* ─── Secondary ──────────────────────────────────────────────────────── */
   .button-secondary {
-    --button-color: var(--color-secondary-button-text);
-    --button-background-color: var(--color-secondary-button-background);
-    --button-border-color: var(--color-secondary-button-border);
+    --button-color: var(--button-dark-content-inverse);
+    --button-border-color: var(--button-dark-stroke-default);
     --button-border-width: var(--style-border-width-secondary);
-    --button-radius: var(--style-border-radius-buttons-secondary);
+    --button-radius: var(--button-radius-default);
     --button-font: var(--button-font-family-secondary);
+    --button-font-weight: var(--navigation-font-weight);
     --button-text-case: var(--button-text-case-secondary);
+    --button-letter-spacing: var(--navigation-letter-spacing);
   }
 
   .button-secondary:hover {
-    --button-color: var(--color-secondary-button-hover-text);
-    --button-background-color: var(--color-secondary-button-hover-background);
-    --button-border-color: var(--color-secondary-button-hover-border);
+    --button-color: var(--button-dark-content-hover);
+    --button-border-color: var(--button-dark-stroke-hover);
+  }
+
+  .button-secondary:disabled {
+    --button-color: var(--button-dark-content-disabled);
+    --button-border-color: var(--button-dark-stroke-disabled);
   }
 
   /* ─── Link ───────────────────────────────────────────────────────────── */
   .link {
     --link-color: currentcolor;
-    --link-color-hover: var(--color-primary-hover);
+    --link-color-hover: var(--button-dark-content-hover);
 
-    color: var(--link-color);
+    color: var(--button-dark-content-inverse);
+    border-bottom: 1px solid var(--button-dark-content-inverse);
     text-decoration: none;
     text-decoration-color: currentcolor;
 
     &:hover {
-      color: var(--link-color-hover);
+      color: var(--button-dark-content-hover);
+      border-color: var(--button-dark-content-hover);
       text-decoration-color: transparent;
     }
   }
@@ -101,14 +115,14 @@
   /* ─── Ghost ──────────────────────────────────────────────────────────── */
   .button-ghost {
     --ghost-color: currentcolor;
-    --ghost-color-hover: var(--color-primary-hover);
+    --ghost-color-hover: var(--button-dark-content-hover);
 
-    color: var(--ghost-color);
+    color: var(--button-dark-content-inverse);
     text-decoration: none;
     text-decoration-color: currentcolor;
 
     &:hover {
-      color: var(--ghost-color-hover);
+      color: var(--button-dark-content-hover);
       text-decoration-color: transparent;
     }
   }
@@ -117,7 +131,7 @@
   .button--with-icon {
     display: flex;
     align-items: center;
-    gap: var(--gap-xs);
+    gap: var(--button-spaced);
   }
 
   .button__icon {
