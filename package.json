@@ -9,10 +9,14 @@
     "format": "prettier . --write --config .twp/config/.prettierrc.json --ignore-path .twp/config/.prettierignore",
     "format:check": "prettier . --check --config .twp/config/.prettierrc.json --ignore-path .twp/config/.prettierignore",
     "check:all": "pnpm lint:js && pnpm lint:css && pnpm format:check",
-    "dev": "shopify theme dev --environment linen-house-dev",
-    "dev:push": "shopify theme push --environment linen-house-dev",
-    "prod:dev": "shopify theme dev --environment linen-house-prod",
-    "prod:push": "shopify theme push --environment linen-house-prod"
+    "dev:lh": "shopify theme dev --environment linen-house-dev",
+    "dev:lh:push": "shopify theme push --environment linen-house-dev",
+    "prod:lh:dev": "shopify theme dev --environment linen-house-prod",
+    "prod:lh:push": "shopify theme push --environment linen-house-prod",
+    "dev:ah": "shopify theme dev --environment aura-home-dev",
+    "dev:ah:push": "shopify theme push --environment aura-home-dev",
+    "prod:ah:dev": "shopify theme dev --environment aura-home-prod",
+    "prod:ah:push": "shopify theme push --environment aura-home-prod"
   },
   "keywords": [],
   "author": "The Working Party",
