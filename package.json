@@ -10,7 +10,9 @@
     "format:check": "prettier . --check --config .twp/config/.prettierrc.json --ignore-path .twp/config/.prettierignore",
     "check:all": "pnpm lint:js && pnpm lint:css && pnpm format:check",
     "dev": "shopify theme dev --environment linen-house-dev",
-    "push": "shopify theme push --environment linen-house-prod"
+    "dev:push": "shopify theme push --environment linen-house-dev",
+    "prod:dev": "shopify theme dev --environment linen-house-prod",
+    "prod:push": "shopify theme push --environment linen-house-prod"
   },
   "keywords": [],
   "author": "The Working Party",
