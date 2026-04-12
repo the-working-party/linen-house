@@ -95,6 +95,54 @@
     --button-border-color: var(--button-dark-stroke-disabled);
   }
 
+  /* ─── Primary Inverse ───────────────────────────────────────────────── */
+  .button-inverse {
+    --button-color: var(--button-light-content-default);
+    --button-background-color: var(--button-light-background-default);
+    --button-radius: var(--button-radius-default);
+    --button-font: var(--button-font-family-primary);
+    --button-border-color: var(--button-light-background-default);
+    --button-font-weight: var(--navigation-font-weight);
+    --button-text-case: var(--button-text-case-primary);
+    --button-padding-block: var(--button-margin);
+    --button-padding-inline: var(--button-margin);
+    --button-letter-spacing: var(--navigation-letter-spacing);
+  }
+
+  .button-inverse:hover {
+    --button-color: var(--button-light-content-default);
+    --button-background-color: var(--button-light-background-hover);
+    --button-border-color: var(--button-light-background-hover);
+  }
+
+  .button-inverse:disabled {
+    --button-color: var(--button-light-content-disabled);
+    --button-background-color: var(--button-light-background-disabled);
+    --button-border-color: var(--button-light-stroke-disabled);
+  }
+
+  /* ─── Secondary Inverse ──────────────────────────────────────────────── */
+  .button-secondary-inverse {
+    --button-color: var(--button-light-content-inverse);
+    --button-border-color: var(--button-light-stroke-default);
+    --button-border-width: var(--style-border-width-secondary);
+    --button-radius: var(--button-radius-default);
+    --button-font: var(--button-font-family-secondary);
+    --button-font-weight: var(--navigation-font-weight);
+    --button-text-case: var(--button-text-case-secondary);
+    --button-letter-spacing: var(--navigation-letter-spacing);
+  }
+
+  .button-secondary-inverse:hover {
+    --button-color: var(--button-light-content-hover);
+    --button-border-color: var(--button-light-stroke-hover);
+  }
+
+  .button-secondary-inverse:disabled {
+    --button-color: var(--button-light-content-disabled);
+    --button-border-color: var(--button-light-stroke-disabled);
+  }
+
   /* ─── Link ───────────────────────────────────────────────────────────── */
   .link {
     --link-color: currentcolor;

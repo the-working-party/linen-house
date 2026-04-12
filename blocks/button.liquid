@@ -36,6 +36,14 @@
           "label": "t:options.secondary"
         },
         {
+          "value": "button-inverse",
+          "label": "t:options.primary_inverse"
+        },
+        {
+          "value": "button-secondary-inverse",
+          "label": "t:options.secondary_inverse"
+        },
+        {
           "value": "link",
           "label": "t:options.link"
         },
@@ -51,7 +59,7 @@
       "id": "show_icon",
       "label": "t:settings.show_icon",
       "default": false,
-      "visible_if": "{{ block.settings.style_class == 'button' or block.settings.style_class == 'button-secondary' }}"
+      "visible_if": "{{ block.settings.style_class == 'button' or block.settings.style_class == 'button-secondary' or block.settings.style_class == 'button-inverse' or block.settings.style_class == 'button-secondary-inverse' }}"
     },
     {
       "type": "header",
