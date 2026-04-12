@@ -178,6 +178,12 @@
     --font-h6--spacing: var(--font-heading--spacing);
     --font-paragraph--spacing: 0.5em;
 
+    /* Inverse color aliases — each resolves to the scheme background, giving
+       the text block's colour select distinct storable values per type. */
+    --color-foreground-inverse: var(--color-background);
+    --color-foreground-heading-inverse: var(--color-background);
+    --color-primary-inverse: var(--color-background);
+
     /* Heading colors */
     --font-h1--color: var(--color-foreground-heading);
     --font-h2--color: var(--color-foreground-heading);
@@ -686,7 +692,6 @@
     --cart-secondary-font-weight: var(--font-{{ settings.cart_price_font }}--weight);
 
       /* Additional vars not extracted via Figma integration */
-    --text-default: #0E0E0E;
     --text-tertiary: #999;
 
     --navigation-font-weight: 500;
@@ -709,14 +714,19 @@
 
       /* Additional [Brand Specific] vars not extracted via Figma integration */
     {% if settings.brand == 'linen-house' %}
+      --text-default: #0E0E0E;
+      --text-inverse: #F9F8F5;
+
+
       --navigation-letter-spacing: 0.2px;
 
       --button-radius-default: 64px;
 
       --button-light-content-default: #0E0E0E;
-      --button-light-background-default: ##F9F8F5;
+      --button-light-background-default: #F9F8F5;
       --button-light-background-hover: #E4E1D6;
       --button-light-content-inverse: #F9F8F5;
+      --button-light-stroke-default: #F9F8F5;
       --button-light-content-hover: #E4E1D6;
       --button-light-stroke-hover: #E4E1D6;
 
@@ -730,6 +740,9 @@
 
 
     {% else %}
+      --text-default: #333333;
+      --text-inverse: #ffffff;
+
       --navigation-letter-spacing: 0.5px;
 
       --button-radius-default: 4px;
@@ -737,6 +750,7 @@
       --button-light-background-default: #FFFFFF;
       --button-light-background-hover: #E7E7E7;
       --button-light-content-inverse: #FFFFFF;
+      --button-light-stroke-default: #FFFFFF;
       --button-light-content-hover: #D5D5D5;
       --button-light-stroke-hover: #D5D5D5;
 

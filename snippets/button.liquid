@@ -10,6 +10,11 @@
 
 {% assign block_settings = block.settings %}
 {% assign show_icon = block_settings.show_icon %}
+{% assign style_class = block_settings.style_class %}
+{% assign is_inverse = false %}
+{% if style_class == 'button-inverse' or style_class == 'button-secondary-inverse' %}
+  {% assign is_inverse = true %}
+{% endif %}
 
 <a
   {% if link == blank %}
@@ -20,8 +25,8 @@
   {% endif %}
   class="
     size-style
-    {{ block_settings.style_class }}
-    {{ block_settings.style_class }}--{{ block.id }}
+    {% if is_inverse %}button {% endif %}{{ style_class }}
+    {{ style_class }}--{{ block.id }}
     {% if show_icon %}button--with-icon{% endif %}
   "
   style="{% render 'size-style', settings: block_settings %}"

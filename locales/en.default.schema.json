@@ -551,6 +551,7 @@
     "h5": "Heading 5",
     "h6": "Heading 6",
     "heading": "Heading",
+    "heading_inverse": "Heading inverse",
     "heading_extra_large": "Heading (Extra large)",
     "heading_extra_small": "Heading (Extra small)",
     "heading_large": "Heading (Large)",
@@ -588,6 +589,7 @@
     "light": "Light",
     "lightning_bolt": "Lightning bolt",
     "link": "Link",
+    "link_inverse": "Link inverse",
     "linkedin": "LinkedIn",
     "lipstick": "Lipstick",
     "lock": "Lock",
@@ -719,6 +721,7 @@
     // Third-level option in font/typography hierarchy
     "tertiary": "Tertiary",
     "text": "Text",
+    "text_inverse": "Text inverse",
     "text_only": "Text only",
     // Icon stroke thickness option, thinnest weight
     "thin": "Thin",
