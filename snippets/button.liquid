@@ -9,6 +9,12 @@
 {%- enddoc -%}
 
 {% assign block_settings = block.settings %}
+{% assign show_icon = block_settings.show_icon %}
+{% assign style_class = block_settings.style_class %}
+{% assign is_inverse = false %}
+{% if style_class == 'button-inverse' or style_class == 'button-secondary-inverse' %}
+  {% assign is_inverse = true %}
+{% endif %}
 
 <a
   {% if link == blank %}
@@ -19,8 +25,9 @@
   {% endif %}
   class="
     size-style
-    {{ block_settings.style_class }}
-    {{ block_settings.style_class }}--{{ block.id }}
+    {% if is_inverse %}button {% endif %}{{ style_class }}
+    {{ style_class }}--{{ block.id }}
+    {% if show_icon %}button--with-icon{% endif %}
   "
   style="{% render 'size-style', settings: block_settings %}"
   {%- if block_settings.open_in_new_tab -%}
@@ -29,17 +36,160 @@
   {%- endif -%}
   {{ block.shopify_attributes }}
 >
-  {{ block_settings.label }}
+  <span>{{ block_settings.label }}</span>
+  {%- if show_icon -%}
+    <span class="button__icon svg-wrapper" aria-hidden="true">
+      {{- 'icon-arrow.svg' | inline_asset_content -}}
+    </span>
+  {%- endif -%}
 </a>
 
 {% stylesheet %}
+  /* ───────────────────────────────────────────────────────────────────────
+     ZONE 1 — Button type tokens
+     All per-type design decisions live here.
+     To add a new property: define the token in each block below,
+     then consume it once in the shared rule in assets/base.css (Zone 2).
+  ──────────────────────────────────────────────────────────────────────── */
+
+  /* ─── Primary ────────────────────────────────────────────────────────── */
+  .button {
+    --button-color: var(--button-dark-content-default);
+    --button-background-color: var(--button-dark-background-default);
+    --button-radius: var(--button-radius-default);
+    --button-font: var(--button-font-family-primary);
+    --button-border-color: var(--button-dark-background-default);
+    --button-font-weight: var(--navigation-font-weight);
+    --button-text-case: var(--button-text-case-primary);
+    --button-padding-block: var(--button-margin);
+    --button-padding-inline: var(--button-margin);
+    --button-letter-spacing: var(--navigation-letter-spacing);
+  }
+
+  .button:hover {
+    --button-color: var(--button-dark-content-default);
+    --button-background-color: var(--button-dark-background-hover);
+    --button-border-color: var(--button-dark-background-hover);
+  }
+
+  .button:disabled {
+    --button-color: var(--button-dark-content-disabled);
+    --button-background-color: var(--button-dark-background-disabled);
+    --button-border-color: var(--button-dark-stroke-disabled);
+  }
+
+  /* ─── Secondary ──────────────────────────────────────────────────────── */
+  .button-secondary {
+    --button-color: var(--button-dark-content-inverse);
+    --button-border-color: var(--button-dark-stroke-default);
+    --button-border-width: var(--style-border-width-secondary);
+    --button-radius: var(--button-radius-default);
+    --button-font: var(--button-font-family-secondary);
+    --button-font-weight: var(--navigation-font-weight);
+    --button-text-case: var(--button-text-case-secondary);
+    --button-letter-spacing: var(--navigation-letter-spacing);
+  }
+
+  .button-secondary:hover {
+    --button-color: var(--button-dark-content-hover);
+    --button-border-color: var(--button-dark-stroke-hover);
+  }
+
+  .button-secondary:disabled {
+    --button-color: var(--button-dark-content-disabled);
+    --button-border-color: var(--button-dark-stroke-disabled);
+  }
+
+  /* ─── Primary Inverse ───────────────────────────────────────────────── */
+  .button-inverse {
+    --button-color: var(--button-light-content-default);
+    --button-background-color: var(--button-light-background-default);
+    --button-radius: var(--button-radius-default);
+    --button-font: var(--button-font-family-primary);
+    --button-border-color: var(--button-light-background-default);
+    --button-font-weight: var(--navigation-font-weight);
+    --button-text-case: var(--button-text-case-primary);
+    --button-padding-block: var(--button-margin);
+    --button-padding-inline: var(--button-margin);
+    --button-letter-spacing: var(--navigation-letter-spacing);
+  }
+
+  .button-inverse:hover {
+    --button-color: var(--button-light-content-default);
+    --button-background-color: var(--button-light-background-hover);
+    --button-border-color: var(--button-light-background-hover);
+  }
+
+  .button-inverse:disabled {
+    --button-color: var(--button-light-content-disabled);
+    --button-background-color: var(--button-light-background-disabled);
+    --button-border-color: var(--button-light-stroke-disabled);
+  }
+
+  /* ─── Secondary Inverse ──────────────────────────────────────────────── */
+  .button-secondary-inverse {
+    --button-color: var(--button-light-content-inverse);
+    --button-border-color: var(--button-light-stroke-default);
+    --button-border-width: var(--style-border-width-secondary);
+    --button-radius: var(--button-radius-default);
+    --button-font: var(--button-font-family-secondary);
+    --button-font-weight: var(--navigation-font-weight);
+    --button-text-case: var(--button-text-case-secondary);
+    --button-letter-spacing: var(--navigation-letter-spacing);
+  }
+
+  .button-secondary-inverse:hover {
+    --button-color: var(--button-light-content-hover);
+    --button-border-color: var(--button-light-stroke-hover);
+  }
+
+  .button-secondary-inverse:disabled {
+    --button-color: var(--button-light-content-disabled);
+    --button-border-color: var(--button-light-stroke-disabled);
+  }
+
+  /* ─── Link ───────────────────────────────────────────────────────────── */
   .link {
+    --link-color: currentcolor;
+    --link-color-hover: var(--button-dark-content-hover);
+
+    color: var(--button-dark-content-inverse);
+    border-bottom: 1px solid var(--button-dark-content-inverse);
     text-decoration: none;
     text-decoration-color: currentcolor;
 
     &:hover {
-      color: var(--color-primary-hover);
+      color: var(--button-dark-content-hover);
+      border-color: var(--button-dark-content-hover);
       text-decoration-color: transparent;
     }
+  }
+
+  /* ─── Ghost ──────────────────────────────────────────────────────────── */
+  .button-ghost {
+    --ghost-color: currentcolor;
+    --ghost-color-hover: var(--button-dark-content-hover);
+
+    color: var(--button-dark-content-inverse);
+    text-decoration: none;
+    text-decoration-color: currentcolor;
+
+    &:hover {
+      color: var(--button-dark-content-hover);
+      text-decoration-color: transparent;
+    }
+  }
+
+  /* ─── Icon layout ────────────────────────────────────────────────────── */
+  .button--with-icon {
+    display: flex;
+    align-items: center;
+    gap: var(--button-spaced);
+  }
+
+  .button__icon {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
   }
 {% endstylesheet %}

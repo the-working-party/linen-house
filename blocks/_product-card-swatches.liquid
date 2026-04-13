@@ -29,14 +29,11 @@
   assign colour_values = nil
 
   # Multi-language colour option detection
+  assign colour_option_names = 'color,colour,colore,farbe,couleur,cor'
+  assign colour_option_list = colour_option_names | split: ','
   for option in product.options_with_values
     assign option_name_lower = option.name | downcase
-    if option_name_lower == 'color'
-      or option_name_lower == 'colour'
-      or option_name_lower == 'colore'
-      or option_name_lower == 'farbe'
-      or option_name_lower == 'couleur'
-      or option_name_lower == 'cor'
+    if colour_option_list contains option_name_lower
       assign colour_values = option.values
       break
     endif

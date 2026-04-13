@@ -1,5 +1,3 @@
-
-
 {% if section.blocks.size > 1 %}
   <script
     src="{{ 'announcement-bar.js' | asset_url }}"
@@ -18,7 +16,9 @@
     assign show_arrows = false
     if section.blocks.size > 1
       assign autoplay = true
-      assign show_arrows = true
+      if section.settings.show_arrows
+        assign show_arrows = true
+      endif
     endif
   %}
 
@@ -149,6 +149,12 @@
       "content": "t:content.appearance"
     },
     {
+      "type": "checkbox",
+      "id": "show_arrows",
+      "label": "t:settings.show_arrows",
+      "default": false
+    },
+    {
       "type": "select",
       "id": "section_width",
       "label": "t:settings.section_width",
@@ -192,7 +198,7 @@
       "max": 100,
       "step": 1,
       "unit": "px",
-      "default": 15
+      "default": 10
     },
     {
       "type": "range",
@@ -202,7 +208,7 @@
       "max": 100,
       "step": 1,
       "unit": "px",
-      "default": 15
+      "default": 10
     }
   ],
   "presets": [
