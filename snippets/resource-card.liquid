@@ -155,8 +155,11 @@
       {%- endif -%}
     {%- endif -%}
 
-    <span class="resource-card__shop-now" aria-hidden="true">
+    <span class="resource-card__shop-now button button--with-icon" aria-hidden="true">
       {{- 'actions.shop_now' | t -}}
+      <span class="button__icon svg-wrapper" aria-hidden="true">
+        {{- 'icon-arrow.svg' | inline_asset_content -}}
+      </span>
     </span>
   </div>
 </div>
@@ -222,15 +225,32 @@
     position: absolute;
     bottom: var(--component-margin);
     left: var(--component-margin);
-    background: var(--color-background);
-    color: var(--color-foreground);
-    padding: var(--padding-xs) var(--padding-xl);
-    border-radius: var(--style-border-radius-buttons-primary);
-    font-family: var(--button-font-family-primary);
-    font-size: var(--font-size--sm);
     white-space: nowrap;
     pointer-events: none;
     z-index: var(--layer-raised);
+
+    /* Icon layout */
+    display: flex;
+    align-items: center;
+    gap: var(--button-spaced);
+
+    /* Primary inverse button tokens */
+    --button-color: var(--button-light-content-default);
+    --button-background-color: var(--button-light-background-default);
+    --button-radius: var(--button-radius-default);
+    --button-font: var(--button-font-family-primary);
+    --button-border-color: var(--button-light-background-default);
+    --button-font-weight: var(--navigation-font-weight);
+    --button-text-case: var(--button-text-case-primary);
+    --button-padding-block: var(--button-margin);
+    --button-padding-inline: var(--button-margin);
+    --button-letter-spacing: var(--navigation-letter-spacing);
+  }
+
+  .resource-card__shop-now .button__icon {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
   }
 
   .resource-card__image {
