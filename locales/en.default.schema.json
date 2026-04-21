@@ -32,6 +32,7 @@
     "text": "Text"
   },
   "content": {
+    "video_controls": "Video controls",
     "visible_if_collection_has_more_products": "Visible if collection has more products than shown",
     "advanced": "Advanced",
     "appearance": "Appearance",
@@ -230,6 +231,7 @@
     "manage_languages": "[Manage languages](/admin/settings/languages)",
     "transparent_background": "Review each template where transparent background is applied for readability",
     "video_alt_text": "Describe the video for assistive tech users",
+    "show_video_controls": "Play, pause, and sound buttons appear on the hero video",
     "video_autoplay": "Videos will be muted by default",
     "video_external": "Use a YouTube or Vimeo URL",
     "pills_usage": "Used for applied filters, discount codes, and search suggestions",
@@ -705,6 +707,7 @@
     // Uniform style option for borders and overlays
     "solid": "Solid",
     "space_between": "Space between",
+    "title_center_button_bottom": "Title centered, button at bottom",
     "spotify": "Spotify",
     "spotlight": "Spotlight",
     "square": "Square",
@@ -1103,6 +1106,7 @@
     "show_second_image_on_hover": "Show second image on hover",
     "show_swatch_label": "Text labels for swatches",
     "show_tax_info": "Tax information",
+    "show_video_controls": "Show video controls",
     // Font size or element dimensions setting
     "size": "Size",
     "skus": "SKUs",
