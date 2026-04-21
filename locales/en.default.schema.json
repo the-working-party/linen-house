@@ -1189,7 +1189,8 @@
     "cs_slider_inner_color": "Slider inner color",
     "text_on_images": "Text on images",
     "x_position": "Horizontal position",
-    "y_position": "Vertical position"
+    "y_position": "Vertical position",
+    "testimonial": "Testimonial"
   },
   "text_defaults": {
     "accordion_heading": "Accordion heading",
