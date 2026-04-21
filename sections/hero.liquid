@@ -556,10 +556,11 @@
     grid-column: 2 / 3;
   }
 
+  /* Stacking: .hero__video-shell uses --layer-raised; content must sit above it so text is not covered. */
   .hero__content-wrapper {
     position: relative;
     inset: 0;
-    z-index: var(--layer-flat);
+    z-index: var(--layer-heightened);
   }
 
   .hero__content-wrapper .group-block-content {
