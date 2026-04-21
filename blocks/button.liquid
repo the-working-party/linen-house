@@ -1,4 +1,5 @@
-{% render 'button', link: block.settings.link %}
+{%- assign button_link = link | default: block.settings.link -%}
+{% render 'button', link: button_link %}
 
 {% schema %}
 {

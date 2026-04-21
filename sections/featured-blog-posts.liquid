@@ -22,6 +22,7 @@
 >
   <div class="section-resource-list__header">
     {% content_for 'block', id: 'static-blog-title', type: '_featured-blog-posts-title' %}
+    {% content_for 'block', id: 'static-header-button', type: 'button', link: section.settings.blog.url %}
   </div>
 
   {% if section.settings.blog != blank and section.settings.blog.articles_count > 0 %}
@@ -62,6 +63,14 @@
   %}
 </div>
 
+{% stylesheet %}
+  .featured-blog-posts .section-resource-list__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+{% endstylesheet %}
+
 {% schema %}
 {
   "name": "t:names.blog_posts",
@@ -79,6 +88,9 @@
     },
     {
       "type": "_featured-blog-posts-image"
+    },
+    {
+      "type": "button"
     }
   ],
   "settings": [
@@ -323,12 +335,31 @@
             "type_preset": "rte"
           }
         },
+        "static-header-button": {
+          "type": "button",
+          "name": "t:names.button",
+          "static": true,
+          "settings": {
+            "style_class": "button-ghost",
+            "show_icon": true,
+            "label": "Read all"
+          }
+        },
         "static-blog-post-card": {
           "type": "_featured-blog-posts-card",
           "name": "t:names.blog_card",
           "static": true,
           "settings": {},
           "blocks": {
+            "blog-label": {
+              "type": "_heading",
+              "name": "t:names.blog",
+              "static": true,
+              "settings": {
+                "text": "<p>{{ closest.blog.title }}</p>",
+                "show_alignment": false
+              }
+            },
             "title": {
               "type": "_heading",
               "name": "t:names.title",
@@ -355,6 +386,15 @@
               "settings": {
                 "padding-block-start": 8,
                 "padding-block-end": 0
+              }
+            },
+            "card-button": {
+              "type": "button",
+              "name": "t:names.button",
+              "static": true,
+              "settings": {
+                "style_class": "button-secondary",
+                "label": "Read more"
               }
             }
           }
@@ -386,12 +426,31 @@
             "type_preset": "rte"
           }
         },
+        "static-header-button": {
+          "type": "button",
+          "name": "t:names.button",
+          "static": true,
+          "settings": {
+            "style_class": "button-ghost",
+            "show_icon": true,
+            "label": "Read all"
+          }
+        },
         "static-blog-post-card": {
           "type": "_featured-blog-posts-card",
           "name": "t:names.blog_card",
           "static": true,
           "settings": {},
           "blocks": {
+            "blog-label": {
+              "type": "_heading",
+              "name": "t:names.blog",
+              "static": true,
+              "settings": {
+                "text": "<p>{{ closest.blog.title }}</p>",
+                "show_alignment": false
+              }
+            },
             "title": {
               "type": "_heading",
               "name": "t:names.title",
@@ -418,6 +477,15 @@
               "settings": {
                 "padding-block-start": 8,
                 "padding-block-end": 0
+              }
+            },
+            "card-button": {
+              "type": "button",
+              "name": "t:names.button",
+              "static": true,
+              "settings": {
+                "style_class": "button-secondary",
+                "label": "Read more"
               }
             }
           }
@@ -448,12 +516,31 @@
             "type_preset": "rte"
           }
         },
+        "static-header-button": {
+          "type": "button",
+          "name": "t:names.button",
+          "static": true,
+          "settings": {
+            "style_class": "button-ghost",
+            "show_icon": true,
+            "label": "Read all"
+          }
+        },
         "static-blog-post-card": {
           "type": "_featured-blog-posts-card",
           "name": "t:names.blog_card",
           "static": true,
           "settings": {},
           "blocks": {
+            "blog-label": {
+              "type": "_heading",
+              "name": "t:names.blog",
+              "static": true,
+              "settings": {
+                "text": "<p>{{ closest.blog.title }}</p>",
+                "show_alignment": false
+              }
+            },
             "title": {
               "type": "_heading",
               "name": "t:names.title",
@@ -480,6 +567,15 @@
               "settings": {
                 "padding-block-start": 8,
                 "padding-block-end": 0
+              }
+            },
+            "card-button": {
+              "type": "button",
+              "name": "t:names.button",
+              "static": true,
+              "settings": {
+                "style_class": "button-secondary",
+                "label": "Read more"
               }
             }
           }
