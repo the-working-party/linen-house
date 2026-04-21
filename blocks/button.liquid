@@ -59,7 +59,7 @@
       "id": "show_icon",
       "label": "t:settings.show_icon",
       "default": false,
-      "visible_if": "{{ block.settings.style_class == 'button' or block.settings.style_class == 'button-secondary' or block.settings.style_class == 'button-inverse' or block.settings.style_class == 'button-secondary-inverse' }}"
+      "visible_if": "{{ block.settings.style_class != 'link' }}"
     },
     {
       "type": "header",
