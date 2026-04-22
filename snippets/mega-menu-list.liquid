@@ -12,7 +12,7 @@
   @param {object} [section] - The section object.
 
   @example
-  {% render 'mega-menu-list', parent_link: link, id: 'MegaMenuList-1', grid_columns_count: 6, menu_content_type: 'featured_products' %}
+  {% render 'mega-menu-list', parent_link: link, id: 'MegaMenuList-1', grid_columns_count: 5, menu_content_type: 'featured_products' %}
 {%- enddoc -%}
 
 {% liquid
@@ -23,7 +23,7 @@
   assign open_column_span = false
   assign column_count = 0
   assign links_before_wrap = 10
-  assign max_menu_columns = grid_columns_count | default: 6
+  assign max_menu_columns = grid_columns_count | default: 5
   assign max_menu_columns_tablet = grid_columns_count_tablet | default: 4
 
   ##
@@ -183,24 +183,14 @@
 </ul>
 
 {% liquid
-  # decide how many grid columns are needed for the menu list, and how many columns are needed for the featured content
-  # prioritize a minimum of 1 featured_collection (2 columns), and minimum 2 featured_products (2 columns)
-  assign min_products = 2
-  assign max_products = 3
+  # Desktop mega menu: 5-column grid, nav in columns 1-3, submenu features in columns 4-5
+  # (up to 2 product or 2 collection cards; tablet still uses the dynamic column math below)
   assign min_products_tablet = 1
   assign max_products_tablet = 3
-  assign min_collections = 1
 
   if menu_content_type == 'featured_products'
-    # desktop breakpoint
-    assign temp_column_count = column_count | plus: min_products
-
-    if temp_column_count > max_menu_columns
-      assign max_product_columns = 2
-    else
-      assign max_product_columns = max_menu_columns | minus: column_count | at_most: max_products
-    endif
-
+    # desktop: 3 + 2 column split, up to 2 product cards
+    assign max_product_columns = 2
     if eager_loading
       assign max_product_columns = max_product_columns | at_most: collection_object.products_count
     else
@@ -208,7 +198,7 @@
     endif
 
     assign max_featured_products = max_product_columns
-    assign max_menu_columns = max_menu_columns | minus: max_product_columns
+    assign max_menu_columns = 3
 
     # tablet breakpoint
     assign temp_column_count = column_count | plus: min_products_tablet
@@ -226,18 +216,10 @@
   endif
 
   if menu_content_type == 'featured_collections'
-    # desktop breakpoint
-    assign min_featured_collection_columns = min_collections | times: 2
-    assign temp_column_count = column_count | plus: min_featured_collection_columns
-
-    if temp_column_count > max_menu_columns
-      assign max_collection_columns = 2
-    else
-      assign max_collection_columns = max_menu_columns | minus: column_count
-    endif
-
-    assign max_featured_collections = max_collection_columns | divided_by: 2 | floor
-    assign max_menu_columns = max_menu_columns | minus: max_collection_columns
+    # desktop: 3 + 2 column split, up to 2 collection cards
+    assign max_collection_columns = 2
+    assign max_featured_collections = 2
+    assign max_menu_columns = 3
 
     # tablet breakpoint
     assign max_collection_columns_tablet = 2
