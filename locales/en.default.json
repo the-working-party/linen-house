@@ -13,6 +13,10 @@
     "active_filters": "Active filters:",
     "cart": "Cart",
     "cart_count": "Total items in cart",
+    "cart_bubble_items_suffix": {
+      "one": "item",
+      "other": "items"
+    },
     "close_dialog": "Close dialog",
     "country_region": "Country/Region",
     "country_results_count": "{{ count }} results",

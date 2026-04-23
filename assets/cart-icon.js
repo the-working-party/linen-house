@@ -9,11 +9,12 @@ import { ThemeEvents, CartUpdateEvent } from '@theme/events';
  * @property {HTMLElement} cartBubble - The cart bubble element.
  * @property {HTMLElement} cartBubbleText - The cart bubble text element.
  * @property {HTMLElement} cartBubbleCount - The cart bubble count element.
+ * @property {HTMLElement} cartBubbleItemsSuffix - Suffix e.g. " Items" (pluralized).
  *
  * @extends {Component<Refs>}
  */
 class CartIcon extends Component {
-  requiredRefs = ['cartBubble', 'cartBubbleText', 'cartBubbleCount'];
+  requiredRefs = ['cartBubble', 'cartBubbleText', 'cartBubbleCount', 'cartBubbleItemsSuffix'];
 
   /** @type {number} */
   get currentCartCount() {
@@ -22,6 +23,16 @@ class CartIcon extends Component {
 
   set currentCartCount(value) {
     this.refs.cartBubbleCount.textContent = value < 100 ? String(value) : '';
+
+    if (this.refs.cartBubbleItemsSuffix && this.refs.cartBubble) {
+      if (value === 0) {
+        this.refs.cartBubbleItemsSuffix.textContent = '';
+      } else {
+        const one = this.refs.cartBubble.getAttribute('data-items-suffix-one') ?? '';
+        const other = this.refs.cartBubble.getAttribute('data-items-suffix-other') ?? '';
+        this.refs.cartBubbleItemsSuffix.textContent = value === 1 ? one : other;
+      }
+    }
   }
 
   connectedCallback() {
@@ -70,6 +81,7 @@ class CartIcon extends Component {
 
     this.refs.cartBubbleCount.classList.toggle('hidden', itemCount === 0);
     this.refs.cartBubble.classList.toggle('visually-hidden', itemCount === 0);
+    this.refs.cartBubbleItemsSuffix?.classList.toggle('hidden', itemCount === 0);
 
     this.currentCartCount = comingFromProductForm ? this.currentCartCount + itemCount : itemCount;
 
