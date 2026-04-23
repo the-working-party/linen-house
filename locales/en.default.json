@@ -71,7 +71,8 @@
     "find_country": "Find country",
     "view_pricing_info": "View pricing information",
     "price_filter_low": "Low price",
-    "price_filter_high": "High price"
+    "price_filter_high": "High price",
+    "free_shipping_progress": "Free shipping progress"
   },
   "actions": {
     // Quick add button on product cards, shortened version of add to cart
@@ -178,6 +179,9 @@
     "account_orders": "Orders",
     "account_profile": "Profile",
     "blog_details_separator": "|",
+    "free_shipping_achieved": "You've unlocked free shipping!",
+    "free_shipping_progress": "{{ amount }} away from free shipping",
+    "free_shipping_threshold": "Free shipping on orders over {{ amount }}",
     "cart_estimated_total": "Estimated total",
     "cart_title": "Cart",
     "cart_subtotal": "Subtotal",

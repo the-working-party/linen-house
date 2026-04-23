@@ -52,6 +52,7 @@
     "carousel_navigation": "Carousel navigation",
     "carousel_pagination": "Carousel pagination",
     "cart_features": "Cart features",
+    "free_shipping": "Free shipping",
     "colors": "Colors",
     "collection_page": "Collection page",
     "complementary_products": "Complementary products must be set up using the Search & Discovery app. [Learn more](https://help.shopify.com/manual/online-store/search-and-discovery)",
@@ -212,6 +213,7 @@
     "work_quickly_to_ship": "<p>We will work quickly to ship your order as soon as possible. Once your order has shipped, you will receive an email with further information. Delivery times vary depending on your location.</p>"
   },
   "info": {
+    "free_shipping_threshold": "Enter the minimum order value in dollars (e.g. 200 for $200)",
     "actions_display_style": "Icons are always used on mobile",
     "applies_on_image_only": "Applies to images only",
     "aspect_ratio_adjusted": "Adjusted in some layouts",
@@ -819,6 +821,8 @@
     // Setting label for cart display format (page vs drawer)
     "cart_type": "Type",
     "auto_open_cart_drawer": "\"Add to cart\" auto-opens drawer",
+    "show_free_shipping_indicator": "Show free shipping indicator",
+    "free_shipping_threshold": "Free shipping threshold ($)",
     // Text case setting for typography (uppercase/lowercase)
     "case": "Case",
     "checkout_buttons": "Accelerated checkout buttons",

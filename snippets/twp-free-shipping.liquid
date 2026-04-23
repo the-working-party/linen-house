@@ -1,0 +1,158 @@
+{% doc %}
+  Renders a free shipping progress indicator for the cart drawer and cart page.
+  Shows a progress bar toward the free shipping threshold with two states:
+  in-progress (amount remaining) and achieved (free shipping unlocked).
+
+  Controlled by `settings.show_free_shipping_indicator` and
+  `settings.free_shipping_threshold`.
+
+  @example
+  {% render 'twp-free-shipping' %}
+{% enddoc %}
+
+{% if settings.show_free_shipping_indicator %}
+  {%- liquid
+    assign threshold_cents = settings.free_shipping_threshold | times: 100
+    assign cart_total = cart.total_price
+    assign threshold_display = threshold_cents | money_without_trailing_zeros
+
+    if threshold_cents == 0 or cart_total >= threshold_cents
+      assign shipping_achieved = true
+      assign progress_percentage = 100
+    else
+      assign shipping_achieved = false
+      assign remaining_cents = threshold_cents | minus: cart_total
+      assign remaining_display = remaining_cents | money
+      assign progress_percentage = cart_total | times: 100 | divided_by: threshold_cents
+    endif
+  -%}
+
+  <div
+    class="twp-free-shipping{% if shipping_achieved %} twp-free-shipping--achieved{% endif %}"
+    aria-live="polite"
+    aria-atomic="true"
+  >
+    <div class="twp-free-shipping__row">
+      <div class="twp-free-shipping__icon-wrap">
+        <span class="svg-wrapper">
+          {{- 'icon-twp-shipping.svg' | inline_asset_content -}}
+        </span>
+      </div>
+
+      <div class="twp-free-shipping__text">
+        {%- if shipping_achieved -%}
+          <p class="twp-free-shipping__title">
+            {{- 'content.free_shipping_achieved' | t -}}
+          </p>
+        {%- else -%}
+          <p class="twp-free-shipping__title">
+            {{- 'content.free_shipping_progress' | t: amount: remaining_display -}}
+          </p>
+        {%- endif -%}
+        <p class="twp-free-shipping__subtitle">
+          {{- 'content.free_shipping_threshold' | t: amount: threshold_display -}}
+        </p>
+      </div>
+    </div>
+
+    <div
+      class="twp-free-shipping__track"
+      role="progressbar"
+      aria-valuenow="{{ progress_percentage }}"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      aria-label="{{ 'accessibility.free_shipping_progress' | t }}"
+    >
+      <div
+        class="twp-free-shipping__fill"
+        style="--twp-shipping-progress: {{ progress_percentage }}%"
+      ></div>
+    </div>
+  </div>
+{% endif %}
+
+{% stylesheet %}
+  .twp-free-shipping {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-md);
+    background-color: rgb(var(--color-foreground-rgb) / 0.04);
+    border-radius: var(--style-border-radius);
+    padding: var(--padding-md);
+    width: 100%;
+  }
+
+  .twp-free-shipping__row {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-sm);
+  }
+
+  .twp-free-shipping__icon-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    background-color: var(--color-background);
+    border-radius: var(--style-border-radius-buttons);
+  }
+
+  .twp-free-shipping__icon-wrap .svg-wrapper {
+    width: var(--icon-size-sm);
+    height: var(--icon-size-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .twp-free-shipping__icon-wrap svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .twp-free-shipping__text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-3xs);
+    min-width: 0;
+  }
+
+  .twp-free-shipping__title {
+    margin: 0;
+    font-size: var(--font-size--sm);
+    color: var(--color-foreground);
+    line-height: 1.5;
+  }
+
+  .twp-free-shipping__subtitle {
+    margin: 0;
+    font-size: var(--font-size--2xs);
+    color: rgb(var(--color-foreground-rgb) / var(--opacity-subdued-text));
+    line-height: 1.5;
+  }
+
+  .twp-free-shipping__track {
+    position: relative;
+    width: 100%;
+    height: 4px;
+    background-color: var(--color-border);
+    border-radius: var(--style-border-radius-buttons);
+    overflow: hidden;
+  }
+
+  .twp-free-shipping__fill {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    width: var(--twp-shipping-progress, 0%);
+    background-color: var(--color-foreground);
+    border-radius: var(--style-border-radius-buttons);
+    transition: width 0.4s ease;
+  }
+
+  .twp-free-shipping--achieved .twp-free-shipping__fill {
+    background-color: var(--color-foreground);
+  }
+{% endstylesheet %}
