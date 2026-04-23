@@ -367,6 +367,11 @@
     width: 100%;
   }
 
+  /* 16px | border | 16px between line items (cart page + side cart) */
+  .cart-items--dividers {
+    --cart-items-gap: 16px;
+  }
+
   @media screen and (min-width: 750px) {
     .cart-items {
       --cart-item-media-width: 132px;
@@ -415,7 +420,7 @@
     column-gap: 12px;
     align-items: start;
     padding-bottom: var(--cart-items-gap);
-    margin-bottom: 12px;
+    margin-bottom: var(--cart-items-gap);
   }
 
   /* Cart drawer: separate grid areas for variants and unit price */
@@ -495,7 +500,7 @@
   }
 
   .cart-items--dividers .cart-items__table-row {
-    border-bottom: 1px solid var(--color-border);
+    border-bottom: var(--cart-items-line-border);
     margin-bottom: var(--cart-items-gap);
   }
 
@@ -671,7 +676,6 @@
   }
 
   @container cart-items (min-width: 720px) {
-    /* Cart page: original layout */
     .cart-items__table-row {
       --cart-item-price-width: 6rem;
 
@@ -696,6 +700,28 @@
       display: flex;
       flex-direction: column;
       align-items: flex-end;
+    }
+
+    /* Main cart page: keep quantity on its own row under product details (not beside details at wide sizes) */
+    .cart-page .cart-items__table-row {
+      grid-template-columns: var(--cart-item-media-width) minmax(0, 1fr) minmax(var(--cart-item-price-width), auto);
+      grid-template-rows: unset;
+      grid-template-areas:
+        'media details price'
+        'media quantity price'
+        'media error error';
+    }
+
+    .cart-page .cart-items__quantity {
+      grid-area: quantity;
+      margin-top: 0;
+      margin-block-start: 12px;
+    }
+
+    .cart-page .cart-items__price {
+      grid-area: price;
+      min-height: unset;
+      display: block;
     }
 
     /* Cart drawer: separate areas for variants and unit price */

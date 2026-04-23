@@ -3,7 +3,8 @@
 
   @param {boolean} [for_header] - Use `for_header: true` only for the **cart drawer trigger** in the header. That
   instance can show the classic round badge (drawer closed) and switch to the text + “item(s)” style
-  (drawer open) via CSS in `header-actions`. The drawer title, cart page, and /cart link use the default.
+  (drawer open) via CSS in `header-actions`. The /cart link in the header also uses this for the bag pill.
+  Other uses (e.g. cart page title, drawer heading) use the default count + “item(s)” line.
 
   Renders a cart count with optional "item" / "items" suffix and pluralized translation.
 {%- enddoc -%}
@@ -24,6 +25,11 @@
   if cart == empty
     assign outer_classes = outer_classes | append: ' visually-hidden'
   endif
+
+  assign use_maintain_ratio = false
+  if for_header and item_count > 0 and item_count <= 99
+    assign use_maintain_ratio = true
+  endif
 -%}
 
 <div
@@ -31,9 +37,9 @@
   class="{{ outer_classes | strip }}"
   data-items-suffix-one="{{ 'accessibility.cart_bubble_items_suffix' | t: count: 1 | escape }}"
   data-items-suffix-other="{{ 'accessibility.cart_bubble_items_suffix' | t: count: 2 | escape }}"
-  {%- if for_header and item_count > 0 and item_count <= 99 %}
+  {%- if use_maintain_ratio -%}
     data-maintain-ratio
-  {%- endif %}
+  {%- endif -%}
 >
   {%- if for_header -%}
     <span class="cart-bubble__background"></span>

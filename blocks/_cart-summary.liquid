@@ -99,6 +99,35 @@
     }
   }
 
+  /* Cart page only: no sidebar color panel */
+  .cart-page__summary > .section-background {
+    background: transparent;
+  }
+
+  .cart-page__summary .cart-summary__inner {
+    align-items: stretch;
+  }
+
+  /* Free shipping: same horizontal alignment as other inner content (no snippet side margins) */
+  .cart-page__summary .twp-free-shipping {
+    align-self: stretch;
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    box-sizing: border-box;
+    /* Card inset only; .cart-summary__inner supplies the same outer padding as for totals/CTA */
+    padding: var(--padding-md);
+  }
+
+  /* No horizontal rules inside cart page summary (cart-totals borders) */
+  .cart-summary__inner .cart-totals:not(:has(.cart-actions)) {
+    border-block-start: none;
+  }
+
+  .cart-summary__inner .cart-actions {
+    border: none;
+  }
+
   /* If extend is off, apply the border radius to the inner summary container */
   .cart-summary__inner.has-border-radius {
     border-radius: var(--border-radius);
