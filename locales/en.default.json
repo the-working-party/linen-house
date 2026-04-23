@@ -28,7 +28,9 @@
       "one": "{{ count }} filter applied",
       "other": "{{ count }} filters applied"
     },
+    "home": "Home",
     "home_logo_alt": "{{ store_name }} - Home",
+    "breadcrumb": "Breadcrumb",
     "increase_quantity": "Increase quantity",
     "inventory_status": "Inventory status",
     "localization_region_and_language": "Region and language selector",
@@ -96,10 +98,11 @@
     // Button to expand hidden product variant options
     "show_all_options": "Show all options",
     "see_items": {
-      "one": "See {{ count }} item",
+      "one": "See {{ count }} product",
       // Button to view filtered product results and close filter dialog
-      "other": "See {{ count }} items"
+      "other": "See {{ count }} products"
     },
+    "load_more": "Load more",
     "show_filters": "Filter",
     "show_less": "Show less",
     "show_more": "Show more",
@@ -134,7 +137,7 @@
       "placeholder": "Email address",
       "success": "Thanks for subscribing!"
     },
-    "filter": "Filter",
+    "filter": "Filters",
     "load_video": "Load video: {{ description }}",
     "sold_out": "Sold out",
     "payment_methods": "Payment methods",
@@ -205,8 +208,8 @@
     "inventory_in_stock": "In stock",
     "inventory_out_of_stock": "Out of stock",
     "item_count": {
-      "one": "{{ count }} item",
-      "other": "{{ count }} items"
+      "one": "{{ count }} product",
+      "other": "{{ count }} products"
     },
     "item_count_cutoff": "More than {{ count }} items",
     "language": "Language",

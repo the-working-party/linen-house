@@ -220,7 +220,6 @@
     /* Letter-spacing / Tracking */
     --letter-spacing--display-tight: -0.03em;
     --letter-spacing--display-normal: 0em;
-    --letter-spacing--display-loose: 0.03em;
 
     --letter-spacing--heading-tight: -0.03em;
     --letter-spacing--heading-normal: 0em;
@@ -241,13 +240,13 @@
     --line-height--heading-normal: 1.25;
     --line-height--heading-loose: 1.35;
 
-    --line-height--body-tight: 1.2;
-    --line-height--body-normal: 1.4;
-    --line-height--body-loose: 1.6;
+    --line-height--body-tight: 1;
+    --line-height--body-normal: 1.1;
+    --line-height--body-loose: 1.2;
 
     /* Typography presets */
     {% liquid
-      assign font_sizes = "paragraph, h1, h2, h3, h4, h5, h6" | split: ", "
+      assign font_sizes = "paragraph_small, paragraph, h1, h2, h3, h4, h5, h6" | split: ", "
       assign fluid_size_cutoff = 48
       assign absolute_font_size_min = 10
 
@@ -323,13 +322,13 @@
         endif
       endfor
 
-      assign type_presets = "paragraph, h1, h2, h3, h4, h5, h6" | split: ", "
+      assign type_presets = "paragraph_small, paragraph, h1, h2, h3, h4, h5, h6" | split: ", "
 
       for preset_name in type_presets
         assign preset_size = '--font-size--[preset_name]' | replace: '[preset_name]', preset_name
         assign preset_line_height = 'type_line_height_[preset_name]' | replace: '[preset_name]', preset_name
 
-        if preset_name == 'paragraph'
+        if preset_name == 'paragraph' or preset_name == 'paragraph_small'
           assign preset_font = '--font-body--family'
           assign preset_style = '--font-body--style'
           assign preset_weight = '400'
@@ -546,13 +545,13 @@
     /* Badges */
     --badge-blob-padding-block: 1px;
     --badge-blob-padding-inline: 12px 8px;
-    --badge-rectangle-padding-block: 1px;
-    --badge-rectangle-padding-inline: 6px;
+    --badge-rectangle-padding-block: 8px;
+    --badge-rectangle-padding-inline: 12px;
     @media screen and (min-width: 750px) {
       --badge-blob-padding-block: 4px;
       --badge-blob-padding-inline: 16px 12px;
-      --badge-rectangle-padding-block: 4px;
-      --badge-rectangle-padding-inline: 10px;
+      --badge-rectangle-padding-block: 12px;
+      --badge-rectangle-padding-inline: 12px;
     }
 
     /* Icons */
@@ -693,9 +692,20 @@
 
       /* Additional vars not extracted via Figma integration */
     --text-tertiary: #999;
+    --text-secondary: #333333;
+    --background-default: #FFF;
+    --background-secondary: #F9F8F5;
+    --stroke-secondary: #D5D5D5;
 
     --navigation-font-weight: 500;
     --navigation-base: 14px;
+
+    --font-paragraph-line-height: 18px;
+
+    --paragraph-small: var(--font-size--paragraph_small);
+    --paragraph-large: 16px;
+    --paragraph-weight: 400;
+    --paragraph-spacing: 0.2px;
 
     --subheading-small: 20px;
     --subheading-medium: 32px;
@@ -703,14 +713,34 @@
     --subheading-spacing: 0.2px;
 
 
-    --button-dark-background-disabled: #F7F7F7;
+    --button-dark-background-disabled: #F7F7F7
     --button-dark-content-disabled: #D5D5D5;
     --button-dark-stroke-disabled: #D5D5D5;
     --button-margin: 16px;
     --button-large: 40px;
     --button-spaced: 24px;
 
+    --component-spacing: 12px;
     --component-margin: 16px;
+
+    --section-margin: 24px;
+    --section-radius: 12px;
+
+    --price-color: {{ settings.price_color }};
+    --sale-price-color: {{ settings.sale_price_color }};
+    --compare-at-price-color: {{ settings.compare_at_price_color }};
+
+    --badge-margin: 12px;
+    --badge-small: 24px;
+    --badge-large: 32px;
+    --badge-spacing: 8px;
+    --badge-radius: 64px;
+
+    --button-small: 32px;
+    --button-radius: 64px;
+
+    --variant-inner-radius: 64px;
+    --field-content-default: #0E0E0E;
 
       /* Additional [Brand Specific] vars not extracted via Figma integration */
     {% if settings.brand == 'linen-house' %}
@@ -718,8 +748,11 @@
       --text-inverse: #F9F8F5;
       --heading-default: #0E0E0E;
       --heading-inverse: #F9F8F5;
-
+      --navigation-base-weight: 500;
       --navigation-letter-spacing: 0.2px;
+      --navigation-extra-small: 10px;
+
+      --icon-default: #0E0E0E;
 
       --button-radius-default: 64px;
 
@@ -739,6 +772,11 @@
       --button-dark-background-hover: #333333;
       --button-dark-content-inverse: #0E0E0E;
 
+      --letter-spacing--display-loose: 0.03em;
+
+      --heading-strong: 600;
+      --heading-weight: 500;
+      --subheading-weight: 500;
 
     {% else %}
       --text-default: #333333;
@@ -764,6 +802,14 @@
       --button-dark-background-default: #333333;
       --button-dark-background-hover: #666666;
       --button-dark-content-inverse: #333333;
+
+      --letter-spacing--heading-loose: 0.125em;
+
+      --heading-strong: 500;
+      --heading-weight: 500;
+      --subheading-weight: 500;
+
+
     {% endif %}
   }
 {% endstyle %}
