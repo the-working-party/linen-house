@@ -53,6 +53,24 @@
       {{ resource.title }}
     </span>
   </a>
+  <div class="resource-card__content">
+    <p class="resource-card__title{% if style == 'overlay' %} h5{%else %} paragraph{% endif %}">
+      {{- resource.title -}}
+    </p>
+
+    {% if resource_type == 'product' %}
+      {% render 'price', product_resource: resource, show_unit_price: true %}
+    {% elsif resource_type == 'collection' and single_thumbnail_collection == false %}
+      <p class="resource-card__subtext paragraph">
+        {{- 'content.search_results_resource_products_count' | t: count: resource.all_products_count -}}
+      </p>
+    {% else %}
+      <p class="resource-card__subtext paragraph">
+        {{- resource.excerpt | default: resource.content | strip_html | truncate: 65 -}}
+      </p>
+    {% endif %}
+  </div>
+
   <div
     class="resource-card__media"
     style="--resource-card-aspect-ratio: {{ ratio }};"
@@ -136,24 +154,13 @@
         </div>
       {%- endif -%}
     {%- endif -%}
-  </div>
 
-  <div class="resource-card__content">
-    <p class="resource-card__title{% if style == 'overlay' %} h5{%else %} paragraph{% endif %}">
-      {{- resource.title -}}
-    </p>
-
-    {% if resource_type == 'product' %}
-      {% render 'price', product_resource: resource, show_unit_price: true %}
-    {% elsif resource_type == 'collection' and single_thumbnail_collection == false %}
-      <p class="resource-card__subtext paragraph">
-        {{- 'content.search_results_resource_products_count' | t: count: resource.all_products_count -}}
-      </p>
-    {% else %}
-      <p class="resource-card__subtext paragraph">
-        {{- resource.excerpt | default: resource.content | strip_html | truncate: 65 -}}
-      </p>
-    {% endif %}
+    <span class="resource-card__shop-now button button--with-icon" aria-hidden="true">
+      {{- 'actions.shop_now' | t -}}
+      <span class="button__icon svg-wrapper" aria-hidden="true">
+        {{- 'icon-arrow.svg' | inline_asset_content -}}
+      </span>
+    </span>
   </div>
 </div>
 {%- if resource_type == 'product' and settings.transition_to_main_product -%}
@@ -209,6 +216,43 @@
     gap: var(--padding-xs);
   }
 
+  .resource-card__media {
+    position: relative;
+    flex: 1;
+  }
+
+  .resource-card__shop-now {
+    position: absolute;
+    bottom: var(--component-margin);
+    left: var(--component-margin);
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: var(--layer-raised);
+
+    /* Icon layout */
+    display: flex;
+    align-items: center;
+    gap: var(--button-spaced);
+
+    /* Primary inverse button tokens */
+    --button-color: var(--button-light-content-default);
+    --button-background-color: var(--button-light-background-default);
+    --button-radius: var(--button-radius-default);
+    --button-font: var(--button-font-family-primary);
+    --button-border-color: var(--button-light-background-default);
+    --button-font-weight: var(--navigation-font-weight);
+    --button-text-case: var(--button-text-case-primary);
+    --button-padding-block: var(--button-margin);
+    --button-padding-inline: var(--button-margin);
+    --button-letter-spacing: var(--navigation-letter-spacing);
+  }
+
+  .resource-card__shop-now .button__icon {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
   .resource-card__image {
     aspect-ratio: var(--resource-card-aspect-ratio, auto);
     object-fit: cover;
@@ -247,6 +291,12 @@
     line-height: 1.3;
     word-break: break-word;
     overflow-wrap: break-word;
+
+    &.h5 {
+      font-size: var(--subheading-small);
+      font-weight: var(--subheading-weight);
+      letter-spacing: var(--subheading-spacing);
+    }
   }
 
   .resource-card__title.paragraph {
@@ -259,8 +309,8 @@
     &::before {
       content: '';
       position: absolute;
-      inset: 50% 0 0;
-      background: var(--gradient-image-overlay);
+      inset: 0 0 50%;
+      background: linear-gradient(to bottom, rgb(0 0 0 / 0.5), transparent);
       border-radius: var(--resource-card-corner-radius);
       pointer-events: none;
       z-index: var(--layer-flat);
@@ -273,8 +323,8 @@
 
   .resource-card--overlay .resource-card__content {
     position: absolute;
-    inset: auto 0 0;
-    padding: var(--padding-lg) var(--padding-lg) var(--padding-sm);
+    inset: 0 0 auto;
+    padding: var(--component-margin) var(--padding-lg) var(--padding-lg);
     z-index: var(--layer-raised);
   }
 

@@ -1,5 +1,3 @@
-
-
 {% render 'text', block: block %}
 
 {% schema %}
@@ -295,19 +293,27 @@
       "label": "t:settings.color",
       "options": [
         {
-          "value": "var(--color-foreground)",
+          "value": "var(--text-default)",
           "label": "t:options.text"
         },
         {
-          "value": "var(--color-foreground-heading)",
+          "value": "var(--text-inverse)",
+          "label": "t:options.text_inverse"
+        },
+        {
+          "value": "var(--heading-default)",
           "label": "t:options.heading"
         },
         {
-          "value": "var(--color-primary)",
+          "value": "var(--heading-inverse)",
+          "label": "t:options.heading_inverse"
+        },
+        {
+          "value": "var(--color-dark-content-inverse)",
           "label": "t:options.link"
         }
       ],
-      "default": "var(--color-foreground)",
+      "default": "var(--text-default)",
       "visible_if": "{{ block.settings.type_preset != 'rte' }}"
     },
     {

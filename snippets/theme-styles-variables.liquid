@@ -178,6 +178,12 @@
     --font-h6--spacing: var(--font-heading--spacing);
     --font-paragraph--spacing: 0.5em;
 
+    /* Inverse color aliases — each resolves to the scheme background, giving
+       the text block's colour select distinct storable values per type. */
+    --color-foreground-inverse: var(--color-background);
+    --color-foreground-heading-inverse: var(--color-background);
+    --color-primary-inverse: var(--color-background);
+
     /* Heading colors */
     --font-h1--color: var(--color-foreground-heading);
     --font-h2--color: var(--color-foreground-heading);
@@ -684,5 +690,80 @@
     --cart-secondary-font-family: var(--font-{{ settings.cart_price_font }}--family);
     --cart-secondary-font-style: var(--font-{{ settings.cart_price_font }}--style);
     --cart-secondary-font-weight: var(--font-{{ settings.cart_price_font }}--weight);
+
+      /* Additional vars not extracted via Figma integration */
+    --text-tertiary: #999;
+
+    --navigation-font-weight: 500;
+    --navigation-base: 14px;
+
+    --subheading-small: 20px;
+    --subheading-medium: 32px;
+    --subheading-weight: 500;
+    --subheading-spacing: 0.2px;
+
+
+    --button-dark-background-disabled: #F7F7F7;
+    --button-dark-content-disabled: #D5D5D5;
+    --button-dark-stroke-disabled: #D5D5D5;
+    --button-margin: 16px;
+    --button-large: 40px;
+    --button-spaced: 24px;
+
+    --component-margin: 16px;
+
+      /* Additional [Brand Specific] vars not extracted via Figma integration */
+    {% if settings.brand == 'linen-house' %}
+      --text-default: #0E0E0E;
+      --text-inverse: #F9F8F5;
+      --heading-default: #0E0E0E;
+      --heading-inverse: #F9F8F5;
+
+      --navigation-letter-spacing: 0.2px;
+
+      --button-radius-default: 64px;
+
+      --button-light-content-default: #0E0E0E;
+      --button-light-background-default: #F9F8F5;
+      --button-light-background-hover: #E4E1D6;
+      --button-light-content-inverse: #F9F8F5;
+      --button-light-stroke-default: #F9F8F5;
+      --button-light-content-hover: #E4E1D6;
+      --button-light-stroke-hover: #E4E1D6;
+
+      --button-dark-content-default: #EFEDE5;
+      --button-dark-stroke-default: #0E0E0E;
+      --button-dark-content-hover: #666666;
+      --button-dark-stroke-hover: #666666;
+      --button-dark-background-default: #0E0E0E;
+      --button-dark-background-hover: #333333;
+      --button-dark-content-inverse: #0E0E0E;
+
+
+    {% else %}
+      --text-default: #333333;
+      --text-inverse: #ffffff;
+      --heading-default: #333333;
+      --heading-inverse: #ffffff;
+
+      --navigation-letter-spacing: 0.5px;
+
+      --button-radius-default: 4px;
+      --button-light-content-default: #333333;
+      --button-light-background-default: #FFFFFF;
+      --button-light-background-hover: #E7E7E7;
+      --button-light-content-inverse: #FFFFFF;
+      --button-light-stroke-default: #FFFFFF;
+      --button-light-content-hover: #D5D5D5;
+      --button-light-stroke-hover: #D5D5D5;
+
+      --button-dark-content-default: #FFFFFF;
+      --button-dark-stroke-default: #333333;
+      --button-dark-content-hover: #999999;
+      --button-dark-stroke-hover: #999999;
+      --button-dark-background-default: #333333;
+      --button-dark-background-hover: #666666;
+      --button-dark-content-inverse: #333333;
+    {% endif %}
   }
 {% endstyle %}

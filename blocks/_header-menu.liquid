@@ -1,9 +1,9 @@
-
 {%- doc -%}
   Renders a header menu block.
 
   @param {string} [variant] - What version of the menu to render. Defaults to header menu.
   @param {string} [transparent] - Show a transparent menu
+  @param {string} [brand] - The brand identifier ('linen-house' or 'aura-home'), passed from the global settings.brand.
 {%- enddoc -%}
 
 {% liquid
@@ -188,7 +188,7 @@
 
 {% style %}
   .header__underlay {
-    --color-submenu: rgb({{ block_settings.color_scheme.settings.background.rgba }});
+    --color-submenu: rgb({{block_settings.color_scheme.settings.background.rgba}});
   }
 {% endstyle %}
 {% stylesheet %}
@@ -282,6 +282,7 @@
     font-weight: var(--menu-top-level-font-weight);
     font-size: var(--menu-top-level-font-size);
     line-height: var(--menu-top-level-font-line-height);
+    letter-spacing: var(--menu-top-level-font-spacing);
     text-transform: var(--menu-top-level-font-case);
     color: var(--menu-top-level-font-color);
     text-decoration: none;
@@ -504,11 +505,11 @@
   .mega-menu__link {
     font-family: var(--menu-child-font-family);
     font-style: var(--menu-child-font-style);
-    font-weight: var(--menu-child-font-weight);
-    font-size: var(--menu-child-font-size);
+    font-weight: var(--navigation-font-weight);
+    font-size: var(--navigation-base);
     line-height: var(--menu-child-font-line-height);
     text-transform: var(--menu-child-font-case);
-    color: var(--menu-child-font-color);
+    color: var(--button-dark-content-inverse);
     white-space: normal;
     text-decoration: none;
     display: inline-flex;
@@ -522,11 +523,11 @@
   .mega-menu__link--parent {
     font-family: var(--menu-parent-font-family);
     font-style: var(--menu-parent-font-style);
-    font-weight: var(--menu-parent-font-weight);
-    font-size: var(--menu-parent-font-size);
+    font-weight: var(--navigation-font-weight);
+    font-size: var(--navigation-base);
     line-height: var(--menu-parent-font-line-height);
     text-transform: var(--menu-parent-font-case);
-    color: var(--menu-parent-font-color);
+    color: var(--text-tertiary);
 
     &:hover {
       color: var(--menu-parent-active-font-color);
