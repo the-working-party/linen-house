@@ -4171,6 +4171,13 @@ text-component {
   }
 }
 
+/* Cart/line-item quantity: use paragraph size; exclude from iOS min-1rem input rule */
+@media screen and (max-width: 1200px) {
+  cart-quantity-selector-component.quantity-selector input[type='number'] {
+    font-size: var(--paragraph-base);
+  }
+}
+
 .product-recommendations {
   display: block;
 }

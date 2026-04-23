@@ -1097,6 +1097,7 @@
     "show_as_accordion": "Show as accordion on mobile",
     "show_author": "Author",
     "show_alignment": "Show alignment",
+    "show_cart_bnpl_message": "Show buy now, pay later message (Afterpay)",
     "show_count": "Show count",
     "show_date": "Date",
     "show_filter_label": "Text labels for applied filters",

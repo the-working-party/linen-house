@@ -2049,6 +2049,12 @@
         "default": true
       },
       {
+        "type": "checkbox",
+        "id": "show_cart_bnpl_message",
+        "label": "t:settings.show_cart_bnpl_message",
+        "default": false
+      },
+      {
         "type": "url",
         "id": "empty_cart_button_link",
         "label": "t:settings.empty_cart_button_link",

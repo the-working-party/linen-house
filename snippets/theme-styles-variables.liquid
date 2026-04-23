@@ -703,7 +703,10 @@
     --font-paragraph-line-height: 18px;
 
     --paragraph-small: var(--font-size--paragraph_small);
+    --paragraph-small: 12px;
+    --paragraph-base: 14px;
     --paragraph-large: 16px;
+    --paragraph-family: var(--font-paragraph--family);
     --paragraph-weight: 400;
 
     --subheading-small: 20px;
@@ -745,6 +748,7 @@
     {% if settings.brand == 'linen-house' %}
       --text-default: #0E0E0E;
       --text-inverse: #F9F8F5;
+      --text-secondary: #333333;
       --heading-default: #0E0E0E;
       --heading-inverse: #F9F8F5;
       --navigation-base-weight: 500;
@@ -782,6 +786,7 @@
     {% else %}
       --text-default: #333333;
       --text-inverse: #ffffff;
+      --text-secondary: #666666;
       --heading-default: #333333;
       --heading-inverse: #ffffff;
 

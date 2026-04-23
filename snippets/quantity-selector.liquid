@@ -181,4 +181,34 @@
     font-size: var(--font-size--sm);
     font-weight: normal;
   }
+
+  cart-quantity-selector-component.quantity-selector {
+    height: var(--button-large);
+    min-height: var(--button-large);
+    box-sizing: border-box;
+    font-size: var(--paragraph-base);
+    background: none;
+    background-color: transparent;
+    border: 1px solid var(--button-dark-stroke-default);
+  }
+
+  cart-quantity-selector-component.quantity-selector:hover,
+  cart-quantity-selector-component.quantity-selector:focus-within {
+    background: none;
+    background-color: transparent;
+  }
+
+  cart-quantity-selector-component.quantity-selector :is(.quantity-minus, .quantity-plus) {
+    width: var(--button-large);
+    height: 100%;
+    min-height: 0;
+  }
+
+  /* Override iOS `input { font-size: max(1rem) }` (see base.css) so the field is paragraph-base, not 16px */
+  cart-quantity-selector-component.quantity-selector input[type="number"] {
+    max-width: calc(
+      var(--quantity-selector-width) - 2 * var(--button-large)
+    );
+    font-size: var(--paragraph-base);
+  }
 {% endstylesheet %}
