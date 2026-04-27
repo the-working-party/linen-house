@@ -1,0 +1,213 @@
+{% capture children %}
+  <div class="twp-key-features">
+    <div class="twp-key-features__left">
+      {%- if section.settings.heading != blank -%}
+        <h2 class="twp-key-features__heading">{{- section.settings.heading | escape -}}</h2>
+      {%- endif -%}
+      {%- if section.settings.body != blank -%}
+        <div class="twp-key-features__body rte">{{- section.settings.body -}}</div>
+      {%- endif -%}
+      {%- if section.settings.button_label != blank and section.settings.button_url != blank -%}
+        <a href="{{ section.settings.button_url }}" class="twp-key-features__button button button--secondary">
+          {{- section.settings.button_label | escape -}}
+        </a>
+      {%- endif -%}
+    </div>
+    {%- if section.settings.image != blank -%}
+      {%- assign img_alt = section.settings.image_alt | default: section.settings.heading | escape -%}
+      <div class="twp-key-features__right">
+        {{
+          section.settings.image
+          | image_url: width: 1400
+          | image_tag:
+            widths: '600, 900, 1200, 1400',
+            sizes: '(min-width: 750px) 60vw, 100vw',
+            alt: img_alt,
+            class: 'twp-key-features__image',
+            loading: 'lazy'
+        }}
+      </div>
+    {%- endif -%}
+  </div>
+{% endcapture %}
+
+{% render 'section', section: section, children: children %}
+
+{% stylesheet %}
+  .twp-key-features {
+    display: flex;
+    gap: var(--gap-xl, 32px);
+    align-items: flex-start;
+  }
+
+  .twp-key-features__left {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-lg, 24px);
+    flex: 0 0 30%;
+  }
+
+  .twp-key-features__heading {
+    margin: 0;
+    font-family: var(--font-primary--family);
+    font-size: var(--font-h3--size);
+    font-weight: var(--font-heading--weight);
+    line-height: 1.2;
+    letter-spacing: 0.02em;
+    color: var(--color-foreground-heading);
+  }
+
+  .twp-key-features__body {
+    font-size: var(--font-paragraph--size, 0.875rem);
+    line-height: 1.5;
+    color: var(--color-foreground);
+  }
+
+  .twp-key-features__button {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: var(--height-buy-buttons, 40px);
+    padding-inline: var(--padding-lg, 16px);
+    border: 1px solid var(--color-foreground);
+    border-radius: var(--buttons-radius, 64px);
+    background: transparent;
+    color: var(--color-foreground);
+    font-family: var(--font-body--family);
+    font-size: var(--font-paragraph-medium--size, 0.875rem);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background-color 0.2s var(--ease-out-quad), color 0.2s var(--ease-out-quad);
+  }
+
+  .twp-key-features__button:hover {
+    background-color: var(--color-foreground);
+    color: var(--color-background);
+  }
+
+  .twp-key-features__right {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .twp-key-features__image {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+    border-radius: var(--media-radius, 12px);
+  }
+
+  @media screen and (max-width: 749px) {
+    .twp-key-features {
+      flex-direction: column-reverse;
+    }
+
+    .twp-key-features__left {
+      flex: none;
+      width: 100%;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Key features",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Key Features"
+    },
+    {
+      "type": "richtext",
+      "id": "body",
+      "label": "Body"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Learn More"
+    },
+    {
+      "type": "url",
+      "id": "button_url",
+      "label": "Button link"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "image_alt",
+      "label": "Image alt text"
+    },
+    {
+      "type": "header",
+      "content": "Colours"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Colour scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-start",
+      "label": "Left",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-end",
+      "label": "Right",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "Key features",
+      "category": "t:categories.product"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,209 @@
+{% doc %}
+  Renders a 2x2 grid of USP (unique selling point) items below the add-to-cart button.
+  Each item has a configurable icon and label.
+
+  @example
+  {% content_for 'block', type: 'twp-product-usps', id: 'product-usps' %}
+{% enddoc %}
+
+{%- liquid
+  assign usp_icons = block.settings.usp_1_icon | append: ',' | append: block.settings.usp_2_icon | append: ',' | append: block.settings.usp_3_icon | append: ',' | append: block.settings.usp_4_icon | split: ','
+  assign usp_labels = block.settings.usp_1_label | append: '|' | append: block.settings.usp_2_label | append: '|' | append: block.settings.usp_3_label | append: '|' | append: block.settings.usp_4_label | split: '|'
+-%}
+
+<ul class="twp-product-usps" {{ block.shopify_attributes }}>
+  {%- for label in usp_labels -%}
+    {%- if label != blank -%}
+      <li class="twp-product-usps__item">
+        {%- render 'icon-or-image',
+          icon: usp_icons[forloop.index0],
+          image_upload: blank,
+          width: 16,
+          class_name: 'twp-product-usps__icon'
+        -%}
+        <span class="twp-product-usps__label">{{- label -}}</span>
+      </li>
+    {%- endif -%}
+  {%- endfor -%}
+</ul>
+
+{% stylesheet %}
+  .twp-product-usps {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .twp-product-usps__item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.875rem;
+    color: var(--color-foreground);
+  }
+
+  .twp-product-usps__icon {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    color: var(--color-foreground);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Product USPs",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "USP 1"
+    },
+    {
+      "type": "select",
+      "id": "usp_1_icon",
+      "label": "Icon",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "leaf", "label": "Leaf" },
+        { "value": "heart", "label": "Heart" },
+        { "value": "star", "label": "Star" },
+        { "value": "truck", "label": "Truck" },
+        { "value": "return", "label": "Return" },
+        { "value": "lock", "label": "Lock" },
+        { "value": "recycle", "label": "Recycle" },
+        { "value": "check_box", "label": "Check" },
+        { "value": "washing", "label": "Washing" },
+        { "value": "dryer", "label": "Dryer" },
+        { "value": "iron", "label": "Iron" },
+        { "value": "ruler", "label": "Ruler" },
+        { "value": "shirt", "label": "Shirt" },
+        { "value": "plane", "label": "Plane" },
+        { "value": "map_pin", "label": "Map pin" },
+        { "value": "snowflake", "label": "Snowflake" }
+      ],
+      "default": "leaf"
+    },
+    {
+      "type": "text",
+      "id": "usp_1_label",
+      "label": "Label",
+      "default": "100% Cotton"
+    },
+    {
+      "type": "header",
+      "content": "USP 2"
+    },
+    {
+      "type": "select",
+      "id": "usp_2_icon",
+      "label": "Icon",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "leaf", "label": "Leaf" },
+        { "value": "heart", "label": "Heart" },
+        { "value": "star", "label": "Star" },
+        { "value": "truck", "label": "Truck" },
+        { "value": "return", "label": "Return" },
+        { "value": "lock", "label": "Lock" },
+        { "value": "recycle", "label": "Recycle" },
+        { "value": "check_box", "label": "Check" },
+        { "value": "washing", "label": "Washing" },
+        { "value": "dryer", "label": "Dryer" },
+        { "value": "iron", "label": "Iron" },
+        { "value": "ruler", "label": "Ruler" },
+        { "value": "shirt", "label": "Shirt" },
+        { "value": "plane", "label": "Plane" },
+        { "value": "map_pin", "label": "Map pin" },
+        { "value": "snowflake", "label": "Snowflake" }
+      ],
+      "default": "heart"
+    },
+    {
+      "type": "text",
+      "id": "usp_2_label",
+      "label": "Label",
+      "default": "Designed in Australia"
+    },
+    {
+      "type": "header",
+      "content": "USP 3"
+    },
+    {
+      "type": "select",
+      "id": "usp_3_icon",
+      "label": "Icon",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "leaf", "label": "Leaf" },
+        { "value": "heart", "label": "Heart" },
+        { "value": "star", "label": "Star" },
+        { "value": "truck", "label": "Truck" },
+        { "value": "return", "label": "Return" },
+        { "value": "lock", "label": "Lock" },
+        { "value": "recycle", "label": "Recycle" },
+        { "value": "check_box", "label": "Check" },
+        { "value": "washing", "label": "Washing" },
+        { "value": "dryer", "label": "Dryer" },
+        { "value": "iron", "label": "Iron" },
+        { "value": "ruler", "label": "Ruler" },
+        { "value": "shirt", "label": "Shirt" },
+        { "value": "plane", "label": "Plane" },
+        { "value": "map_pin", "label": "Map pin" },
+        { "value": "snowflake", "label": "Snowflake" }
+      ],
+      "default": "star"
+    },
+    {
+      "type": "text",
+      "id": "usp_3_label",
+      "label": "Label",
+      "default": "Crafted for Comfort"
+    },
+    {
+      "type": "header",
+      "content": "USP 4"
+    },
+    {
+      "type": "select",
+      "id": "usp_4_icon",
+      "label": "Icon",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "leaf", "label": "Leaf" },
+        { "value": "heart", "label": "Heart" },
+        { "value": "star", "label": "Star" },
+        { "value": "truck", "label": "Truck" },
+        { "value": "return", "label": "Return" },
+        { "value": "lock", "label": "Lock" },
+        { "value": "recycle", "label": "Recycle" },
+        { "value": "check_box", "label": "Check" },
+        { "value": "washing", "label": "Washing" },
+        { "value": "dryer", "label": "Dryer" },
+        { "value": "iron", "label": "Iron" },
+        { "value": "ruler", "label": "Ruler" },
+        { "value": "shirt", "label": "Shirt" },
+        { "value": "plane", "label": "Plane" },
+        { "value": "map_pin", "label": "Map pin" },
+        { "value": "snowflake", "label": "Snowflake" }
+      ],
+      "default": "snowflake"
+    },
+    {
+      "type": "text",
+      "id": "usp_4_label",
+      "label": "Label",
+      "default": "Ideal for Sleep"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product USPs",
+      "category": "t:categories.product"
+    }
+  ]
+}
+{% endschema %}
