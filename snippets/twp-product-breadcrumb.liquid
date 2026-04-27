@@ -84,7 +84,10 @@
 
   @media screen and (max-width: 749px) {
     .twp-product-breadcrumb {
-      display: none;
+      position: static;
+      grid-column: 1 / -1;
+      padding-inline: var(--page-margin, 16px);
+      margin-bottom: 4px;
     }
   }
 {% endstylesheet %}

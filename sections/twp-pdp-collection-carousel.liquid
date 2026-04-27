@@ -140,7 +140,7 @@
   .twp-collection-carousel__card {
     display: flex;
     flex-direction: column;
-    gap: var(--gap-sm, 8px);
+    gap: var(--gap-md, 16px);
     text-decoration: none;
     color: var(--color-foreground);
   }
@@ -167,15 +167,15 @@
 
   .twp-collection-carousel__badge {
     position: absolute;
-    top: 12px;
-    right: 12px;
+    top: 8px;
+    right: 8px;
     display: inline-flex;
     align-items: center;
-    height: 32px;
+    height: 24px;
     padding-inline: 12px;
     border-radius: var(--buttons-radius, 64px);
-    background-color: var(--color-accent-1);
-    color: var(--color-accent-1-contrast);
+    background-color: var(--color-background-secondary);
+    color: var(--color-foreground);
     font-size: 0.75rem;
     line-height: 1;
     white-space: nowrap;
@@ -184,7 +184,7 @@
   .twp-collection-carousel__info {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 12px;
   }
 
   .twp-collection-carousel__vendor {
@@ -193,7 +193,7 @@
   }
 
   .twp-collection-carousel__title {
-    font-size: var(--font-paragraph--size, 0.875rem);
+    font-size: var(--font-paragraph-large--size, 1rem);
     color: var(--color-foreground);
     line-height: 1.4;
   }
@@ -211,8 +211,8 @@
 
   @media screen and (max-width: 749px) {
     .twp-collection-carousel__item {
-      flex: 0 0 75vw;
-      min-width: 200px;
+      flex: 0 0 calc(50% - 4px);
+      min-width: 140px;
     }
 
     .twp-collection-carousel__heading {

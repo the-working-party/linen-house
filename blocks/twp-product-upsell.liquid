@@ -17,8 +17,9 @@
     {%- if heading != blank -%}
       <p class="twp-product-upsell__heading">{{- heading -}}</p>
     {%- endif -%}
-    <div class="twp-product-upsell__scroller">
-      <ul class="twp-product-upsell__list">
+    <div class="twp-product-upsell__scroll-container">
+      <div class="twp-product-upsell__scroller">
+        <ul class="twp-product-upsell__list">
         {%- for product in upsell_collection.products limit: 8 -%}
           {%- unless product.id == current_product.id -%}
             <li class="twp-product-upsell__item">
@@ -47,7 +48,15 @@
             </li>
           {%- endunless -%}
         {%- endfor -%}
-      </ul>
+        </ul>
+      </div>
+      <div class="twp-product-upsell__gradient" aria-hidden="true"></div>
+      <button class="twp-product-upsell__arrow twp-product-upsell__arrow--prev" aria-label="Scroll left" hidden>
+        {{- 'icon-chevron-left.svg' | inline_asset_content -}}
+      </button>
+      <button class="twp-product-upsell__arrow twp-product-upsell__arrow--next" aria-label="Scroll right">
+        {{- 'icon-chevron-right.svg' | inline_asset_content -}}
+      </button>
     </div>
   </div>
 {%- endif -%}
@@ -55,8 +64,12 @@
 {% stylesheet %}
   .twp-product-upsell__heading {
     margin: 0 0 16px;
-    font-size: 1rem;
+    font-size: var(--font-paragraph-large--size, 1rem);
     color: var(--color-foreground);
+  }
+
+  .twp-product-upsell__scroll-container {
+    position: relative;
   }
 
   .twp-product-upsell__scroller {
@@ -80,7 +93,7 @@
   .twp-product-upsell__card {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 12px;
     width: 160px;
     flex-shrink: 0;
     text-decoration: none;
@@ -88,7 +101,7 @@
   }
 
   .twp-product-upsell__image-wrapper {
-    aspect-ratio: 4 / 5;
+    aspect-ratio: 3 / 4;
     overflow: hidden;
     border-radius: var(--media-radius, 12px);
     width: 160px;
@@ -109,20 +122,84 @@
 
   .twp-product-upsell__vendor {
     font-size: 0.75rem;
-    color: var(--color-foreground-secondary, var(--color-foreground));
-    opacity: 0.7;
+    color: rgb(var(--color-foreground-rgb) / var(--opacity-subdued-text, 0.65));
   }
 
   .twp-product-upsell__title {
-    font-size: 0.875rem;
+    font-size: var(--font-paragraph-large--size, 1rem);
     color: var(--color-foreground);
+    line-height: 1.4;
   }
 
   .twp-product-upsell__price {
     font-size: 0.75rem;
-    color: var(--color-foreground);
+    color: rgb(var(--color-foreground-rgb) / var(--opacity-subdued-text, 0.65));
+  }
+
+  .twp-product-upsell__gradient {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 80px;
+    background: linear-gradient(to right, transparent, var(--color-background));
+    pointer-events: none;
+  }
+
+  .twp-product-upsell__arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--buttons-radius, 64px);
+    background-color: var(--color-background);
+    border: 1px solid var(--color-border, rgba(0,0,0,0.1));
+    cursor: pointer;
+    z-index: 1;
+  }
+
+  .twp-product-upsell__arrow svg {
+    width: 10px;
+    height: auto;
+  }
+
+  .twp-product-upsell__arrow--prev {
+    left: 8px;
+  }
+
+  .twp-product-upsell__arrow--next {
+    right: 8px;
   }
 {% endstylesheet %}
+
+{% javascript %}
+  document.querySelectorAll('.twp-product-upsell__scroll-container').forEach((container) => {
+    const scroller = container.querySelector('.twp-product-upsell__scroller');
+    const prevBtn = container.querySelector('.twp-product-upsell__arrow--prev');
+    const nextBtn = container.querySelector('.twp-product-upsell__arrow--next');
+    const cardWidth = 168;
+
+    function updateArrows() {
+      prevBtn.hidden = scroller.scrollLeft <= 0;
+      nextBtn.hidden = scroller.scrollLeft >= scroller.scrollWidth - scroller.clientWidth - 1;
+    }
+
+    prevBtn.addEventListener('click', () => {
+      scroller.scrollBy({ left: -cardWidth * 2, behavior: 'smooth' });
+    });
+
+    nextBtn.addEventListener('click', () => {
+      scroller.scrollBy({ left: cardWidth * 2, behavior: 'smooth' });
+    });
+
+    scroller.addEventListener('scroll', updateArrows, { passive: true });
+    updateArrows();
+  });
+{% endjavascript %}
 
 {% schema %}
 {
