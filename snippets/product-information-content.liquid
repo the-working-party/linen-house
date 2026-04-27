@@ -10,6 +10,7 @@
   @param {string} media_gallery - Captured HTML for the product media gallery block
   @param {string} product_details - Captured HTML for the product details block
   @param {string} additional_blocks - Captured HTML for additional section blocks
+  @param {product} [product] - The current product, used to render the breadcrumb overlay
 
   @example
   {% capture media_gallery %}
@@ -82,6 +83,9 @@
   style="{% render 'spacing-style', settings: settings %} --gap: {{ settings.gap }}px;"
   data-testid="product-information"
 >
+  {%- if request.page_type == 'product' and product != blank -%}
+    {%- render 'twp-product-breadcrumb', product: product -%}
+  {%- endif -%}
   {% if settings.desktop_media_position == 'left' and product_has_media and request.page_type == 'product' %}
     {% assign product_href = '#ProductInformation-' | append: section_id %}
     {% render 'skip-to-content-link', href: product_href, text: 'accessibility.skip_to_product_info' %}
