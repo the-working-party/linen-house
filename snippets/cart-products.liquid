@@ -178,6 +178,12 @@
                       </a>
                     </p>
 
+                    {%- if item.product.vendor != blank -%}
+                      <div class="cart-items__vendor">
+                        {{ item.product.vendor | escape }}
+                      </div>
+                    {%- endif -%}
+
                     {%- if item.item_components.size != 0 -%}
                       <ul class="cart-items__bundle list-unstyled">
                         {%- for component in item.item_components -%}
@@ -257,13 +263,6 @@
                       {%- endif -%}
                     {%- endif -%}
                   </div>
-
-                  {%- if item.product.vendor != blank -%}
-                    <div class="cart-items__vendor">
-                      {{ item.product.vendor | escape }}
-                    </div>
-                  {%- endif -%}
-
                 </td>
                 <td
                   class="cart-items__quantity"
@@ -521,12 +520,9 @@
   }
 
   .cart-items__details > * + *,
+  .cart-items__product-info > * + *,
   .cart-items__bundle li {
     margin-block-start: 12px;
-  }
-
-  .cart-items__details * {
-    font-size: var(--paragraph-base);
   }
 
   .cart-items__details a {
@@ -554,6 +550,9 @@
 
   .cart-items__variant {
     display: inline;
+    font-size: var(--paragraph-small);
+    color: var(--text-secondary);
+    letter-spacing: var(--paragraph-spacing);
   }
 
   .cart-items__variant dt,
@@ -805,7 +804,7 @@
   .cart-secondary-typography {
     font-family: var(--cart-secondary-font-family);
     font-style: var(--cart-secondary-font-style);
-    font-weight: var(--cart-secondary-font-weight);
+    font-weight: var(--paragraph-weight);
   }
 
   .cart__ctas {

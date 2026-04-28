@@ -190,6 +190,7 @@
     background: none;
     background-color: transparent;
     border: 1px solid var(--button-dark-stroke-default);
+    border-radius: var(--button-radius);
   }
 
   cart-quantity-selector-component.quantity-selector:hover,
@@ -205,10 +206,8 @@
   }
 
   /* Override iOS `input { font-size: max(1rem) }` (see base.css) so the field is paragraph-base, not 16px */
-  cart-quantity-selector-component.quantity-selector input[type="number"] {
-    max-width: calc(
-      var(--quantity-selector-width) - 2 * var(--button-large)
-    );
+  cart-quantity-selector-component.quantity-selector input[type='number'] {
+    max-width: calc(var(--quantity-selector-width) - 2 * var(--button-large));
     font-size: var(--paragraph-base);
   }
 {% endstylesheet %}
