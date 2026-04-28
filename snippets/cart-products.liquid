@@ -324,13 +324,16 @@
                   </div>
                 </td>
                 {%- liquid
-                  assign line_money = item.final_line_price | money
+                  assign price = item.final_line_price | money_with_currency
                   assign unit_money = item.unit_price | money
+                  assign original_line_money = item.original_line_price | money
+                  assign show_line_discount = false
+                  if item.original_line_price > item.final_line_price
+                    assign show_line_discount = true
+                  endif
                   if settings.currency_code_enabled_cart_items
-                    assign price = line_money | append: ' ' | append: cart.currency.iso_code
-                    assign unit_price = unit_money | append: ' ' | append: cart.currency.iso_code
+                    assign unit_price = item.unit_price | money_with_currency
                   else
-                    assign price = line_money
                     assign unit_price = unit_money
                   endif
                 -%}
@@ -339,7 +342,20 @@
                   role="cell"
                   headers="productTotal"
                 >
-                  <text-component value="{{ price | strip_html }}">{{ price }}</text-component>
+                  <div class="cart-items__line-price">
+                    <text-component value="{{ price | strip_html }}">
+                      {%- if show_line_discount -%}
+                        <span class="visually-hidden">{{ 'content.price_sale' | t }}&nbsp;</span>
+                      {%- endif -%}
+                      {{- price -}}
+                    </text-component>
+                    {%- if show_line_discount -%}
+                      <div class="cart-items__price-original">
+                        <span class="visually-hidden">{{ 'content.price_regular' | t }}&nbsp;</span>
+                        <span class="compare-at-price">{{ original_line_money }}</span>
+                      </div>
+                    {%- endif -%}
+                  </div>
                   {%- if item.unit_price_measurement -%}
                     <div class="cart-items__price-unit cart-secondary-typography">
                       {% render 'unit-price', price: unit_price, measurement: item.unit_price_measurement %}
@@ -462,6 +478,11 @@
       min-width: auto;
       width: max-content;
     }
+  }
+
+  /* Line-item discount title list: hidden in cart page and drawer (price treatment shows savings). */
+  .cart-items__variants-wrapper > ul {
+    display: none;
   }
 
   .cart-items__table-row.cart-items__nested-line td:first-child {
@@ -610,6 +631,18 @@
     display: block;
     font-size: var(--paragraph-small);
     line-height: var(--line-height);
+  }
+
+  .cart-items__line-price {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .cart-items__price-original {
+    font-size: var(--paragraph-small);
   }
 
   .cart-items__price-unit {
