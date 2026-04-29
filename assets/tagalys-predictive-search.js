@@ -1,44 +1,80 @@
 import { Component } from '@theme/component';
 
 /**
+ * @typedef {Object} TagalysPredictiveSearchRefs
+ * @property {HTMLDivElement} mount - The container element Tagalys's
+ *   `ShopifySearchSuggestions` widget renders results into.
+ */
+
+/**
+ * @typedef {Object} TagalysSDKCallbackPayload
+ * @property {unknown} [response] - SDK-supplied response payload (opaque).
+ */
+
+/**
  * <tagalys-predictive-search>
  *
  * Sibling component to Horizon's <predictive-search-component>. Initialises
  * `Tagalys.UIWidgets.ShopifySearchSuggestions` against the modal's search input
- * and renders results into the inner `[data-tagalys-predictive-mount]` div.
+ * and renders results into the inner [data-tagalys-predictive-mount] div
+ * (also exposed as `this.refs.mount`).
  *
- * Hijack-on-ready pattern: on init success, flips `data-search-provider="tagalys"`
- * on the search modal so the native predictive results hide via CSS. On init
- * failure or `data-init-timeout-ms` timeout (lazy, fires on first user input)
- * OR the connected-callback safety timeout (fires regardless of input so a
- * 404'd SDK does not strand the modal in `loading` forever), flips to
- * `data-search-provider="native"` and the native predictive flow resumes.
+ * Hijack-on-ready pattern: on init success, flips
+ * `data-search-provider="tagalys"` on the search modal so the native
+ * predictive results hide via the CSS gate in
+ * snippets/tagalys-predictive-search.liquid. On init failure, the per-input
+ * 2-second timeout, or the connected-callback safety timeout (fires
+ * regardless of input so a 404'd SDK does not strand the modal in
+ * `loading` state forever), flips to `data-search-provider="native"` and
+ * the native predictive flow resumes via assets/predictive-search.js.
  *
- * The widget is initialised lazily on the first input event to avoid wasted
- * SDK work for users who never open the search modal.
- *
- * Tagalys SDK has no documented destroy() method, so initialisation runs once
- * per page lifetime; subsequent modal open/close cycles reuse the live widget.
+ * The widget is initialised lazily on the first input or focus event to
+ * avoid wasted SDK work for users who never open the search modal.
  *
  * State machine on the search modal element via `data-search-provider`:
- *   "loading" → set in Liquid when tagalys + predictive both enabled (initial)
+ *   "loading" → set in Liquid when tagalys + predictive both enabled
  *   "tagalys" → flipped on Tagalys SDK afterInitialRender callback
  *   "native"  → flipped on init failure, init timeout, or safety timeout
  *
- * The native predictive search handler (assets/predictive-search.js:283 #search)
- * bails when provider === "tagalys" || "loading" so only one provider drives
- * the dropdown at any time.
+ * Tagalys SDK has no documented destroy() method, so initialisation runs
+ * once per page lifetime; subsequent modal open/close cycles reuse the
+ * live widget.
+ *
+ * @extends {Component<TagalysPredictiveSearchRefs>}
  */
 class TagalysPredictiveSearch extends Component {
+  /** @type {string[]} */
+  requiredRefs = ['mount'];
+
+  /** @type {boolean} */
   #initStarted = false;
+
+  /** @type {boolean} */
   #initFailed = false;
+
+  /** @type {HTMLInputElement | null} */
   #searchInput = null;
+
+  /** @type {HTMLElement | null} */
   #searchModal = null;
+
+  /** @type {ReturnType<typeof setTimeout> | null} */
   #initTimeoutId = null;
+
+  /** @type {ReturnType<typeof setTimeout> | null} */
   #safetyTimeoutId = null;
+
+  /** @type {ReturnType<typeof setInterval> | null} */
   #pollIntervalId = null;
+
+  /** @type {((event: Event) => void) | null} */
   #boundInitOnFirstInput = null;
 
+  /**
+   * Locates the search modal and search input, registers lazy-init listeners,
+   * and arms the safety timeout.
+   * @returns {void}
+   */
   connectedCallback() {
     super.connectedCallback();
 
@@ -51,7 +87,9 @@ class TagalysPredictiveSearch extends Component {
     this.#searchModal.dataset.searchProvider ??= 'loading';
 
     const inputSelector = this.dataset.searchInputSelector || '#cmdk-input';
-    this.#searchInput = document.querySelector(inputSelector);
+    this.#searchInput = /** @type {HTMLInputElement | null} */ (
+      document.querySelector(inputSelector)
+    );
 
     if (!this.#searchInput) {
       this.#fallbackToNative('search-input-not-found');
@@ -74,30 +112,37 @@ class TagalysPredictiveSearch extends Component {
     }, safetyMs);
   }
 
+  /**
+   * Clears all pending timers/intervals and removes lazy-init listeners.
+   * @returns {void}
+   */
   disconnectedCallback() {
     super.disconnectedCallback?.();
     if (this.#initTimeoutId) clearTimeout(this.#initTimeoutId);
     if (this.#safetyTimeoutId) clearTimeout(this.#safetyTimeoutId);
     if (this.#pollIntervalId) clearInterval(this.#pollIntervalId);
-    // Remove input listeners that may not have fired yet to avoid dangling
-    // references holding the component instance after disconnect.
+
     if (this.#searchInput && this.#boundInitOnFirstInput) {
       this.#searchInput.removeEventListener('input', this.#boundInitOnFirstInput);
       this.#searchInput.removeEventListener('focus', this.#boundInitOnFirstInput);
     }
   }
 
-  #initOnFirstInput() {
+  /**
+   * Lazy-init handler invoked once on first input or focus. Schedules the
+   * SDK init via Tagalys's whenTagalysReady polling helper.
+   * @returns {void}
+   */
+  #initOnFirstInput = () => {
     if (this.#initStarted) return;
     this.#initStarted = true;
 
-    // Safety timer no longer needed — input-driven timeout takes over.
     if (this.#safetyTimeoutId) {
       clearTimeout(this.#safetyTimeoutId);
       this.#safetyTimeoutId = null;
     }
 
-    if (!window.whenTagalysReady) {
+    if (typeof window.whenTagalysReady !== 'function') {
       this.#fallbackToNative('whenTagalysReady-missing');
       return;
     }
@@ -109,8 +154,14 @@ class TagalysPredictiveSearch extends Component {
     }, timeoutMs);
 
     this.#pollIntervalId = window.whenTagalysReady(() => this.#initWidget());
-  }
+  };
 
+  /**
+   * Initialises Tagalys.UIWidgets.ShopifySearchSuggestions on the host
+   * search input. Wires lifecycle callbacks that flip the search modal's
+   * provider state and update aria-busy on the mount.
+   * @returns {void}
+   */
   #initWidget() {
     if (this.#initFailed) return;
 
@@ -125,7 +176,8 @@ class TagalysPredictiveSearch extends Component {
     const mountSelector = '[data-tagalys-predictive-mount]';
     const searchInput = this.#searchInput;
     const searchModal = this.#searchModal;
-    const mount = this.querySelector(mountSelector);
+    const mount = this.refs.mount;
+
     if (mount) mount.setAttribute('aria-busy', 'true');
 
     try {
@@ -138,10 +190,15 @@ class TagalysPredictiveSearch extends Component {
               inheritAlignmentElementWidth: true,
               canBindSearchSubmitActionToNearestFormElement: false,
               minimumCharactersToShowSuggestions: minChars,
+              /**
+               * Closes the modal and navigates to the search results page.
+               * @param {string} query - The submitted search query.
+               * @returns {void}
+               */
               onSearchSubmit(query) {
                 const dialogComponent = searchModal?.closest('dialog-component') || searchModal;
                 dialogComponent?.dispatchEvent?.(new CustomEvent('dialog:close'));
-                window.location.href = `/search?q=${encodeURIComponent(query || searchInput.value || '')}`;
+                window.location.href = `/search?q=${encodeURIComponent(query || searchInput?.value || '')}`;
               },
             },
           },
@@ -151,17 +208,18 @@ class TagalysPredictiveSearch extends Component {
           afterInitialRender: () => {
             if (this.#initTimeoutId) clearTimeout(this.#initTimeoutId);
             if (this.#safetyTimeoutId) clearTimeout(this.#safetyTimeoutId);
-            searchModal.dataset.searchProvider = 'tagalys';
-            const m = this.querySelector(mountSelector);
-            m?.setAttribute('aria-busy', 'false');
+            if (searchModal) searchModal.dataset.searchProvider = 'tagalys';
+            this.refs.mount?.setAttribute('aria-busy', 'false');
           },
           afterEveryRender: () => {
-            const m = this.querySelector(mountSelector);
-            m?.setAttribute('aria-busy', 'false');
+            this.refs.mount?.setAttribute('aria-busy', 'false');
           },
+          /**
+           * @param {TagalysSDKCallbackPayload} event - SDK pre-API-call event payload.
+           * @returns {TagalysSDKCallbackPayload}
+           */
           beforeAPICall: (event) => {
-            const m = this.querySelector(mountSelector);
-            m?.setAttribute('aria-busy', 'true');
+            this.refs.mount?.setAttribute('aria-busy', 'true');
             return event;
           },
           onFailedAPICall: () => {
@@ -170,10 +228,18 @@ class TagalysPredictiveSearch extends Component {
         },
       });
     } catch (error) {
-      this.#fallbackToNative(`init-threw: ${error?.message || 'unknown'}`);
+      const message = error instanceof Error ? error.message : 'unknown';
+      this.#fallbackToNative(`init-threw: ${message}`);
     }
   }
 
+  /**
+   * Tears down all pending init work and flips the search modal's provider
+   * state to `native`, which causes the native predictive flow to resume.
+   * Idempotent — subsequent calls are no-ops.
+   * @param {string} reason - Short identifier for logging.
+   * @returns {void}
+   */
   #fallbackToNative(reason) {
     if (this.#initFailed) return;
     this.#initFailed = true;
