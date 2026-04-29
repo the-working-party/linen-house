@@ -1,5 +1,7 @@
 {%- liquid
   assign carousel_collection = section.settings.collection
+  assign colour_option_names = 'color,colour,colore,farbe,couleur,cor'
+  assign colour_option_list = colour_option_names | split: ','
 -%}
 
 {% capture children %}
@@ -19,52 +21,146 @@
     </div>
 
     {%- if carousel_collection != blank -%}
-      <div class="twp-collection-carousel__scroller">
-        <ul class="twp-collection-carousel__list">
-          {%- for product in carousel_collection.products limit: 8 -%}
-            {%- liquid
-              assign badge_label = nil
-              for tag in product.tags
-                if tag contains 'badge:'
-                  assign badge_label = tag | remove_first: 'badge:'
-                  break
-                endif
-              endfor
-            -%}
-            <li class="twp-collection-carousel__item">
-              <a href="{{ product.url }}" class="twp-collection-carousel__card">
-                <div class="twp-collection-carousel__image-wrapper">
-                  {%- if product.featured_image -%}
-                    {%- assign img_alt = product.featured_image.alt | default: product.title | escape -%}
-                    {{
-                      product.featured_image
-                      | image_url: width: 800
-                      | image_tag:
-                        widths: '400, 600, 800',
-                        sizes: '(min-width: 1200px) 25vw, (min-width: 750px) 33vw, 80vw',
-                        alt: img_alt,
-                        class: 'twp-collection-carousel__image',
-                        loading: 'lazy'
-                    }}
-                  {%- else -%}
-                    <div class="twp-collection-carousel__image-placeholder"></div>
-                  {%- endif -%}
-                  {%- if badge_label != nil -%}
-                    <span class="twp-collection-carousel__badge">{{- badge_label -}}</span>
-                  {%- endif -%}
+      <div class="twp-collection-carousel__track">
+        <div class="twp-collection-carousel__scroller">
+          <ul class="twp-collection-carousel__list">
+            {%- for product in carousel_collection.products limit: 8 -%}
+              {%- liquid
+                assign badge_label = nil
+                for tag in product.tags
+                  if tag contains 'badge:'
+                    assign badge_label = tag | remove_first: 'badge:'
+                    break
+                  endif
+                endfor
+
+                assign swatch_colour_values = nil
+                for option in product.options_with_values
+                  assign option_name_lower = option.name | downcase
+                  if colour_option_list contains option_name_lower
+                    assign swatch_colour_values = option.values
+                    break
+                  endif
+                endfor
+
+                assign carousel_variant = product.selected_or_first_available_variant
+              -%}
+              <li class="twp-collection-carousel__item">
+                <div class="twp-collection-carousel__card">
+                  <div class="twp-collection-carousel__image-wrapper">
+                    <a href="{{ product.url }}" class="twp-collection-carousel__image-link" aria-label="{{ product.title | escape }}">
+                      {%- if product.featured_image -%}
+                        {%- assign img_alt = product.featured_image.alt | default: product.title | escape -%}
+                        {{
+                          product.featured_image
+                          | image_url: width: 800
+                          | image_tag:
+                            widths: '400, 600, 800',
+                            sizes: '(min-width: 1200px) 25vw, (min-width: 750px) 33vw, 80vw',
+                            alt: img_alt,
+                            class: 'twp-collection-carousel__image',
+                            loading: 'lazy'
+                        }}
+                      {%- else -%}
+                        <div class="twp-collection-carousel__image-placeholder"></div>
+                      {%- endif -%}
+                    </a>
+                    {%- if badge_label != nil -%}
+                      <span class="twp-collection-carousel__badge">{{- badge_label -}}</span>
+                    {%- endif -%}
+                    {%- if product.available -%}
+                      <div class="twp-collection-carousel__quick-add-overlay">
+                        {%- if product.variants.size == 1 -%}
+                          <product-form-component
+                            on:submit="/handleSubmit"
+                            data-product-id="{{ product.id }}"
+                            data-quantity-default="1"
+                          >
+                            <form action="{{ routes.cart_add_url }}" method="post" data-type="add-to-cart-form">
+                              <input type="hidden" name="id" value="{{ carousel_variant.id }}" ref="variantId">
+                              <input type="hidden" name="quantity" value="1">
+                              <button
+                                type="submit"
+                                class="twp-collection-carousel__quick-add-btn"
+                                aria-label="{{ 'actions.add' | t }}: {{ product.title | escape }}"
+                              >
+                                {{- 'icon-cart.svg' | inline_asset_content -}}
+                              </button>
+                              <div ref="liveRegion" class="visually-hidden" aria-live="polite" aria-atomic="true"></div>
+                            </form>
+                          </product-form-component>
+                        {%- else -%}
+                          <a
+                            href="{{ product.url }}"
+                            class="twp-collection-carousel__quick-add-btn"
+                            aria-label="{{ 'actions.choose' | t }}: {{ product.title | escape }}"
+                            tabindex="-1"
+                          >
+                            {{- 'icon-cart.svg' | inline_asset_content -}}
+                          </a>
+                        {%- endif -%}
+                      </div>
+                    {%- endif -%}
+                  </div>
+                  <div class="twp-collection-carousel__info">
+                    {%- if swatch_colour_values != blank and swatch_colour_values.size > 0 -%}
+                      {%- assign swatch_limit = 4 -%}
+                      {%- assign swatch_overflow = swatch_colour_values.size | minus: swatch_limit -%}
+                      <div class="twp-collection-carousel__swatches">
+                        {%- for value in swatch_colour_values limit: swatch_limit -%}
+                          {%- liquid
+                            assign swatch_bg = ''
+                            if value.swatch
+                              if value.swatch.image
+                                assign swatch_image_url = value.swatch.image | image_url: width: 64
+                                assign swatch_bg = 'url(' | append: swatch_image_url | append: ') center / cover'
+                              elsif value.swatch.color
+                                assign swatch_bg = value.swatch.color
+                              endif
+                            else
+                              assign swatch_handle = value | handleize
+                              assign swatch_filename = 'swatch-' | append: swatch_handle | append: '.jpg'
+                              assign swatch_asset = images[swatch_filename]
+                              if swatch_asset
+                                assign swatch_asset_url = swatch_asset | image_url: width: 64
+                                assign swatch_bg = 'url(' | append: swatch_asset_url | append: ') center / cover'
+                              else
+                                assign swatch_bg = value | handleize | replace: '-', ''
+                              endif
+                            endif
+                          -%}
+                          <span
+                            class="twp-collection-carousel__swatch"
+                            style="{%- if swatch_bg contains 'url(' -%}background: {{ swatch_bg }};{%- else -%}background-color: {{ swatch_bg }};{%- endif -%}"
+                            title="{{ value | escape }}"
+                            aria-label="{{ value | escape }}"
+                          ></span>
+                        {%- endfor -%}
+                        {%- if swatch_overflow > 0 -%}
+                          <span class="twp-collection-carousel__swatch-overflow">+{{ swatch_overflow }}</span>
+                        {%- endif -%}
+                      </div>
+                    {%- endif -%}
+                    <a href="{{ product.url }}" class="twp-collection-carousel__info-link">
+                      <span class="twp-collection-carousel__vendor">{{- product.vendor | escape -}}</span>
+                      <span class="twp-collection-carousel__title">{{- product.title | escape -}}</span>
+                      {%- if product.type != blank -%}
+                        <span class="twp-collection-carousel__type">{{- product.type | escape -}}</span>
+                      {%- endif -%}
+                      <span class="twp-collection-carousel__price">{{- product.price_min | money -}}</span>
+                    </a>
+                  </div>
                 </div>
-                <div class="twp-collection-carousel__info">
-                  <span class="twp-collection-carousel__vendor">{{- product.vendor | escape -}}</span>
-                  <span class="twp-collection-carousel__title">{{- product.title | escape -}}</span>
-                  {%- if product.type != blank -%}
-                    <span class="twp-collection-carousel__type">{{- product.type | escape -}}</span>
-                  {%- endif -%}
-                  <span class="twp-collection-carousel__price">{{- product.price_min | money -}}</span>
-                </div>
-              </a>
-            </li>
-          {%- endfor -%}
-        </ul>
+              </li>
+            {%- endfor -%}
+          </ul>
+        </div>
+        <button class="twp-collection-carousel__arrow twp-collection-carousel__arrow--prev" aria-label="Scroll left" hidden>
+          {{- 'icon-chevron-left.svg' | inline_asset_content -}}
+        </button>
+        <button class="twp-collection-carousel__arrow twp-collection-carousel__arrow--next" aria-label="Scroll right">
+          {{- 'icon-chevron-right.svg' | inline_asset_content -}}
+        </button>
       </div>
     {%- endif -%}
   </div>
@@ -114,6 +210,10 @@
     color: inherit;
   }
 
+  .twp-collection-carousel__track {
+    position: relative;
+  }
+
   .twp-collection-carousel__scroller {
     overflow-x: auto;
     scrollbar-width: none;
@@ -141,7 +241,6 @@
     display: flex;
     flex-direction: column;
     gap: var(--gap-md, 16px);
-    text-decoration: none;
     color: var(--color-foreground);
   }
 
@@ -152,11 +251,22 @@
     border-radius: var(--media-radius, 12px);
   }
 
+  .twp-collection-carousel__image-link {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
   .twp-collection-carousel__image {
     display: block;
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: transform 0.4s ease;
+  }
+
+  .twp-collection-carousel__card:hover .twp-collection-carousel__image {
+    transform: scale(1.03);
   }
 
   .twp-collection-carousel__image-placeholder {
@@ -167,11 +277,11 @@
 
   .twp-collection-carousel__badge {
     position: absolute;
-    top: 8px;
-    right: 8px;
+    top: 12px;
+    right: 12px;
     display: inline-flex;
     align-items: center;
-    height: 24px;
+    height: 32px;
     padding-inline: 12px;
     border-radius: var(--buttons-radius, 64px);
     background-color: var(--color-background-secondary);
@@ -179,12 +289,81 @@
     font-size: 0.75rem;
     line-height: 1;
     white-space: nowrap;
+    pointer-events: none;
+  }
+
+  .twp-collection-carousel__quick-add-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    padding: 12px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  .twp-collection-carousel__card:hover .twp-collection-carousel__quick-add-overlay,
+  .twp-collection-carousel__card:focus-within .twp-collection-carousel__quick-add-overlay {
+    opacity: 1;
+  }
+
+  .twp-collection-carousel__quick-add-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--buttons-radius, 64px);
+    background-color: var(--color-background);
+    border: none;
+    cursor: pointer;
+    color: var(--color-foreground);
+    text-decoration: none;
+    flex-shrink: 0;
+  }
+
+  .twp-collection-carousel__quick-add-btn svg {
+    width: 12px;
+    height: auto;
   }
 
   .twp-collection-carousel__info {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: var(--gap-md, 16px);
+  }
+
+  .twp-collection-carousel__swatches {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0;
+  }
+
+  .twp-collection-carousel__swatch {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1px solid rgb(0 0 0 / 0.15);
+    flex-shrink: 0;
+  }
+
+  .twp-collection-carousel__swatch-overflow {
+    font-size: 0.75rem;
+    color: rgb(var(--color-foreground-rgb, 0 0 0) / 0.5);
+    line-height: 20px;
+  }
+
+  .twp-collection-carousel__info-link {
+    display: flex;
+    flex-direction: column;
+    gap: var(--component-spacing, 12px);
+    text-decoration: none;
+    color: inherit;
   }
 
   .twp-collection-carousel__vendor {
@@ -193,7 +372,7 @@
   }
 
   .twp-collection-carousel__title {
-    font-size: var(--font-paragraph-large--size, 1rem);
+    font-size: var(--font-paragraph-medium--size, 0.875rem);
     color: var(--color-foreground);
     line-height: 1.4;
   }
@@ -209,6 +388,36 @@
     margin-top: 4px;
   }
 
+  .twp-collection-carousel__arrow {
+    position: absolute;
+    top: 212px;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--buttons-radius, 64px);
+    background-color: var(--color-background);
+    border: none;
+    cursor: pointer;
+    z-index: 1;
+    color: var(--color-foreground);
+  }
+
+  .twp-collection-carousel__arrow svg {
+    width: 12px;
+    height: auto;
+  }
+
+  .twp-collection-carousel__arrow--prev {
+    left: 12px;
+  }
+
+  .twp-collection-carousel__arrow--next {
+    right: 12px;
+  }
+
   @media screen and (max-width: 749px) {
     .twp-collection-carousel__item {
       flex: 0 0 calc(50% - 4px);
@@ -218,8 +427,41 @@
     .twp-collection-carousel__heading {
       font-size: var(--font-h4--size);
     }
+
+    .twp-collection-carousel__arrow {
+      display: none;
+    }
   }
 {% endstylesheet %}
+
+{% javascript %}
+  document.querySelectorAll('.twp-collection-carousel__track').forEach((track) => {
+    const scroller = track.querySelector('.twp-collection-carousel__scroller');
+    const prevBtn = track.querySelector('.twp-collection-carousel__arrow--prev');
+    const nextBtn = track.querySelector('.twp-collection-carousel__arrow--next');
+
+    function scrollAmount() {
+      const item = scroller.querySelector('.twp-collection-carousel__item');
+      return item ? (item.offsetWidth + 8) * 2 : 500;
+    }
+
+    function updateArrows() {
+      prevBtn.hidden = scroller.scrollLeft <= 0;
+      nextBtn.hidden = scroller.scrollLeft >= scroller.scrollWidth - scroller.clientWidth - 1;
+    }
+
+    prevBtn.addEventListener('click', () => {
+      scroller.scrollBy({ left: -scrollAmount(), behavior: 'smooth' });
+    });
+
+    nextBtn.addEventListener('click', () => {
+      scroller.scrollBy({ left: scrollAmount(), behavior: 'smooth' });
+    });
+
+    scroller.addEventListener('scroll', updateArrows, { passive: true });
+    updateArrows();
+  });
+{% endjavascript %}
 
 {% schema %}
 {

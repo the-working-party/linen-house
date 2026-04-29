@@ -10,6 +10,8 @@
   assign upsell_collection = block.settings.collection
   assign current_product = closest.product
   assign heading = block.settings.heading
+  assign colour_option_names = 'color,colour,colore,farbe,couleur,cor'
+  assign colour_option_list = colour_option_names | split: ','
 -%}
 
 {%- if upsell_collection != blank -%}
@@ -22,29 +24,115 @@
         <ul class="twp-product-upsell__list">
         {%- for product in upsell_collection.products limit: 8 -%}
           {%- unless product.id == current_product.id -%}
+            {%- liquid
+              assign swatch_colour_values = nil
+              for option in product.options_with_values
+                assign option_name_lower = option.name | downcase
+                if colour_option_list contains option_name_lower
+                  assign swatch_colour_values = option.values
+                  break
+                endif
+              endfor
+
+              assign upsell_variant = product.selected_or_first_available_variant
+            -%}
             <li class="twp-product-upsell__item">
-              <a href="{{ product.url }}" class="twp-product-upsell__card">
+              <div class="twp-product-upsell__card">
                 {%- if product.featured_image -%}
                   {%- assign img_alt = product.featured_image.alt | escape -%}
                   <div class="twp-product-upsell__image-wrapper">
-                    {{
-                      product.featured_image
-                      | image_url: width: 400
-                      | image_tag:
-                        widths: '200, 400',
-                        sizes: '160px',
-                        alt: img_alt,
-                        class: 'twp-product-upsell__image',
-                        loading: 'lazy'
-                    }}
+                    <a href="{{ product.url }}" class="twp-product-upsell__image-link" aria-label="{{ product.title | escape }}">
+                      {{
+                        product.featured_image
+                        | image_url: width: 400
+                        | image_tag:
+                          widths: '200, 400',
+                          sizes: '160px',
+                          alt: img_alt,
+                          class: 'twp-product-upsell__image',
+                          loading: 'lazy'
+                      }}
+                    </a>
+                    {%- if product.available -%}
+                      {%- if product.variants.size == 1 -%}
+                        <product-form-component
+                          on:submit="/handleSubmit"
+                          data-product-id="{{ product.id }}"
+                          data-quantity-default="1"
+                          class="twp-product-upsell__quick-add"
+                        >
+                          <form action="{{ routes.cart_add_url }}" method="post" data-type="add-to-cart-form">
+                            <input type="hidden" name="id" value="{{ upsell_variant.id }}" ref="variantId">
+                            <input type="hidden" name="quantity" value="1">
+                            <button
+                              type="submit"
+                              class="twp-product-upsell__quick-add-btn"
+                              aria-label="{{ 'actions.add' | t }}: {{ product.title | escape }}"
+                            >
+                              {{- 'icon-add-to-cart.svg' | inline_asset_content -}}
+                            </button>
+                            <div ref="liveRegion" class="visually-hidden" aria-live="polite" aria-atomic="true"></div>
+                          </form>
+                        </product-form-component>
+                      {%- else -%}
+                        <a
+                          href="{{ product.url }}"
+                          class="twp-product-upsell__quick-add twp-product-upsell__quick-add-btn"
+                          aria-label="{{ 'actions.choose' | t }}: {{ product.title | escape }}"
+                          tabindex="-1"
+                        >
+                          {{- 'icon-add-to-cart.svg' | inline_asset_content -}}
+                        </a>
+                      {%- endif -%}
+                    {%- endif -%}
                   </div>
                 {%- endif -%}
                 <div class="twp-product-upsell__info">
-                  <span class="twp-product-upsell__vendor">{{- product.vendor -}}</span>
-                  <span class="twp-product-upsell__title">{{- product.title -}}</span>
-                  <span class="twp-product-upsell__price">{{- product.price_min | money -}}</span>
+                  {%- if swatch_colour_values != blank and swatch_colour_values.size > 0 -%}
+                    {%- assign upsell_swatch_limit = 4 -%}
+                    {%- assign upsell_swatch_overflow = swatch_colour_values.size | minus: upsell_swatch_limit -%}
+                    <div class="twp-product-upsell__swatches">
+                      {%- for value in swatch_colour_values limit: upsell_swatch_limit -%}
+                        {%- liquid
+                          assign swatch_bg = ''
+                          if value.swatch
+                            if value.swatch.image
+                              assign swatch_image_url = value.swatch.image | image_url: width: 64
+                              assign swatch_bg = 'url(' | append: swatch_image_url | append: ') center / cover'
+                            elsif value.swatch.color
+                              assign swatch_bg = value.swatch.color
+                            endif
+                          else
+                            assign swatch_handle = value | handleize
+                            assign swatch_filename = 'swatch-' | append: swatch_handle | append: '.jpg'
+                            assign swatch_asset = images[swatch_filename]
+                            if swatch_asset
+                              assign swatch_asset_url = swatch_asset | image_url: width: 64
+                              assign swatch_bg = 'url(' | append: swatch_asset_url | append: ') center / cover'
+                            else
+                              assign swatch_bg = value | handleize | replace: '-', ''
+                            endif
+                          endif
+                        -%}
+                        <span
+                          class="twp-product-upsell__swatch"
+                          style="{%- if swatch_bg contains 'url(' -%}background: {{ swatch_bg }};{%- else -%}background-color: {{ swatch_bg }};{%- endif -%}"
+                          title="{{ value | escape }}"
+                          aria-label="{{ value | escape }}"
+                        ></span>
+                      {%- endfor -%}
+                      {%- if upsell_swatch_overflow > 0 -%}
+                        <span class="twp-product-upsell__swatch-overflow">+{{ upsell_swatch_overflow }}</span>
+                      {%- endif -%}
+                    </div>
+                  {%- endif -%}
+                  <a href="{{ product.url }}" class="twp-product-upsell__info-link">
+                    <span class="twp-product-upsell__vendor">{{- product.vendor -}}</span>
+                    <span class="twp-product-upsell__title">{{- product.title -}}</span>
+                    <span class="twp-product-upsell__price">{{- product.price_min | money -}}</span>
+                  </a>
                 </div>
-              </a>
+              </div>
             </li>
           {%- endunless -%}
         {%- endfor -%}
@@ -96,15 +184,21 @@
     gap: 12px;
     width: 160px;
     flex-shrink: 0;
-    text-decoration: none;
     color: var(--color-foreground);
   }
 
   .twp-product-upsell__image-wrapper {
+    position: relative;
     aspect-ratio: 3 / 4;
     overflow: hidden;
     border-radius: var(--media-radius, 12px);
     width: 160px;
+  }
+
+  .twp-product-upsell__image-link {
+    display: block;
+    width: 100%;
+    height: 100%;
   }
 
   .twp-product-upsell__image {
@@ -112,12 +206,80 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: transform 0.4s ease;
+  }
+
+  .twp-product-upsell__card:hover .twp-product-upsell__image {
+    transform: scale(1.03);
+  }
+
+  .twp-product-upsell__quick-add {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  .twp-product-upsell__card:hover .twp-product-upsell__quick-add,
+  .twp-product-upsell__card:focus-within .twp-product-upsell__quick-add {
+    opacity: 1;
+  }
+
+  .twp-product-upsell__quick-add-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: var(--color-background);
+    border: none;
+    cursor: pointer;
+    color: var(--color-foreground);
+    text-decoration: none;
+  }
+
+  .twp-product-upsell__quick-add-btn svg {
+    width: 16px;
+    height: auto;
   }
 
   .twp-product-upsell__info {
     display: flex;
     flex-direction: column;
     gap: 4px;
+  }
+
+  .twp-product-upsell__swatches {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 4px;
+  }
+
+  .twp-product-upsell__swatch {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 1px solid rgb(0 0 0 / 0.15);
+    flex-shrink: 0;
+  }
+
+  .twp-product-upsell__swatch-overflow {
+    font-size: 0.75rem;
+    color: rgb(var(--color-foreground-rgb, 0 0 0) / 0.5);
+    line-height: 16px;
+  }
+
+  .twp-product-upsell__info-link {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    text-decoration: none;
+    color: inherit;
   }
 
   .twp-product-upsell__vendor {
@@ -148,18 +310,19 @@
 
   .twp-product-upsell__arrow {
     position: absolute;
-    top: 50%;
+    top: 35%;
     transform: translateY(-50%);
     display: flex;
     align-items: center;
     justify-content: center;
     width: 32px;
     height: 32px;
-    border-radius: var(--buttons-radius, 64px);
+    border-radius: 50%;
     background-color: var(--color-background);
-    border: 1px solid var(--color-border, rgba(0,0,0,0.1));
+    border: 1px solid var(--color-border, rgba(0, 0, 0, 0.1));
     cursor: pointer;
     z-index: 1;
+    color: var(--color-foreground);
   }
 
   .twp-product-upsell__arrow svg {
