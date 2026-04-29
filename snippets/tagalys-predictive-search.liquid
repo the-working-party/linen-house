@@ -40,33 +40,40 @@
       aria-busy="false"
     ></div>
   </tagalys-predictive-search>
-
-  {% stylesheet %}
-    /* Tagalys predictive search visibility gate.
-       Search modal carries data-search-provider on the dialog-component:
-         "loading" — hide both until Tagalys SDK ready or timeout
-         "tagalys" — show Tagalys mount, hide native results
-         "native"  — show native results, hide Tagalys mount (default fallback) */
-    .search-modal[data-search-provider='loading'] .predictive-search-form__content,
-    .search-modal[data-search-provider='loading'] .tagalys-predictive-search__results {
-      visibility: hidden;
-    }
-
-    .search-modal[data-search-provider='tagalys'] .predictive-search-form__content {
-      display: none;
-    }
-
-    .search-modal[data-search-provider='native'] tagalys-predictive-search,
-    .search-modal:not([data-search-provider]) tagalys-predictive-search {
-      display: none;
-    }
-
-    tagalys-predictive-search {
-      display: block;
-    }
-
-    .tagalys-predictive-search__results {
-      min-height: 1px;
-    }
-  {% endstylesheet %}
 {%- endif -%}
+
+{%- comment -%}
+  The {% stylesheet %} tag must be at the top level of the snippet — Shopify's
+  parser rejects it nested inside {% if %}. Shopify deduplicates stylesheet
+  contents in <head>, so emitting them unconditionally costs nothing when
+  Tagalys is disabled. The selectors target `.search-modal[data-search-provider="..."]`
+  which only exists when Tagalys is on, so the rules are no-ops on Aura Home.
+{%- endcomment -%}
+{% stylesheet %}
+  /* Tagalys predictive search visibility gate.
+     Search modal carries data-search-provider on the dialog-component:
+       "loading" — hide both until Tagalys SDK ready or timeout
+       "tagalys" — show Tagalys mount, hide native results
+       "native"  — show native results, hide Tagalys mount (default fallback) */
+  .search-modal[data-search-provider='loading'] .predictive-search-form__content,
+  .search-modal[data-search-provider='loading'] .tagalys-predictive-search__results {
+    visibility: hidden;
+  }
+
+  .search-modal[data-search-provider='tagalys'] .predictive-search-form__content {
+    display: none;
+  }
+
+  .search-modal[data-search-provider='native'] tagalys-predictive-search,
+  .search-modal:not([data-search-provider]) tagalys-predictive-search {
+    display: none;
+  }
+
+  tagalys-predictive-search {
+    display: block;
+  }
+
+  .tagalys-predictive-search__results {
+    min-height: 1px;
+  }
+{% endstylesheet %}
