@@ -10,12 +10,12 @@
     id: 'media-gallery',
     closest.product: closest.product
   -%}
-{% endcapture %}
-
-{% capture product_details %}
   {%- if request.page_type == 'product' and product != blank -%}
     {%- render 'twp-product-breadcrumb', product: product -%}
   {%- endif -%}
+{% endcapture %}
+
+{% capture product_details %}
   {% content_for 'block',
     type: '_product-details',
     id: 'product-details',
@@ -41,6 +41,8 @@
     data-current-variant-id="{{ current_variant.id }}"
     data-initial-quantity="{{ initial_quantity }}"
     data-default-variant-title="{{ 'products.product.default_title' | t }}"
+    data-colour-option-index="{{ sticky_colour_option_index | default: '' }}"
+    data-size-option-index="{{ sticky_size_option_index | default: '' }}"
   >
     <div
       class="sticky-add-to-cart__bar color-{{ settings.popover_color_scheme }}"
@@ -84,6 +86,69 @@
           else
             assign has_image = true
           endif
+
+          # Detect colour and non-colour option indices for split variant display
+          assign sticky_colour_option_names = 'color,colour,colore,farbe,couleur,cor'
+          assign sticky_colour_option_list = sticky_colour_option_names | split: ','
+          assign sticky_colour_option_index = nil
+          assign sticky_colour_option_obj = nil
+          assign sticky_size_option_index = nil
+
+          for opt in product.options_with_values
+            assign opt_name_lower = opt.name | downcase
+            if sticky_colour_option_list contains opt_name_lower
+              assign sticky_colour_option_index = forloop.index0
+              assign sticky_colour_option_obj = opt
+            else
+              if sticky_size_option_index == nil
+                assign sticky_size_option_index = forloop.index0
+              endif
+            endif
+          endfor
+
+          assign sticky_colour_name = ''
+          assign sticky_colour_swatch_bg = ''
+          assign sticky_size_name = ''
+
+          if sticky_colour_option_index != nil and current_variant != blank
+            assign sticky_colour_name = current_variant.options[sticky_colour_option_index]
+            if sticky_colour_option_obj != nil
+              for value in sticky_colour_option_obj.values
+                if value.name == sticky_colour_name
+                  if value.swatch
+                    if value.swatch.image
+                      assign _swatch_url = value.swatch.image | image_url: width: 64
+                      assign sticky_colour_swatch_bg = 'url(' | append: _swatch_url | append: ') center / cover'
+                    elsif value.swatch.color
+                      assign sticky_colour_swatch_bg = value.swatch.color
+                    endif
+                  else
+                    assign _swatch_handle = value | handleize
+                    assign _swatch_filename = 'swatch-' | append: _swatch_handle | append: '.jpg'
+                    assign _swatch_asset = images[_swatch_filename]
+                    if _swatch_asset
+                      assign _swatch_asset_url = _swatch_asset | image_url: width: 64
+                      assign sticky_colour_swatch_bg = 'url(' | append: _swatch_asset_url | append: ') center / cover'
+                    else
+                      assign sticky_colour_swatch_bg = value | handleize | replace: '-', ''
+                    endif
+                  endif
+                  break
+                endif
+              endfor
+            endif
+          endif
+
+          if sticky_size_option_index != nil and current_variant != blank
+            assign sticky_size_name = current_variant.options[sticky_size_option_index]
+          endif
+
+          assign has_split_display = false
+          if product.has_only_default_variant != true
+            if sticky_colour_option_index != nil or sticky_size_option_index != nil
+              assign has_split_display = true
+            endif
+          endif
         %}
         <div
           class="sticky-add-to-cart__info"
@@ -97,20 +162,39 @@
           >
             {{ product.title | escape }}
           </p>
-          <div
-            class="sticky-add-to-cart__variant"
-            data-testid="sticky-variant-title"
-            {% if product.has_only_default_variant %}
+          {%- unless product.has_only_default_variant -%}
+            {%- comment -%} Hidden element kept for Horizon JS compatibility (variant unavailable handler) {%- endcomment -%}
+            <div
+              class="sticky-add-to-cart__variant"
+              data-testid="sticky-variant-title"
+              aria-hidden="true"
               style="display: none;"
-            {% endif %}
-          >
-            {% unless product.has_only_default_variant %}
-              {% if current_variant != blank %}
-                {% assign variant_title = current_variant.title | escape %}
-              {% endif %}
-              {{ variant_title }}
-            {% endunless %}
-          </div>
+            >
+              {%- if current_variant != blank -%}
+                {{- current_variant.title | escape -}}
+              {%- endif -%}
+            </div>
+            {%- if has_split_display -%}
+              {%- if sticky_colour_option_index != nil and sticky_colour_name != blank -%}
+                <div class="sticky-add-to-cart__variant-colour">
+                  <span
+                    class="sticky-add-to-cart__variant-swatch"
+                    style="--swatch-inner-bg: {%- if sticky_colour_swatch_bg contains 'url(' -%}{{ sticky_colour_swatch_bg }}{%- elsif sticky_colour_swatch_bg != blank -%}{{ sticky_colour_swatch_bg }}{%- endif -%};"
+                    aria-hidden="true"
+                  ></span>
+                  <span class="sticky-add-to-cart__variant-colour-name">{{- sticky_colour_name | escape -}}</span>
+                </div>
+              {%- endif -%}
+              {%- if sticky_size_option_index != nil and sticky_size_name != blank -%}
+                <span class="sticky-add-to-cart__variant-size">{{- sticky_size_name | escape -}}</span>
+              {%- endif -%}
+            {%- else -%}
+              {%- comment -%} Fallback for products without detectable colour/size options {%- endcomment -%}
+              {%- if current_variant != blank -%}
+                <span class="sticky-add-to-cart__variant-fallback">{{- current_variant.title | escape -}}</span>
+              {%- endif -%}
+            {%- endif -%}
+          {%- endunless -%}
         </div>
 
         <div
@@ -289,6 +373,44 @@
     margin-top: var(--margin-3xs);
   }
 
+  .sticky-add-to-cart__variant-colour {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    margin-top: var(--margin-3xs);
+  }
+
+  .sticky-add-to-cart__variant-swatch {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: var(--buttons-radius, 64px);
+    border: 1px solid var(--color-foreground);
+    padding: 4px;
+    flex-shrink: 0;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+
+  .sticky-add-to-cart__variant-swatch::after {
+    content: '';
+    flex: 1;
+    height: 100%;
+    border-radius: var(--buttons-radius, 64px);
+    background: var(--swatch-inner-bg);
+  }
+
+  .sticky-add-to-cart__variant-colour-name,
+  .sticky-add-to-cart__variant-size,
+  .sticky-add-to-cart__variant-fallback {
+    font-size: var(--font-paragraph-small--size);
+    color: var(--color-foreground);
+    white-space: nowrap;
+  }
+
   .sticky-add-to-cart__price {
     font-weight: var(--font-weight-semibold);
   }
@@ -351,6 +473,15 @@
       white-space: nowrap;
     }
 
+    .sticky-add-to-cart__variant-colour {
+      margin-top: 0;
+    }
+
+    .sticky-add-to-cart__variant-size,
+    .sticky-add-to-cart__variant-fallback {
+      margin-top: 0;
+    }
+
     .sticky-add-to-cart__button {
       width: 100%;
       padding: var(--padding-lg);
@@ -370,6 +501,64 @@
     }
   }
 {% endstylesheet %}
+
+{% javascript %}
+  // Sync the split colour/size display when Horizon JS updates the hidden variant element
+  // (occurs when the selected variant combination is unavailable)
+  (function () {
+    const COLOUR_OPTION_NAMES = ['color', 'colour', 'colore', 'farbe', 'couleur', 'cor'];
+
+    function getSwatchBgFromPicker(variantPicker, colourOptionIndex) {
+      const checkedInputs = Array.from(variantPicker.querySelectorAll('input:checked'));
+      const colourInput = checkedInputs[colourOptionIndex];
+      if (!colourInput) return null;
+      const swatchSpan = colourInput.closest('label')?.querySelector('.swatch');
+      if (!swatchSpan) return null;
+      return swatchSpan.style.getPropertyValue('--swatch-background').trim() || null;
+    }
+
+    function syncStickyVariant(stickyEl) {
+      const variantEl = stickyEl.querySelector('.sticky-add-to-cart__variant');
+      if (!variantEl) return;
+
+      const colourNameEl = stickyEl.querySelector('.sticky-add-to-cart__variant-colour-name');
+      const sizeEl = stickyEl.querySelector('.sticky-add-to-cart__variant-size');
+      const swatchEl = stickyEl.querySelector('.sticky-add-to-cart__variant-swatch');
+      if (!colourNameEl && !sizeEl) return;
+
+      const title = variantEl.textContent.trim();
+      if (!title) return;
+
+      const parts = title.split(' / ');
+      const colourIdx = parseInt(stickyEl.dataset.colourOptionIndex || '0');
+      const sizeIdx = parseInt(stickyEl.dataset.sizeOptionIndex || '1');
+
+      if (colourNameEl && parts[colourIdx] !== undefined) colourNameEl.textContent = parts[colourIdx];
+      if (sizeEl && parts[sizeIdx] !== undefined) sizeEl.textContent = parts[sizeIdx];
+
+      if (swatchEl) {
+        const variantPicker = document.querySelector(
+          `variant-picker[data-product-id="${stickyEl.dataset.productId}"]`
+        );
+        if (variantPicker) {
+          const bg = getSwatchBgFromPicker(variantPicker, colourIdx);
+          if (bg) swatchEl.style.setProperty('--swatch-inner-bg', bg);
+        }
+      }
+    }
+
+    document.querySelectorAll('sticky-add-to-cart').forEach((stickyEl) => {
+      const variantEl = stickyEl.querySelector('.sticky-add-to-cart__variant');
+      if (!variantEl) return;
+
+      new MutationObserver(() => syncStickyVariant(stickyEl)).observe(variantEl, {
+        childList: true,
+        characterData: true,
+        subtree: true,
+      });
+    });
+  })();
+{% endjavascript %}
 
 {% schema %}
 {

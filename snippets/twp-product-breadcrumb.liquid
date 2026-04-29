@@ -44,7 +44,7 @@
 {% stylesheet %}
   .twp-product-breadcrumb {
     position: absolute;
-    left: var(--page-margin, 32px);
+    left: 32px;
     top: 30px;
     z-index: 2;
   }
@@ -84,10 +84,7 @@
 
   @media screen and (max-width: 749px) {
     .twp-product-breadcrumb {
-      position: static;
-      grid-column: 1 / -1;
-      padding-inline: var(--page-margin, 16px);
-      margin-bottom: 4px;
+      display: none;
     }
   }
 {% endstylesheet %}

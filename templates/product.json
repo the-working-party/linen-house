@@ -25,7 +25,7 @@
             "thumbnail_position": "right",
             "thumbnail_width": 44,
             "aspect_ratio": "adapt",
-            "constrain_to_viewport": true,
+            "constrain_to_viewport": false,
             "media_fit": "contain",
             "media_radius": 12,
             "extend_media": false,
@@ -255,13 +255,13 @@
             "usps_twp": {
               "type": "twp-product-usps",
               "settings": {
-                "usp_1_icon": "leaf",
+                "usp_1_icon": "linen-house-cotton",
                 "usp_1_label": "100% Cotton",
-                "usp_2_icon": "heart",
+                "usp_2_icon": "linen-house-heart",
                 "usp_2_label": "Designed in Australia",
-                "usp_3_icon": "star",
+                "usp_3_icon": "linen-house-feather",
                 "usp_3_label": "Crafted for Comfort",
-                "usp_4_icon": "snowflake",
+                "usp_4_icon": "linen-house-sleep",
                 "usp_4_label": "Ideal for Sleep"
               },
               "blocks": {}
@@ -269,9 +269,9 @@
             "accordion_twp": {
               "type": "accordion",
               "settings": {
-                "dividers": true,
+                "dividers": false,
                 "icon": "plus",
-                "type_preset": "body",
+                "type_preset": "paragraph",
                 "inherit_color_scheme": true,
                 "color_scheme": "",
                 "border": "none",
@@ -299,7 +299,7 @@
                       "settings": {
                         "text": "<p>{{ closest.product.description }}</p>",
                         "width": "100%",
-                        "max_width": "normal",
+                        "max_width": "none",
                         "alignment": "left",
                         "type_preset": "rte",
                         "font": "var(--font-body--family)",

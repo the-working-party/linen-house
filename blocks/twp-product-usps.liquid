@@ -15,12 +15,16 @@
   {%- for label in usp_labels -%}
     {%- if label != blank -%}
       <li class="twp-product-usps__item">
-        {%- render 'icon-or-image',
-          icon: usp_icons[forloop.index0],
-          image_upload: blank,
-          width: 16,
-          class_name: 'twp-product-usps__icon'
+        {%- liquid
+          assign icon_name = usp_icons[forloop.index0]
+          assign icon_file = 'icon-' | append: icon_name | append: '.svg'
+          assign icon_svg = icon_file | inline_asset_content
         -%}
+        {%- if icon_svg != blank -%}
+          <span class="twp-product-usps__icon" aria-hidden="true">{{ icon_svg }}</span>
+        {%- elsif icon_name != 'none' -%}
+          {%- render 'icon-or-image', icon: icon_name, image_upload: blank, width: 12, class_name: 'twp-product-usps__icon' -%}
+        {%- endif -%}
         <span class="twp-product-usps__label">{{- label -}}</span>
       </li>
     {%- endif -%}
@@ -31,7 +35,8 @@
   .twp-product-usps {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 12px;
+    row-gap: 16px;
+    column-gap: 12px;
     list-style: none;
     margin: 0;
     padding: 0;
@@ -40,15 +45,15 @@
   .twp-product-usps__item {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
     font-size: 0.875rem;
     color: var(--color-foreground);
   }
 
   .twp-product-usps__icon {
     flex-shrink: 0;
-    width: 16px;
-    height: 16px;
+    width: 12px;
+    height: 12px;
     color: var(--color-foreground);
   }
 {% endstylesheet %}
@@ -68,6 +73,10 @@
       "label": "Icon",
       "options": [
         { "value": "none", "label": "None" },
+        { "value": "linen-house-cotton", "label": "Cotton (LH)" },
+        { "value": "linen-house-heart", "label": "Heart (LH)" },
+        { "value": "linen-house-feather", "label": "Feather (LH)" },
+        { "value": "linen-house-sleep", "label": "Sleep (LH)" },
         { "value": "leaf", "label": "Leaf" },
         { "value": "heart", "label": "Heart" },
         { "value": "star", "label": "Star" },
@@ -85,7 +94,7 @@
         { "value": "map_pin", "label": "Map pin" },
         { "value": "snowflake", "label": "Snowflake" }
       ],
-      "default": "leaf"
+      "default": "linen-house-cotton"
     },
     {
       "type": "text",
@@ -103,6 +112,10 @@
       "label": "Icon",
       "options": [
         { "value": "none", "label": "None" },
+        { "value": "linen-house-cotton", "label": "Cotton (LH)" },
+        { "value": "linen-house-heart", "label": "Heart (LH)" },
+        { "value": "linen-house-feather", "label": "Feather (LH)" },
+        { "value": "linen-house-sleep", "label": "Sleep (LH)" },
         { "value": "leaf", "label": "Leaf" },
         { "value": "heart", "label": "Heart" },
         { "value": "star", "label": "Star" },
@@ -120,7 +133,7 @@
         { "value": "map_pin", "label": "Map pin" },
         { "value": "snowflake", "label": "Snowflake" }
       ],
-      "default": "heart"
+      "default": "linen-house-heart"
     },
     {
       "type": "text",
@@ -138,6 +151,10 @@
       "label": "Icon",
       "options": [
         { "value": "none", "label": "None" },
+        { "value": "linen-house-cotton", "label": "Cotton (LH)" },
+        { "value": "linen-house-heart", "label": "Heart (LH)" },
+        { "value": "linen-house-feather", "label": "Feather (LH)" },
+        { "value": "linen-house-sleep", "label": "Sleep (LH)" },
         { "value": "leaf", "label": "Leaf" },
         { "value": "heart", "label": "Heart" },
         { "value": "star", "label": "Star" },
@@ -155,7 +172,7 @@
         { "value": "map_pin", "label": "Map pin" },
         { "value": "snowflake", "label": "Snowflake" }
       ],
-      "default": "star"
+      "default": "linen-house-feather"
     },
     {
       "type": "text",
@@ -173,6 +190,10 @@
       "label": "Icon",
       "options": [
         { "value": "none", "label": "None" },
+        { "value": "linen-house-cotton", "label": "Cotton (LH)" },
+        { "value": "linen-house-heart", "label": "Heart (LH)" },
+        { "value": "linen-house-feather", "label": "Feather (LH)" },
+        { "value": "linen-house-sleep", "label": "Sleep (LH)" },
         { "value": "leaf", "label": "Leaf" },
         { "value": "heart", "label": "Heart" },
         { "value": "star", "label": "Star" },
@@ -190,7 +211,7 @@
         { "value": "map_pin", "label": "Map pin" },
         { "value": "snowflake", "label": "Snowflake" }
       ],
-      "default": "snowflake"
+      "default": "linen-house-sleep"
     },
     {
       "type": "text",
