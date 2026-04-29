@@ -40,7 +40,7 @@ jobs:
             https://github.com/the-working-party/twp-plugin-marketplace.git
           plugins: |
             shopify-theme-development@the-working-party-plugins
-            compound-engineering@every-marketplace
+            compound-engineering@compound-engineering-plugin
           prompt: |
             Review PR #${{ github.event.pull_request.number }} in this Shopify Horizon theme.
 
