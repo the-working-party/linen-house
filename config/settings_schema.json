@@ -2589,68 +2589,68 @@
       {
         "type": "checkbox",
         "id": "tagalys_enabled",
-        "label": "Enable Tagalys",
+        "label": "t:settings.tagalys_enabled",
         "default": false,
-        "info": "Master switch for all Tagalys functionality. When disabled, all features fall back to Shopify native behaviour."
+        "info": "t:info.tagalys_enabled"
       },
       {
         "type": "text",
         "id": "tagalys_sdk_url",
-        "label": "SDK URL",
+        "label": "t:settings.tagalys_sdk_url",
         "default": "https://storage.googleapis.com/tagalys-public-assets/tagalys-ui-widgets-3.0.8.min.js",
-        "info": "Tagalys UI Widgets SDK URL. Update when upgrading SDK versions."
+        "info": "t:info.tagalys_sdk_url"
       },
       {
         "type": "text",
         "id": "tagalys_server_url",
-        "label": "API Server URL",
-        "info": "Provided by Tagalys (e.g. https://api-r2.tagalys.com)"
+        "label": "t:settings.tagalys_server_url",
+        "info": "t:info.tagalys_server_url"
       },
       {
         "type": "text",
         "id": "tagalys_client_code",
-        "label": "Client Code",
-        "info": "Provided by Tagalys"
+        "label": "t:settings.tagalys_client_code",
+        "info": "t:info.tagalys_client_code"
       },
       {
         "type": "text",
         "id": "tagalys_api_key",
-        "label": "API Key",
-        "info": "Provided by Tagalys"
+        "label": "t:settings.tagalys_api_key",
+        "info": "t:info.tagalys_api_key"
       },
       {
         "type": "text",
         "id": "tagalys_store_id",
-        "label": "Store ID",
-        "info": "Provided by Tagalys"
+        "label": "t:settings.tagalys_store_id",
+        "info": "t:info.tagalys_store_id"
       },
       {
         "type": "text",
         "id": "tagalys_storefront_access_token",
-        "label": "Shopify Storefront API Access Token",
-        "info": "From a Shopify Custom App. Required for multi-currency and product tile rendering."
+        "label": "t:settings.tagalys_storefront_access_token",
+        "info": "t:info.tagalys_storefront_access_token"
       },
       {
         "type": "header",
-        "content": "Search"
+        "content": "t:content.search"
       },
       {
         "type": "checkbox",
         "id": "tagalys_search_enabled",
-        "label": "Enable Tagalys Search",
+        "label": "t:settings.tagalys_search_enabled",
         "default": false,
-        "info": "Replace Shopify native search with Tagalys-powered search results."
+        "info": "t:info.tagalys_search_enabled"
       },
       {
         "type": "text",
         "id": "tagalys_no_results_widget_id",
-        "label": "No Results Widget ID",
-        "info": "Smart widget ID to display when search returns no results."
+        "label": "t:settings.tagalys_no_results_widget_id",
+        "info": "t:info.tagalys_no_results_widget_id"
       },
       {
         "type": "range",
         "id": "tagalys_no_results_limit",
-        "label": "No Results Widget Product Limit",
+        "label": "t:settings.tagalys_no_results_limit",
         "min": 4,
         "max": 16,
         "step": 1,
@@ -2659,97 +2659,97 @@
       {
         "type": "checkbox",
         "id": "tagalys_predictive_search_enabled",
-        "label": "Enable Tagalys Predictive Search",
+        "label": "t:settings.tagalys_predictive_search_enabled",
         "default": false,
-        "info": "Replace native predictive search dropdown with Tagalys instant search. Falls back to native if SDK fails to load."
+        "info": "t:info.tagalys_predictive_search_enabled"
       },
       {
         "type": "range",
         "id": "tagalys_predictive_min_chars",
-        "label": "Predictive Search Minimum Characters",
+        "label": "t:settings.tagalys_predictive_min_chars",
         "min": 1,
         "max": 5,
         "step": 1,
         "default": 2,
-        "info": "Number of characters typed before predictive results appear."
+        "info": "t:info.tagalys_predictive_min_chars"
       },
       {
         "type": "header",
-        "content": "Collections"
+        "content": "t:content.tagalys_collections"
       },
       {
         "type": "select",
         "id": "tagalys_collections_mode",
-        "label": "Collection Rendering Mode",
+        "label": "t:settings.tagalys_collections_mode",
         "options": [
           {
             "value": "native",
-            "label": "Native (Shopify sort order)"
+            "label": "t:options.tagalys_native"
           },
           {
             "value": "api",
-            "label": "API (Tagalys SDK rendering)"
+            "label": "t:options.tagalys_api"
           }
         ],
         "default": "native",
-        "info": "Native: Tagalys pushes sort orders server-side. API: SDK renders collections with filters/pagination."
+        "info": "t:info.tagalys_collections_mode"
       },
       {
         "type": "header",
-        "content": "A/B Testing"
+        "content": "t:content.tagalys_ab_testing"
       },
       {
         "type": "checkbox",
         "id": "tagalys_ab_testing_enabled",
-        "label": "Enable A/B Testing",
+        "label": "t:settings.tagalys_ab_testing_enabled",
         "default": false,
-        "info": "Enables Tagalys collection A/B testing with redirect-based traffic splitting."
+        "info": "t:info.tagalys_ab_testing_enabled"
       },
       {
         "type": "text",
         "id": "tagalys_ab_testing_namespace",
-        "label": "Tagalys Metafield Namespace",
+        "label": "t:settings.tagalys_ab_testing_namespace",
         "default": "app--3369055--tagalys",
-        "info": "Metafield namespace used by the Tagalys app. Only change if instructed by Tagalys support."
+        "info": "t:info.tagalys_ab_testing_namespace"
       },
       {
         "type": "header",
-        "content": "Markets"
+        "content": "t:content.tagalys_markets"
       },
       {
         "type": "checkbox",
         "id": "tagalys_markets_enabled",
-        "label": "Enable Multi-Market Support",
+        "label": "t:settings.tagalys_markets_enabled",
         "default": false,
-        "info": "Loads market translations script and configures currency/locale from Shopify Markets."
+        "info": "t:info.tagalys_markets_enabled"
       },
       {
         "type": "header",
-        "content": "Recommendations"
+        "content": "t:content.tagalys_recommendations_header"
       },
       {
         "type": "checkbox",
         "id": "tagalys_cart_upsell_enabled",
-        "label": "Enable In-Cart Upsell",
+        "label": "t:settings.tagalys_cart_upsell_enabled",
         "default": false,
-        "info": "Show Tagalys recommendation widget in the cart."
+        "info": "t:info.tagalys_cart_upsell_enabled"
       },
       {
         "type": "select",
         "id": "tagalys_cart_upsell_widget_type",
-        "label": "Cart Upsell Widget Type",
+        "label": "t:settings.tagalys_cart_upsell_widget_type",
         "options": [
           {
             "value": "bought_also_bought",
-            "label": "Bought Also Bought"
+            "label": "t:options.tagalys_bought_also_bought"
           },
           {
             "value": "smart_widget",
-            "label": "Smart Widget"
+            "label": "t:options.tagalys_smart_widget"
           },
           {
             "value": "recommendations",
-            "label": "Recommendations"
+            "label": "t:options.tagalys_recommendations"
           }
         ],
         "default": "bought_also_bought"
@@ -2757,13 +2757,13 @@
       {
         "type": "text",
         "id": "tagalys_cart_upsell_widget_id",
-        "label": "Cart Upsell Widget ID",
-        "info": "Required for Smart Widget and Recommendations types. Found in the Tagalys dashboard."
+        "label": "t:settings.tagalys_cart_upsell_widget_id",
+        "info": "t:info.tagalys_cart_upsell_widget_id"
       },
       {
         "type": "range",
         "id": "tagalys_cart_upsell_limit",
-        "label": "Cart Upsell Product Limit",
+        "label": "t:settings.tagalys_cart_upsell_limit",
         "min": 4,
         "max": 12,
         "step": 1,

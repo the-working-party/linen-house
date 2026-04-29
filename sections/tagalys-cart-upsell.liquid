@@ -100,33 +100,33 @@
 
 {% schema %}
 {
-  "name": "Tagalys Cart Upsell",
+  "name": "t:names.tagalys_cart_upsell",
   "class": "section-wrapper tagalys-cart-upsell-section",
   "settings": [
     {
       "type": "text",
       "id": "heading",
-      "label": "Heading",
+      "label": "t:settings.heading",
       "default": "You may also like"
     },
     {
       "type": "range",
       "id": "product_limit",
-      "label": "Product Limit",
+      "label": "t:settings.tagalys_product_limit",
       "min": 4,
       "max": 12,
       "step": 1,
       "default": 4,
-      "info": "Overrides the global cart upsell limit for this instance."
+      "info": "t:info.tagalys_section_product_limit_override"
     },
     {
       "type": "paragraph",
-      "content": "Widget type and ID are configured in Theme Settings > Tagalys Integration > Recommendations."
+      "content": "t:content.tagalys_cart_upsell_paragraph"
     }
   ],
   "presets": [
     {
-      "name": "Tagalys Cart Upsell"
+      "name": "t:names.tagalys_cart_upsell"
     }
   ],
   "enabled_on": {
