@@ -1,0 +1,33 @@
+{%- doc -%}
+  Tagalys Search Results Widget container.
+
+  Renders a Tagalys-powered search results container for the /search page.
+  The Tagalys SDK auto-detects the search query from the URL and populates
+  the data-tagalys-widget container with results.
+
+  This snippet is a conditional include — wrap the theme's existing search
+  markup with `{% if settings.tagalys_enabled and settings.tagalys_search_enabled %}`.
+
+  Outputs nothing when either setting is false.
+
+  @param {number} [page_size] - Optional override for the products-per-page limit (defaults to settings.tagalys_no_results_limit)
+
+  @example
+  {% if settings.tagalys_enabled and settings.tagalys_search_enabled %}
+    {% render 'tagalys-search', page_size: 24 %}
+  {% else %}
+    {% comment %} ...native search markup... {% endcomment %}
+  {% endif %}
+{%- enddoc -%}
+
+{%- if settings.tagalys_enabled and settings.tagalys_search_enabled -%}
+  <div
+    class="tagalys-search-results"
+    data-tagalys-widget="search-results"
+    data-limit="{{ page_size | default: 24 }}"
+    {%- if settings.tagalys_no_results_widget_id != blank -%}
+      data-no-results-widget="{{ settings.tagalys_no_results_widget_id }}"
+      data-no-results-widget-limit="{{ settings.tagalys_no_results_limit | default: 8 }}"
+    {%- endif -%}
+  ></div>
+{%- endif -%}

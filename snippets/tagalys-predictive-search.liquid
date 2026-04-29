@@ -1,0 +1,72 @@
+{%- doc -%}
+  Tagalys Predictive Search mount.
+
+  Renders a sibling container next to Horizon's native predictive-search
+  results inside the search modal. Outputs nothing when Tagalys or
+  predictive search is disabled — meaning the search modal falls back
+  to the native predictive flow.
+
+  The `<tagalys-predictive-search>` web component (assets/tagalys-predictive-search.js)
+  initialises `Tagalys.UIWidgets.ShopifySearchSuggestions` once on first input
+  and binds it to the modal's existing `<input ref="searchInput">`. On SDK
+  ready or 2-second timeout it flips `data-search-provider` on the search
+  modal element to swap between Tagalys and native results via the CSS
+  gate below.
+
+  @example
+  {% render 'tagalys-predictive-search' %}
+{%- enddoc -%}
+
+{%- if settings.tagalys_enabled and settings.tagalys_predictive_search_enabled -%}
+  <script
+    src="{{ 'tagalys-predictive-search.js' | asset_url }}"
+    type="module"
+    fetchpriority="low"
+  ></script>
+
+  <tagalys-predictive-search
+    class="tagalys-predictive-search"
+    data-search-input-selector="#cmdk-input"
+    data-min-chars="{{ settings.tagalys_predictive_min_chars | default: 2 }}"
+    data-init-timeout-ms="2000"
+    role="region"
+    aria-label="{{ 'content.search' | t }}"
+  >
+    <div
+      class="tagalys-predictive-search__results"
+      data-tagalys-predictive-mount
+      role="listbox"
+      aria-live="polite"
+      aria-busy="false"
+    ></div>
+  </tagalys-predictive-search>
+
+  {% stylesheet %}
+    /* Tagalys predictive search visibility gate.
+       Search modal carries data-search-provider on the dialog-component:
+         "loading" — hide both until Tagalys SDK ready or timeout
+         "tagalys" — show Tagalys mount, hide native results
+         "native"  — show native results, hide Tagalys mount (default fallback) */
+    .search-modal[data-search-provider='loading'] .predictive-search-form__content,
+    .search-modal[data-search-provider='loading'] .tagalys-predictive-search__results {
+      visibility: hidden;
+    }
+
+    .search-modal[data-search-provider='tagalys'] .predictive-search-form__content {
+      display: none;
+    }
+
+    .search-modal[data-search-provider='native'] tagalys-predictive-search,
+    .search-modal:not([data-search-provider]) tagalys-predictive-search {
+      display: none;
+    }
+
+    tagalys-predictive-search {
+      display: block;
+    }
+
+    .tagalys-predictive-search__results {
+      min-height: 1px;
+    }
+  {% endstylesheet %}
+{%- endif -%}

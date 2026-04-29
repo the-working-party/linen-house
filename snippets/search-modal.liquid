@@ -16,9 +16,24 @@
   fetchpriority="low"
 ></script>
 
+{%- comment -%}
+  data-search-provider state machine for the Tagalys predictive search hijack:
+    - SET HERE (Liquid) to "loading" when both tagalys_enabled and
+      tagalys_predictive_search_enabled are true. Otherwise unset, and the
+      native predictive component handles input as today.
+    - WRITTEN by `assets/tagalys-predictive-search.js` (the Tagalys mount
+      Component) which flips it to "tagalys" on SDK afterInitialRender, or
+      to "native" on init failure / 2s timeout / safety timeout.
+    - READ by `assets/predictive-search.js` (#search method) to bail when
+      Tagalys is the active provider, and by the CSS gate in
+      `snippets/tagalys-predictive-search.liquid` to show/hide the right pane.
+{%- endcomment -%}
 <dialog-component
   id="search-modal"
   class="search-modal"
+  {%- if settings.tagalys_enabled and settings.tagalys_predictive_search_enabled -%}
+    data-search-provider="loading"
+  {%- endif -%}
   {{ block.shopify_attributes }}
 >
   <dialog
@@ -121,6 +136,9 @@
               products_test_id: 'products-list-default--modal'
             %}
           </div>
+
+          {%- comment -%} Tagalys predictive-search mount (sibling) — hidden by CSS unless data-search-provider="tagalys" on the search modal {%- endcomment -%}
+          {% render 'tagalys-predictive-search' %}
 
           <div class="predictive-search-form__footer">
             <button

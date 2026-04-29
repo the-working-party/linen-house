@@ -1,9 +1,30 @@
+{% comment %}
+  Resolve the Tagalys A/B variant primary collection so the heading reflects
+  the primary collection's identity (title, description, image, breadcrumb)
+  on variant URLs. Inlined here because Liquid `{% render %}` scope is
+  isolated — variables assigned inside a snippet do not propagate back to
+  the caller, so the snippets/tagalys-primary-collection.liquid pattern
+  (which only does {%- liquid assign primary_collection = ... -%}) cannot
+  set the variable in this section's scope. The snippet remains as
+  documentation/reference but is not used here.
+{% endcomment %}
 {%- liquid
-  assign title_image = closest.collection.metafields.custom.title_image
-  assign collection_title = closest.collection.title
-  assign pre_title = closest.collection.metafields.custom.pre_title.value
-  assign description = closest.collection.description
-  assign collection_image = closest.collection.image
+  assign heading_collection = closest.collection
+
+  if settings.tagalys_enabled and settings.tagalys_ab_testing_enabled and request.page_type == 'collection'
+    assign tagalys_app_namespace = settings.tagalys_ab_testing_namespace | default: 'app--3369055--tagalys'
+    if collection.metafields[tagalys_app_namespace].a_b_test_configuration
+      assign heading_collection = collection
+    elsif collection.metafields[tagalys_app_namespace].a_b_test_primary_variant
+      assign heading_collection = collection.metafields[tagalys_app_namespace].a_b_test_primary_variant.value
+    endif
+  endif
+
+  assign title_image = heading_collection.metafields.custom.title_image
+  assign collection_title = heading_collection.title
+  assign pre_title = heading_collection.metafields.custom.pre_title.value
+  assign description = heading_collection.description
+  assign collection_image = heading_collection.image
 
   assign has_collection_image = false
   if section.settings.show_image and collection_image
@@ -60,7 +81,7 @@
 
 {% render 'section', section: section, children: children %}
 
-{% if section.settings.show_breadcrumb and closest.collection %}
+{% if section.settings.show_breadcrumb and heading_collection %}
   <nav
     class="twp-collection-breadcrumb color-{{ section.settings.color_scheme }}{% if has_collection_image %} twp-collection-breadcrumb--has-media{% endif %}{% if section.settings.content_direction == 'row' %} twp-collection-breadcrumb--split{% endif %}"
     aria-label="{{ 'accessibility.breadcrumb' | t }}"
@@ -73,7 +94,7 @@
         <span class="twp-collection-breadcrumb__separator" aria-hidden="true">
           {{- 'icon-chevron-right.svg' | inline_asset_content -}}
         </span>
-        <span aria-current="page">{{ closest.collection.title }}</span>
+        <span aria-current="page">{{ heading_collection.title }}</span>
       </li>
     </ol>
   </nav>

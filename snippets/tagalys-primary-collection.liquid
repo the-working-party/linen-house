@@ -1,0 +1,45 @@
+{%- doc -%}
+  Tagalys Primary Collection Resolver — REFERENCE ONLY.
+
+  This snippet is intentionally retained but unreferenced (theme-check
+  flags as OrphanedSnippet — accepted as documented intent).
+
+  ⚠ Liquid `{% render %}` scope is isolated. Variables assigned inside this
+  snippet DO NOT propagate back to the calling scope, so this snippet's
+  intended cross-scope output pattern from the upstream tagalys-starter
+  pack does not work in current Liquid.
+
+  Inline the resolution logic in the calling section instead. See
+  `sections/twp-collection-heading.liquid` for the canonical inline
+  pattern. This snippet is preserved for reference and to keep the
+  starter file map intact for upstream sync.
+
+  @example
+  {%- comment -%} Inline this logic in your section instead of {% render %}-ing this file {%- endcomment -%}
+{%- enddoc -%}
+
+{% # theme-check-disable UnusedAssign %}
+{%- comment -%}
+  This snippet's only output is the `primary_collection` variable assigned
+  for use in the calling scope (theme-check can't see cross-scope usage).
+{%- endcomment -%}
+{%- liquid
+  if settings.tagalys_enabled and settings.tagalys_ab_testing_enabled
+    assign tagalys_app_namespace = settings.tagalys_ab_testing_namespace | default: 'app--3369055--tagalys'
+
+    if request.page_type == 'collection'
+      if collection.metafields[tagalys_app_namespace].a_b_test_configuration
+        assign primary_collection = collection
+      elsif collection.metafields[tagalys_app_namespace].a_b_test_primary_variant
+        assign primary_collection = collection.metafields[tagalys_app_namespace].a_b_test_primary_variant.value
+      else
+        assign primary_collection = collection
+      endif
+    else
+      assign primary_collection = collection
+    endif
+  else
+    assign primary_collection = collection
+  endif
+-%}
+{% # theme-check-enable UnusedAssign %}

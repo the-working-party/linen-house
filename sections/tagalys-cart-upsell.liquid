@@ -1,0 +1,136 @@
+{%- comment -%}
+  Tagalys Cart Upsell Section.
+
+  In-cart cross-sell / upsell widget. Place via the theme editor on the cart
+  template (the `enabled_on` schema restricts placement). The cart's existing
+  `{% content_for 'blocks' %}` zone in `sections/main-cart.liquid` is the
+  intended drop point; no template JSON edits required.
+
+  The inline script reads cart items, passes product IDs into the Tagalys
+  widget's `productId` config, and re-initialises the widget on each render.
+
+  Outputs nothing when Tagalys or cart upsell is disabled.
+{%- endcomment -%}
+
+{%- if settings.tagalys_enabled and settings.tagalys_cart_upsell_enabled and cart.item_count > 0 -%}
+  {%- liquid
+    assign heading = section.settings.heading | default: 'You may also like'
+    assign widget_type = settings.tagalys_cart_upsell_widget_type
+    assign widget_id = settings.tagalys_cart_upsell_widget_id
+    assign product_limit = section.settings.product_limit | default: settings.tagalys_cart_upsell_limit
+
+    case widget_type
+      when 'bought_also_bought'
+        assign tagalys_widget_name = 'BoughtAlsoBought'
+      when 'smart_widget'
+        assign tagalys_widget_name = 'SmartWidget'
+      when 'recommendations'
+        assign tagalys_widget_name = 'Recommendations'
+    endcase
+
+    assign cart_product_ids = ''
+    for item in cart.items
+      if cart_product_ids != ''
+        assign cart_product_ids = cart_product_ids | append: ','
+      endif
+      assign cart_product_ids = cart_product_ids | append: item.product_id
+    endfor
+  -%}
+
+  <div
+    class="tagalys-cart-upsell"
+    data-section-id="{{ section.id }}"
+    data-tagalys-cart-upsell="{{ section.id }}"
+    data-widget-type="{{ tagalys_widget_name }}"
+    data-widget-id="{{ widget_id }}"
+    data-product-ids="{{ cart_product_ids }}"
+    data-limit="{{ product_limit }}"
+    data-heading="{{ heading | escape }}"
+  ></div>
+
+  {%- comment -%} ADAPT: cart_drawer_init — for JS-rendered cart drawers, run this IIFE in the drawer's open callback or via a MutationObserver instead of on page load. AJAX cart updates also do not re-fire this script — recommendations stay frozen at initial render until full reload. {%- endcomment -%}
+  <script>
+    (function() {
+      var sectionId = {{ section.id | json }};
+      var sectionSelector = '[data-tagalys-cart-upsell="' + sectionId + '"]';
+      var container = document.querySelector(sectionSelector);
+      if (!container) return;
+
+      var widgetType = container.getAttribute('data-widget-type');
+      var widgetId = container.getAttribute('data-widget-id');
+      var productIds = container.getAttribute('data-product-ids');
+      var limit = parseInt(container.getAttribute('data-limit'), 10) || 4;
+      var heading = container.getAttribute('data-heading') || 'You may also like';
+
+      if ((widgetType === 'SmartWidget' || widgetType === 'Recommendations') && !widgetId) return;
+
+      // Guard against onTagalysReady being undefined when the SDK config snippet
+      // bails (credentials blank). Theme remains functional; widget no-ops.
+      if (typeof onTagalysReady !== 'function') return;
+
+      onTagalysReady(function() {
+        if (!window.Tagalys || !window.Tagalys.UIWidgets || !window.Tagalys.UIWidgets[widgetType]) return;
+
+        var config = {
+          templates: {
+            widget: {
+              labels: { heading: heading },
+              options: { limit: limit }
+            }
+          }
+        };
+
+        if (widgetId) {
+          if (widgetType === 'Recommendations') {
+            config.recommendationId = widgetId;
+          } else {
+            config.widgetId = widgetId;
+          }
+        }
+
+        if (widgetType !== 'SmartWidget' && productIds) {
+          config.productId = productIds.split(',').slice(0, 3).join(',');
+        }
+
+        window.Tagalys.UIWidgets[widgetType].init(sectionSelector, config);
+      });
+    })();
+  </script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Tagalys Cart Upsell",
+  "class": "section-wrapper tagalys-cart-upsell-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "You may also like"
+    },
+    {
+      "type": "range",
+      "id": "product_limit",
+      "label": "Product Limit",
+      "min": 4,
+      "max": 12,
+      "step": 1,
+      "default": 4,
+      "info": "Overrides the global cart upsell limit for this instance."
+    },
+    {
+      "type": "paragraph",
+      "content": "Widget type and ID are configured in Theme Settings > Tagalys Integration > Recommendations."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Tagalys Cart Upsell"
+    }
+  ],
+  "enabled_on": {
+    "templates": ["cart"]
+  }
+}
+{% endschema %}

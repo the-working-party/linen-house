@@ -2582,5 +2582,193 @@
         "default": "linen-house"
       }
     ]
+  },
+  {
+    "name": "t:names.tagalys",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "tagalys_enabled",
+        "label": "Enable Tagalys",
+        "default": false,
+        "info": "Master switch for all Tagalys functionality. When disabled, all features fall back to Shopify native behaviour."
+      },
+      {
+        "type": "text",
+        "id": "tagalys_sdk_url",
+        "label": "SDK URL",
+        "default": "https://storage.googleapis.com/tagalys-public-assets/tagalys-ui-widgets-3.0.8.min.js",
+        "info": "Tagalys UI Widgets SDK URL. Update when upgrading SDK versions."
+      },
+      {
+        "type": "text",
+        "id": "tagalys_server_url",
+        "label": "API Server URL",
+        "info": "Provided by Tagalys (e.g. https://api-r2.tagalys.com)"
+      },
+      {
+        "type": "text",
+        "id": "tagalys_client_code",
+        "label": "Client Code",
+        "info": "Provided by Tagalys"
+      },
+      {
+        "type": "text",
+        "id": "tagalys_api_key",
+        "label": "API Key",
+        "info": "Provided by Tagalys"
+      },
+      {
+        "type": "text",
+        "id": "tagalys_store_id",
+        "label": "Store ID",
+        "info": "Provided by Tagalys"
+      },
+      {
+        "type": "text",
+        "id": "tagalys_storefront_access_token",
+        "label": "Shopify Storefront API Access Token",
+        "info": "From a Shopify Custom App. Required for multi-currency and product tile rendering."
+      },
+      {
+        "type": "header",
+        "content": "Search"
+      },
+      {
+        "type": "checkbox",
+        "id": "tagalys_search_enabled",
+        "label": "Enable Tagalys Search",
+        "default": false,
+        "info": "Replace Shopify native search with Tagalys-powered search results."
+      },
+      {
+        "type": "text",
+        "id": "tagalys_no_results_widget_id",
+        "label": "No Results Widget ID",
+        "info": "Smart widget ID to display when search returns no results."
+      },
+      {
+        "type": "range",
+        "id": "tagalys_no_results_limit",
+        "label": "No Results Widget Product Limit",
+        "min": 4,
+        "max": 16,
+        "step": 1,
+        "default": 8
+      },
+      {
+        "type": "checkbox",
+        "id": "tagalys_predictive_search_enabled",
+        "label": "Enable Tagalys Predictive Search",
+        "default": false,
+        "info": "Replace native predictive search dropdown with Tagalys instant search. Falls back to native if SDK fails to load."
+      },
+      {
+        "type": "range",
+        "id": "tagalys_predictive_min_chars",
+        "label": "Predictive Search Minimum Characters",
+        "min": 1,
+        "max": 5,
+        "step": 1,
+        "default": 2,
+        "info": "Number of characters typed before predictive results appear."
+      },
+      {
+        "type": "header",
+        "content": "Collections"
+      },
+      {
+        "type": "select",
+        "id": "tagalys_collections_mode",
+        "label": "Collection Rendering Mode",
+        "options": [
+          {
+            "value": "native",
+            "label": "Native (Shopify sort order)"
+          },
+          {
+            "value": "api",
+            "label": "API (Tagalys SDK rendering)"
+          }
+        ],
+        "default": "native",
+        "info": "Native: Tagalys pushes sort orders server-side. API: SDK renders collections with filters/pagination."
+      },
+      {
+        "type": "header",
+        "content": "A/B Testing"
+      },
+      {
+        "type": "checkbox",
+        "id": "tagalys_ab_testing_enabled",
+        "label": "Enable A/B Testing",
+        "default": false,
+        "info": "Enables Tagalys collection A/B testing with redirect-based traffic splitting."
+      },
+      {
+        "type": "text",
+        "id": "tagalys_ab_testing_namespace",
+        "label": "Tagalys Metafield Namespace",
+        "default": "app--3369055--tagalys",
+        "info": "Metafield namespace used by the Tagalys app. Only change if instructed by Tagalys support."
+      },
+      {
+        "type": "header",
+        "content": "Markets"
+      },
+      {
+        "type": "checkbox",
+        "id": "tagalys_markets_enabled",
+        "label": "Enable Multi-Market Support",
+        "default": false,
+        "info": "Loads market translations script and configures currency/locale from Shopify Markets."
+      },
+      {
+        "type": "header",
+        "content": "Recommendations"
+      },
+      {
+        "type": "checkbox",
+        "id": "tagalys_cart_upsell_enabled",
+        "label": "Enable In-Cart Upsell",
+        "default": false,
+        "info": "Show Tagalys recommendation widget in the cart."
+      },
+      {
+        "type": "select",
+        "id": "tagalys_cart_upsell_widget_type",
+        "label": "Cart Upsell Widget Type",
+        "options": [
+          {
+            "value": "bought_also_bought",
+            "label": "Bought Also Bought"
+          },
+          {
+            "value": "smart_widget",
+            "label": "Smart Widget"
+          },
+          {
+            "value": "recommendations",
+            "label": "Recommendations"
+          }
+        ],
+        "default": "bought_also_bought"
+      },
+      {
+        "type": "text",
+        "id": "tagalys_cart_upsell_widget_id",
+        "label": "Cart Upsell Widget ID",
+        "info": "Required for Smart Widget and Recommendations types. Found in the Tagalys dashboard."
+      },
+      {
+        "type": "range",
+        "id": "tagalys_cart_upsell_limit",
+        "label": "Cart Upsell Product Limit",
+        "min": 4,
+        "max": 12,
+        "step": 1,
+        "default": 4
+      }
+    ]
   }
 ]

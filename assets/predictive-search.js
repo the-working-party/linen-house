@@ -284,6 +284,15 @@ class PredictiveSearchComponent extends Component {
     // If the input is not a text input (like using the Escape key), don't search
     if (!event.inputType) return;
 
+    // Tagalys predictive-search hijack: when the search modal is in
+    // "tagalys" provider mode, skip the native fetch entirely — the Tagalys
+    // SDK has bound to the same input and renders into its own sibling
+    // container. We still process resetSearch on empty input so the
+    // reset button hides correctly.
+    const searchModal = this.closest('.search-modal') || this.closest('dialog-component');
+    const provider = searchModal?.dataset?.searchProvider;
+    const tagalysActive = provider === 'tagalys' || provider === 'loading';
+
     const searchTerm = this.refs.searchInput.value.trim();
     this.#currentIndex = -1;
 
@@ -293,6 +302,9 @@ class PredictiveSearchComponent extends Component {
     }
 
     this.#showResetButton();
+
+    if (tagalysActive) return;
+
     this.#getSearchResults(searchTerm);
   }, 200);
 
@@ -383,6 +395,13 @@ class PredictiveSearchComponent extends Component {
     this.#currentIndex = -1;
     searchInput.value = '';
     this.#hideResetButton();
+
+    // Short-circuit when Tagalys is the active provider — the empty-state
+    // markup would morph into a hidden container (CSS gate hides native
+    // results when provider="tagalys"), wasting a Section Rendering API
+    // request on every input clear.
+    const searchModal = this.closest('.search-modal') || this.closest('dialog-component');
+    if (searchModal?.dataset?.searchProvider === 'tagalys') return;
 
     const abortController = this.#createAbortController();
     const url = new URL(window.location.href);

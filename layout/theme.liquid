@@ -6,6 +6,9 @@
   lang="{{ request.locale.iso_code }}"
 >
   <head>
+    {%- comment -%} Tagalys A/B testing redirect script — must load synchronously to prevent FOUC of variant collections before the redirect fires. Outputs nothing when disabled. {%- endcomment -%}
+    {% render 'tagalys-ab-testing', call: 'script' %}
+
     {%- if settings.favicon != blank -%}
       <link
         rel="icon"
@@ -26,6 +29,9 @@
     {% endif %}
 
     {%- render 'meta-tags' -%}
+    {%- comment -%} Tagalys-aware canonical (rewrites variant collections to primary; standard canonical when Tagalys A/B is off). Replaces meta-tags' canonical when settings.tagalys_enabled and settings.tagalys_ab_testing_enabled are both true. {%- endcomment -%}
+    {% render 'tagalys-ab-testing', call: 'canonical_url' %}
+    {%- render 'tagalys-config' -%}
     {%- render 'stylesheets' -%}
     {%- render 'fonts' -%}
     {%- render 'scripts' -%}
@@ -137,5 +143,7 @@
     {% if settings.quick_add or settings.mobile_quick_add %}
       {% render 'quick-add-modal' %}
     {% endif %}
+
+    {% render 'tagalys-analytics' %}
   </body>
 </html>

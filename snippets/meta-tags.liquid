@@ -114,10 +114,13 @@
   {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
 </title>
 
-<link
-  rel="canonical"
-  href="{{ canonical_url }}"
->
+{%- comment -%}
+  Canonical URL is emitted by `snippets/tagalys-ab-testing.liquid`
+  (call: 'canonical_url') from `layout/theme.liquid` for all states:
+  - Tagalys + A/B both on: rewrites variant collection URL to primary.
+  - All other states: emits the standard canonical_url.
+  Do not re-emit here.
+{%- endcomment -%}
 
 {% if page_description %}
   <meta

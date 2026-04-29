@@ -1,0 +1,21 @@
+# Liquid files — DO NOT format with prettier.
+# @shopify/prettier-plugin-liquid is installed but corrupts Shopify themes:
+# collapses {% liquid %} blocks, reformats {% schema %} JSON, breaks
+# {% style %} whitespace, causing Shopify CLI to reject pushes.
+# See ~/business/claude-code-kb/learnings/prettier-liquid-corruption.md
+**/*.liquid
+
+# Auto-generated theme JSON files (shopify admin owns these)
+config/settings_data.json
+templates/*.json
+sections/*.json
+
+# Lockfiles and build output
+pnpm-lock.yaml
+node_modules/
+
+# Tokens and Figma exports — formatted by upstream tooling
+tokens/figma-variables.json
+tokens/aura-home-variables.json
+tokens/figma-variables-cache.json
+.figma-horizon/
