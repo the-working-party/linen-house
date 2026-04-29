@@ -17,7 +17,13 @@
   {% render 'tagalys-predictive-search' %}
 {%- enddoc -%}
 
-{%- if settings.tagalys_enabled and settings.tagalys_predictive_search_enabled -%}
+{%- if settings.tagalys_enabled
+  and settings.tagalys_predictive_search_enabled
+  and settings.tagalys_server_url != blank
+  and settings.tagalys_client_code != blank
+  and settings.tagalys_api_key != blank
+  and settings.tagalys_store_id != blank
+-%}
   <script
     src="{{ 'tagalys-predictive-search.js' | asset_url }}"
     type="module"

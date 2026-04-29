@@ -29,7 +29,17 @@
 -%}
 
 <div class="tagalys-recommendations-section" data-section-id="{{ section.id }}">
-  {%- if settings.tagalys_enabled -%}
+  {%- liquid
+    assign tagalys_active = false
+    if settings.tagalys_enabled
+      and settings.tagalys_server_url != blank
+      and settings.tagalys_client_code != blank
+      and settings.tagalys_api_key != blank
+      and settings.tagalys_store_id != blank
+      assign tagalys_active = true
+    endif
+  -%}
+  {%- if tagalys_active -%}
     {%- if heading != blank -%}
       <h2 class="tagalys-recommendations__heading">{{ heading }}</h2>
     {%- endif -%}

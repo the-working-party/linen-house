@@ -31,7 +31,13 @@
 <dialog-component
   id="search-modal"
   class="search-modal"
-  {%- if settings.tagalys_enabled and settings.tagalys_predictive_search_enabled -%}
+  {%- if settings.tagalys_enabled
+    and settings.tagalys_predictive_search_enabled
+    and settings.tagalys_server_url != blank
+    and settings.tagalys_client_code != blank
+    and settings.tagalys_api_key != blank
+    and settings.tagalys_store_id != blank
+  -%}
     data-search-provider="loading"
   {%- endif -%}
   {{ block.shopify_attributes }}

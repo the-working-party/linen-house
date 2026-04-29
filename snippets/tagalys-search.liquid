@@ -20,7 +20,19 @@
   {% endif %}
 {%- enddoc -%}
 
-{%- if settings.tagalys_enabled and settings.tagalys_search_enabled -%}
+{%- comment -%}
+  Gate on credentials too — `tagalys-config.liquid` only loads the SDK when
+  all five required fields are non-blank, so rendering this mount when
+  credentials are missing would leave an empty container with no widget
+  to populate it (broken search page). Mirror the SDK gate here.
+{%- endcomment -%}
+{%- if settings.tagalys_enabled
+  and settings.tagalys_search_enabled
+  and settings.tagalys_server_url != blank
+  and settings.tagalys_client_code != blank
+  and settings.tagalys_api_key != blank
+  and settings.tagalys_store_id != blank
+-%}
   <div
     class="tagalys-search-results"
     data-tagalys-widget="search-results"

@@ -25,7 +25,14 @@
       {% assign products_per_page = section.settings.products_per_page %}
     {% endif %}
 
-    {% if settings.tagalys_enabled and settings.tagalys_search_enabled %}
+    {%- comment -%} Same credential gate as `snippets/tagalys-search.liquid` — when credentials are blank, the SDK never loads, so we must fall through to native to avoid an empty mount. {%- endcomment -%}
+    {% if settings.tagalys_enabled
+      and settings.tagalys_search_enabled
+      and settings.tagalys_server_url != blank
+      and settings.tagalys_client_code != blank
+      and settings.tagalys_api_key != blank
+      and settings.tagalys_store_id != blank
+    %}
       {% render 'tagalys-search', page_size: products_per_page %}
     {% else %}
       {% paginate search.results by products_per_page %}
