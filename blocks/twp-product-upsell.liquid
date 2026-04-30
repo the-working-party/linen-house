@@ -129,7 +129,17 @@
                   <a href="{{ product.url }}" class="twp-product-upsell__info-link">
                     <span class="twp-product-upsell__vendor">{{- product.vendor -}}</span>
                     <span class="twp-product-upsell__title">{{- product.title -}}</span>
-                    <span class="twp-product-upsell__price">{{- product.price_min | money -}}</span>
+                    {%- if product.type != blank -%}
+                      <span class="twp-product-upsell__type">{{- product.type -}}</span>
+                    {%- endif -%}
+                    <span class="twp-product-upsell__price">
+                      {%- assign upsell_price = product.price_min | money -%}
+                      {%- if product.price_varies -%}
+                        {{- 'accessibility.price_from' | t: price: upsell_price -}}
+                      {%- else -%}
+                        {{- upsell_price -}}
+                      {%- endif -%}
+                    </span>
                   </a>
                 </div>
               </div>
@@ -150,6 +160,10 @@
 {%- endif -%}
 
 {% stylesheet %}
+  .twp-product-upsell {
+    width: 100%;
+  }
+
   .twp-product-upsell__heading {
     margin: 0 0 16px;
     font-size: var(--font-paragraph-large--size, 1rem);
@@ -158,6 +172,7 @@
 
   .twp-product-upsell__scroll-container {
     position: relative;
+    min-width: 0;
   }
 
   .twp-product-upsell__scroller {
@@ -181,7 +196,7 @@
   .twp-product-upsell__card {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 16px;
     width: 160px;
     flex-shrink: 0;
     color: var(--color-foreground);
@@ -248,7 +263,7 @@
   .twp-product-upsell__info {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 12px;
   }
 
   .twp-product-upsell__swatches {
@@ -261,8 +276,8 @@
 
   .twp-product-upsell__swatch {
     display: inline-block;
-    width: 16px;
-    height: 16px;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
     border: 1px solid rgb(0 0 0 / 0.15);
     flex-shrink: 0;
@@ -283,19 +298,24 @@
   }
 
   .twp-product-upsell__vendor {
-    font-size: 0.75rem;
-    color: rgb(var(--color-foreground-rgb) / var(--opacity-subdued-text, 0.65));
+    font-size: var(--paragraph-small, 0.75rem);
+    color: var(--text-secondary, #333);
   }
 
   .twp-product-upsell__title {
     font-size: var(--font-paragraph-large--size, 1rem);
     color: var(--color-foreground);
-    line-height: 1.4;
+    line-height: 1.5;
+  }
+
+  .twp-product-upsell__type {
+    font-size: var(--paragraph-small, 0.75rem);
+    color: var(--text-secondary, #333);
   }
 
   .twp-product-upsell__price {
-    font-size: 0.75rem;
-    color: rgb(var(--color-foreground-rgb) / var(--opacity-subdued-text, 0.65));
+    font-size: var(--paragraph-small, 0.75rem);
+    color: var(--text-secondary, #333);
   }
 
   .twp-product-upsell__gradient {
@@ -336,6 +356,12 @@
 
   .twp-product-upsell__arrow--next {
     right: 8px;
+  }
+
+  @media screen and (max-width: 749px) {
+    .twp-product-upsell__arrow {
+      display: none;
+    }
   }
 {% endstylesheet %}
 
