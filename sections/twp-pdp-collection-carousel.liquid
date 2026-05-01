@@ -210,6 +210,10 @@
     color: inherit;
   }
 
+  .twp-collection-carousel {
+    overflow: hidden;
+  }
+
   .twp-collection-carousel__track {
     position: relative;
   }
@@ -218,6 +222,8 @@
     overflow-x: auto;
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
+    width: 100%;
+    min-width: 0;
   }
 
   .twp-collection-carousel__scroller::-webkit-scrollbar {
@@ -420,8 +426,8 @@
 
   @media screen and (max-width: 749px) {
     .twp-collection-carousel__item {
-      flex: 0 0 calc(50% - 4px);
-      min-width: 140px;
+      flex: 0 0 159px;
+      min-width: 0;
     }
 
     .twp-collection-carousel__heading {
