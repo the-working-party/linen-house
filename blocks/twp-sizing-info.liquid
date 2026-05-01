@@ -1,0 +1,23 @@
+{% doc %}
+  Renders sizing information from the product's size_guide metafield.
+  Reads: product.metafields.custom.size_guide (multi_line_text_field)
+  Renders nothing if the metafield is not set.
+
+  @example
+  {% content_for 'block', type: 'twp-sizing-info', id: 'sizing' %}
+{% enddoc %}
+
+{%- assign sizing = closest.product.metafields.custom.size_guide -%}
+
+{%- if sizing != blank -%}
+  <div class="twp-sizing-info rte" {{ block.shopify_attributes }}>
+    <p>{{ sizing | newline_to_br }}</p>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Sizing info",
+  "tag": null
+}
+{% endschema %}

@@ -29,7 +29,7 @@
   endif
 
   assign product_material = product.metafields.custom.material
-  assign product_care = product.metafields.custom.care_instructions
+  assign product_care = product.metafields.custom.care_instructions.value
 -%}
 
 <script type="application/ld+json">
@@ -84,7 +84,7 @@
     {
       "@type": "PropertyValue",
       "name": "Care Instructions",
-      "value": {{ product_care | json }}
+      "value": {{ product_care.label | json }}
     }
   ]
   {%- endif -%}
