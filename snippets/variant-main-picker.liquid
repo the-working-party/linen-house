@@ -9,6 +9,11 @@
 
 {% assign block_settings = block.settings %}
 
+{% liquid
+  assign size_option_names = 'size,größe,taille,tamaño,maat,misura,taglia'
+  assign size_option_list = size_option_names | split: ','
+%}
+
 {% unless product_resource.has_only_default_variant %}
   {% liquid
     assign button_background_brightness = section.settings.color_scheme.settings.foreground | color_brightness
@@ -53,6 +58,12 @@
             assign option_id_attribute = 'data-option-id="' | append: fieldset_id | append: '"'
             assign longest_value = 0
           endif
+
+          assign opt_name_lower = product_option.name | downcase
+          assign show_size_guide = false
+          if size_guide_page != blank and size_option_list contains opt_name_lower
+            assign show_size_guide = true
+          endif
         -%}
 
         {%- if product_option.values.size == 1 and variant_style != 'swatch' -%}
@@ -71,7 +82,7 @@
         {%- elsif variant_style == 'swatch' or block_settings.variant_style == 'buttons' -%}
           {%- assign fieldset_index = forloop.index0 -%}
           <fieldset
-            class="variant-option variant-option--buttons{% if variant_style == 'swatch' %} variant-option--swatches{% else %} variant-option--{{ settings.variant_button_width }}{% endif %}"
+            class="variant-option variant-option--buttons{% if variant_style == 'swatch' %} variant-option--swatches{% else %} variant-option--{{ settings.variant_button_width }}{% endif %}{% if show_size_guide %} variant-option--has-size-guide{% endif %}"
             data-fieldset-index="{{ fieldset_index }}"
             ref="fieldsets[]"
             {{ option_id_attribute }}
@@ -81,6 +92,18 @@
               {%- if variant_style == 'swatch' -%}
                 <span class="variant-option__swatch-value">{{ product_option.selected_value }}</span>
               {%- endif %}
+              {%- if show_size_guide -%}
+                <button
+                  type="button"
+                  class="twp-size-guide__trigger button-unstyled"
+                  data-dialog-target="twp-size-guide-component"
+                >
+                  {{- 'products.size_guide.label' | t -}}
+                  <span class="twp-size-guide__trigger-icon" aria-hidden="true">
+                    {{- 'icon-linen-house-ruler.svg' | inline_asset_content -}}
+                  </span>
+                </button>
+              {%- endif -%}
             </legend>
             {%- for product_option_value in product_option.values -%}
               {% if product_option_value.size > longest_value and option_id_attribute %}
@@ -309,4 +332,42 @@
     text-align: right;
     justify-content: right;
   }
+
+  .variant-option--has-size-guide legend {
+    display: flex;
+    align-items: center;
+    width: 100%;
+  }
+
+  .twp-size-guide__trigger {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: var(--font-paragraph-small--size, 0.875rem);
+    font-weight: 500;
+    letter-spacing: 0.2px;
+    color: var(--color-foreground);
+    cursor: pointer;
+    flex-shrink: 0;
+    text-decoration: none;
+  }
+
+  .twp-size-guide__trigger-icon svg {
+    width: 12px;
+    height: 12px;
+    color: inherit;
+  }
 {% endstylesheet %}
+
+{% javascript %}
+  document.querySelectorAll('[data-dialog-target]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      document.getElementById(btn.dataset.dialogTarget)?.showDialog();
+    });
+  });
+{% endjavascript %}
+
+{%- if size_guide_page != blank -%}
+  {%- render 'twp-size-guide-modal', size_guide_page: size_guide_page -%}
+{%- endif -%}

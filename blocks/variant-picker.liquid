@@ -8,7 +8,12 @@
 -%}
 
 {% unless product_resource == blank %}
-  {% render 'variant-main-picker', product_resource: product_resource, section: section, product: product %}
+  {% render 'variant-main-picker',
+    product_resource: product_resource,
+    section: section,
+    product: product,
+    size_guide_page: block.settings.size_guide_page
+  %}
 {% endunless %}
 
 {% schema %}
@@ -51,6 +56,16 @@
       "id": "alignment",
       "label": "t:settings.alignment",
       "default": "left"
+    },
+    {
+      "type": "header",
+      "content": "Size guide"
+    },
+    {
+      "type": "page",
+      "id": "size_guide_page",
+      "label": "Size guide page",
+      "info": "Page containing the size measurements table."
     },
     {
       "type": "header",
