@@ -4,6 +4,10 @@
   {{ closest.product | structured_data }}
 </script>
 
+{%- if request.page_type == 'product' and product != blank -%}
+  {%- render 'twp-product-schema', product: product -%}
+{%- endif -%}
+
 {% capture media_gallery %}
   {%- content_for 'block',
     type: '_product-media-gallery',
