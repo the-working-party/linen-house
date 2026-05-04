@@ -57,9 +57,9 @@
     list-style: none;
     margin: 0;
     padding: 0;
-    font-size: 0.625rem;
+    font-size: var(--navigation-extra-small);
     line-height: 1;
-    letter-spacing: 0.02em;
+    letter-spacing: var(--navigation-letter-spacing);
   }
 
   .twp-product-breadcrumb__item {
@@ -84,7 +84,8 @@
 
   @media screen and (max-width: 749px) {
     .twp-product-breadcrumb {
-      display: none;
+      position: static;
+      padding: var(--section-margin) var(--section-margin) 0;
     }
   }
 {% endstylesheet %}

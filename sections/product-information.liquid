@@ -448,6 +448,25 @@
       width: 100%;
     }
   }
+
+  @media screen and (max-width: 749px) {
+    .product-information {
+      row-gap: 0;
+    }
+
+    .product-information .product-information__grid {
+      grid-template-columns: var(--section-margin) 1fr var(--section-margin);
+    }
+
+    .product-information .media-gallery.sticky-content {
+      position: static;
+      top: auto;
+    }
+
+    .product-information .media-gallery--hint :not(.dialog-zoomed-gallery) > .product-media-container:not(:only-child) {
+      width: calc(100% - 55px);
+    }
+  }
 {% endstylesheet %}
 
 {% javascript %}
