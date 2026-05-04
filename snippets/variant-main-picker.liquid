@@ -100,7 +100,8 @@
                 >
                   {{- 'products.size_guide.label' | t -}}
                   <span class="twp-size-guide__trigger-icon" aria-hidden="true">
-                    {{- 'icon-linen-house-ruler.svg' | inline_asset_content -}}
+                    {%- assign ruler_icon = 'icon-' | append: settings.brand | append: '-ruler.svg' -%}
+                    {{- ruler_icon | inline_asset_content -}}
                   </span>
                 </button>
               {%- endif -%}
