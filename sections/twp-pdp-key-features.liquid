@@ -47,7 +47,7 @@
   .twp-key-features__left {
     display: flex;
     flex-direction: column;
-    flex: 0 0 30%;
+    flex: 0 0 342px;
   }
 
   .twp-key-features__heading {
@@ -62,9 +62,12 @@
 
   .twp-key-features__body {
     margin-top: var(--section-margin);
-    font-size: var(--font-paragraph--size, 0.875rem);
+    font-family: var(--font-body--family);
+    font-size: var(--font-size--paragraph);
+    font-weight: var(--paragraph-weight);
     line-height: 1.5;
-    color: var(--color-foreground);
+    letter-spacing: var(--paragraph-spacing);
+    color: var(--text-default);
   }
 
   .twp-key-features__button {
@@ -73,12 +76,12 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    height: var(--height-buy-buttons, 40px);
-    padding-inline: var(--padding-lg, 16px);
-    border: 1px solid var(--color-foreground);
-    border-radius: var(--buttons-radius, 64px);
+    height: var(--button-large);
+    padding-inline: var(--button-margin);
+    border: 1px solid var(--button-dark-stroke-default);
+    border-radius: var(--button-radius-default);
     background: transparent;
-    color: var(--color-foreground);
+    color: var(--button-dark-content-inverse);
     font-family: var(--font-body--family);
     font-size: var(--font-paragraph-medium--size, 0.875rem);
     text-decoration: none;
@@ -87,15 +90,15 @@
   }
 
   .twp-key-features__button:hover {
-    background-color: var(--color-foreground);
-    color: var(--color-background);
+    background-color: var(--button-dark-stroke-default);
+    color: var(--button-dark-content-default);
   }
 
   .twp-key-features__right {
-    flex: 1;
-    min-width: 0;
+    flex: 1 0 0;
+    aspect-ratio: 509 / 339;
     overflow: hidden;
-    border-radius: var(--media-radius, 12px);
+    border-radius: var(--section-radius);
   }
 
   .twp-key-features__image {
@@ -118,7 +121,7 @@
     .twp-key-features__right {
       flex: none;
       width: 100%;
-      aspect-ratio: 3 / 2;
+      aspect-ratio: 600 / 400;
     }
   }
 {% endstylesheet %}
