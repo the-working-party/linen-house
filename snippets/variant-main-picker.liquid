@@ -12,6 +12,8 @@
 {% liquid
   assign size_option_names = 'size,größe,taille,tamaño,maat,misura,taglia'
   assign size_option_list = size_option_names | split: ','
+  assign colour_option_names = 'color,colour,colore,farbe,couleur,cor'
+  assign colour_option_list = colour_option_names | split: ','
 %}
 
 {% unless product_resource.has_only_default_variant %}
@@ -64,6 +66,10 @@
           if size_guide_page != blank and size_option_list contains opt_name_lower
             assign show_size_guide = true
           endif
+          assign is_colour_option = false
+          if colour_option_list contains opt_name_lower
+            assign is_colour_option = true
+          endif
         -%}
 
         {%- if product_option.values.size == 1 and variant_style != 'swatch' -%}
@@ -82,7 +88,7 @@
         {%- elsif variant_style == 'swatch' or block_settings.variant_style == 'buttons' -%}
           {%- assign fieldset_index = forloop.index0 -%}
           <fieldset
-            class="variant-option variant-option--buttons{% if variant_style == 'swatch' %} variant-option--swatches{% else %} variant-option--{{ settings.variant_button_width }}{% endif %}{% if show_size_guide %} variant-option--has-size-guide{% endif %}"
+            class="variant-option variant-option--buttons{% if variant_style == 'swatch' %} variant-option--swatches{% else %} variant-option--{{ settings.variant_button_width }}{% endif %}{% if show_size_guide %} variant-option--has-size-guide{% endif %}{% if is_colour_option %} variant-option--colour{% endif %}"
             data-fieldset-index="{{ fieldset_index }}"
             ref="fieldsets[]"
             {{ option_id_attribute }}
@@ -255,7 +261,13 @@
   }
 
   .variant-picker__form {
+    display: flex;
+    flex-direction: column;
     width: 100%;
+  }
+
+  .variant-option--colour {
+    order: -1;
   }
 
   .variant-picker[data-shopify-visual-preview] {
