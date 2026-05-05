@@ -356,6 +356,11 @@
   },
   "products": {
     "save_percent": "Save {{ percent }}%",
+    "sale": "Sale",
+    "bnpl": {
+      "message": "Buy now pay later with Afterpay",
+      "see_options": "See options"
+    },
     "size_guide": {
       "label": "Size guide",
       "title": "Size guide"

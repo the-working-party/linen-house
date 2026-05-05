@@ -192,6 +192,21 @@
                     "padding-inline-end": 0
                   },
                   "blocks": {}
+                },
+                "reviews_twp": {
+                  "type": "twp-product-reviews",
+                  "settings": {
+                    "review_score": "4.8",
+                    "review_count": "22 Reviews"
+                  },
+                  "blocks": {}
+                },
+                "bnpl_twp": {
+                  "type": "twp-product-bnpl",
+                  "settings": {
+                    "link_url": ""
+                  },
+                  "blocks": {}
                 }
               },
               "block_order": [
@@ -199,8 +214,15 @@
                 "vendor_twp",
                 "text_xrnftG",
                 "fabric_twp",
-                "price_tVjtKg"
+                "price_tVjtKg",
+                "reviews_twp",
+                "bnpl_twp"
               ]
+            },
+            "short_desc_twp": {
+              "type": "twp-product-short-description",
+              "settings": {},
+              "blocks": {}
             },
             "divider_VJhene": {
               "type": "_divider",
@@ -449,6 +471,7 @@
           },
           "block_order": [
             "group_icgrde",
+            "short_desc_twp",
             "divider_VJhene",
             "variant_picker_R3rGDr",
             "buy_buttons_eYQEYi",

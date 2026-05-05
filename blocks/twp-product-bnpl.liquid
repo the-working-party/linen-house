@@ -1,0 +1,51 @@
+<div class="twp-product-bnpl" {{ block.shopify_attributes }}>
+  <span class="twp-product-bnpl__message">{{ 'products.bnpl.message' | t }}</span>
+  {%- if block.settings.link_url != blank -%}
+    <a class="twp-product-bnpl__link" href="{{ block.settings.link_url }}">{{ 'products.bnpl.see_options' | t }}</a>
+  {%- else -%}
+    <span class="twp-product-bnpl__link">{{ 'products.bnpl.see_options' | t }}</span>
+  {%- endif -%}
+</div>
+
+{% stylesheet %}
+  .twp-product-bnpl {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .twp-product-bnpl__message,
+  .twp-product-bnpl__link {
+    font-family: var(--font-body--family);
+    font-size: 0.75rem;
+    line-height: 1.5;
+    letter-spacing: 0.2px;
+    color: rgb(var(--color-foreground-rgb) / var(--opacity-subdued-text));
+    text-decoration: none;
+  }
+
+  a.twp-product-bnpl__link {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "BNPL",
+  "tag": null,
+  "settings": [
+    {
+      "type": "url",
+      "id": "link_url",
+      "label": "See options link"
+    }
+  ],
+  "presets": [
+    {
+      "name": "BNPL",
+      "category": "t:categories.product"
+    }
+  ]
+}
+{% endschema %}

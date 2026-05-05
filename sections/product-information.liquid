@@ -16,6 +16,7 @@
   -%}
   {%- if request.page_type == 'product' and product != blank -%}
     {%- render 'twp-product-breadcrumb', product: product -%}
+    {%- render 'twp-gallery-sale-badge', product: product -%}
   {%- endif -%}
 {% endcapture %}
 

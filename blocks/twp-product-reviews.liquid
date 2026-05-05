@@ -1,0 +1,97 @@
+{%- liquid
+  assign score = block.settings.review_score | plus: 0
+  assign count = block.settings.review_count
+  assign full_stars = score | floor
+  assign star_svg = 'icon-linen-house-star-fill.svg' | inline_asset_content
+-%}
+
+{%- if score > 0 and count != blank -%}
+  <div class="twp-product-reviews" {{ block.shopify_attributes }}>
+    <div class="twp-product-reviews__stars" aria-hidden="true">
+      {%- for i in (1..5) -%}
+        {%- if i <= full_stars -%}
+          <span class="twp-product-reviews__star">{{ star_svg }}</span>
+        {%- else -%}
+          <span class="twp-product-reviews__star twp-product-reviews__star--empty">{{ star_svg }}</span>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+    <span class="twp-product-reviews__score">{{ block.settings.review_score }}</span>
+    <span class="twp-product-reviews__count">{{ count }}</span>
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  .twp-product-reviews {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .twp-product-reviews__stars {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .twp-product-reviews__star {
+    display: flex;
+    width: 10px;
+    height: 10px;
+    color: var(--color-foreground);
+    flex-shrink: 0;
+  }
+
+  .twp-product-reviews__star svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .twp-product-reviews__star--empty {
+    opacity: 0.15;
+  }
+
+  .twp-product-reviews__score {
+    font-family: var(--font-body--family);
+    font-size: 0.75rem;
+    line-height: 1.5;
+    letter-spacing: 0.2px;
+    color: var(--color-foreground);
+  }
+
+  .twp-product-reviews__count {
+    font-family: var(--font-body--family);
+    font-size: 0.75rem;
+    line-height: 1.5;
+    letter-spacing: 0.2px;
+    color: rgb(var(--color-foreground-rgb) / var(--opacity-subdued-text));
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Reviews",
+  "tag": null,
+  "settings": [
+    {
+      "type": "text",
+      "id": "review_score",
+      "label": "Review score",
+      "info": "Will be replaced with live Yotpo data when the app is installed.",
+      "default": "4.8"
+    },
+    {
+      "type": "text",
+      "id": "review_count",
+      "label": "Review count label",
+      "default": "22 Reviews"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Reviews",
+      "category": "t:categories.product"
+    }
+  ]
+}
+{% endschema %}
