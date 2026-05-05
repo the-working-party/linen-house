@@ -166,10 +166,15 @@
                   },
                   "blocks": {}
                 },
+                "fabric_twp": {
+                  "type": "twp-product-fabric",
+                  "settings": {},
+                  "blocks": {}
+                },
                 "price_tVjtKg": {
                   "type": "price",
                   "settings": {
-                    "show_sale_price_first": true,
+                    "show_sale_price_first": false,
                     "show_installments": false,
                     "show_tax_info": false,
                     "type_preset": "paragraph",
@@ -181,7 +186,7 @@
                     "letter_spacing": "normal",
                     "case": "none",
                     "color": "var(--color-foreground)",
-                    "padding-block-start": 0,
+                    "padding-block-start": 4,
                     "padding-block-end": 0,
                     "padding-inline-start": 0,
                     "padding-inline-end": 0
@@ -193,6 +198,7 @@
                 "badge_twp",
                 "vendor_twp",
                 "text_xrnftG",
+                "fabric_twp",
                 "price_tVjtKg"
               ]
             },

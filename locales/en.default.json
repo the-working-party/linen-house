@@ -355,6 +355,7 @@
     "blog_post_description": "An excerpt of your blog post's content"
   },
   "products": {
+    "save_percent": "Save {{ percent }}%",
     "size_guide": {
       "label": "Size guide",
       "title": "Size guide"

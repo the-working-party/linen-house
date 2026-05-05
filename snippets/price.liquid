@@ -19,6 +19,11 @@
     assign show_compare_price = true
   endif
 
+  assign savings_pct = 0
+  if show_compare_price
+    assign savings_pct = selected_variant.compare_at_price | minus: selected_variant.price | times: 100 | divided_by: selected_variant.compare_at_price | round
+  endif
+
   if product_resource == blank
     assign price = 1999
   endif
@@ -124,6 +129,9 @@
           <span class="price-item--sale price">{{ price | default: '&nbsp;' }}</span>
         </span>
       {% endif %}
+      {%- if show_compare_price and is_product_card == false and savings_pct > 0 -%}
+        <span class="twp-sale-badge">{{ 'products.save_percent' | t: percent: savings_pct }}</span>
+      {%- endif -%}
     </div>
   {% endif %}
   {%- if selected_variant.unit_price and show_unit_price %}
@@ -145,3 +153,25 @@
     {{- 'content.volume_pricing_available' | t -}}
   </small>
 {%- endif -%}
+
+{% stylesheet %}
+  .price__sale {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .twp-sale-badge {
+    display: flex;
+    height: 24px;
+    padding-inline: 12px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 64px;
+    background: var(--colour-blush-20, #F7EFEB);
+    font-family: var(--font-body--family);
+    font-size: 0.75rem;
+    white-space: nowrap;
+  }
+{% endstylesheet %}
