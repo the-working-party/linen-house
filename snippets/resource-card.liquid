@@ -9,6 +9,8 @@
   @param {string} [image_aspect_ratio] - The aspect ratio to display the image. Defaults to image's natural ratio
   @param {boolean} [image_hover] - Whether to show a secondary image on hover and focus
   @param {string} [image_sizes] - The sizes attribute for responsive images. Defaults to 'auto'
+
+  Product cards: when `resource.vendor` is present, vendor is shown above the title; description stack uses 12px (`--component-spacing`) gaps.
 {%- enddoc -%}
 
 {% liquid
@@ -50,10 +52,19 @@
     href="{{ resource.url }}"
   >
     <span class="visually-hidden">
-      {{ resource.title }}
+      {%- if resource_type == 'product' and resource.vendor != blank -%}
+        {{- resource.vendor }} — {{ resource.title -}}
+      {%- else -%}
+        {{- resource.title -}}
+      {%- endif -%}
     </span>
   </a>
   <div class="resource-card__content">
+    {% if resource_type == 'product' and resource.vendor != blank %}
+      <p class="resource-card__vendor">
+        {{- resource.vendor | escape -}}
+      </p>
+    {% endif %}
     <p class="resource-card__title{% if style == 'overlay' %} h5{%else %} paragraph{% endif %}">
       {{- resource.title -}}
     </p>
@@ -194,8 +205,13 @@
     color: var(--color-foreground);
     gap: var(--padding-3xs);
 
-    .price {
-      font-weight: 500;
+    .price,
+    .compare-at-price {
+      font-family: var(--paragraph-family);
+      font-size: var(--paragraph-small);
+      font-weight: var(--paragraph-weight);
+      line-height: 18px;
+      letter-spacing: var(--paragraph-spacing);
     }
 
     .volume-pricing-note {
@@ -214,6 +230,27 @@
   .resource-card[data-resource-type='article'] .resource-card__content,
   .resource-card[data-resource-type='page'] .resource-card__content {
     gap: var(--padding-xs);
+  }
+
+  .resource-card[data-resource-type='product'] .resource-card__content {
+    gap: var(--component-spacing);
+
+    .volume-pricing-note {
+      margin-top: var(--component-spacing);
+    }
+  }
+
+  .resource-card__vendor {
+    margin-block: 0;
+    color: var(--text-secondary);
+    font-size: var(--paragraph-small);
+    font-weight: var(--paragraph-weight);
+    line-height: 18px;
+    letter-spacing: var(--paragraph-spacing);
+  }
+
+  .resource-card--overlay .resource-card__vendor {
+    color: rgb(255 255 255 / var(--opacity-subdued-text));
   }
 
   .resource-card__media {
@@ -288,7 +325,6 @@
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
     overflow: hidden;
-    line-height: 1.3;
     word-break: break-word;
     overflow-wrap: break-word;
 
@@ -296,11 +332,15 @@
       font-size: var(--subheading-small);
       font-weight: var(--subheading-weight);
       letter-spacing: var(--subheading-spacing);
+      line-height: 1.3;
     }
   }
 
   .resource-card__title.paragraph {
-    line-height: 1.3;
+    font-family: var(--paragraph-family);
+    font-size: var(--paragraph-large);
+    line-height: 24px;
+    letter-spacing: var(--paragraph-spacing);
   }
 
   .resource-card--overlay {
