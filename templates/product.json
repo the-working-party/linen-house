@@ -195,10 +195,7 @@
                 },
                 "reviews_twp": {
                   "type": "twp-product-reviews",
-                  "settings": {
-                    "review_score": "4.8",
-                    "review_count": "22 Reviews"
-                  },
+                  "settings": {},
                   "blocks": {}
                 },
                 "bnpl_twp": {
@@ -509,6 +506,16 @@
         "padding-inline-end": 0
       }
     },
+    "twp_pdp_reviews": {
+      "type": "twp-pdp-reviews",
+      "settings": {
+        "color_scheme": "scheme-2",
+        "padding-block-start": 64,
+        "padding-block-end": 64,
+        "padding-inline-start": 0,
+        "padding-inline-end": 0
+      }
+    },
     "twp_collection_carousel": {
       "type": "twp-pdp-collection-carousel",
       "settings": {
@@ -527,6 +534,7 @@
   "order": [
     "main",
     "twp_key_features",
+    "twp_pdp_reviews",
     "twp_collection_carousel"
   ]
 }

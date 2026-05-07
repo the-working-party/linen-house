@@ -6,29 +6,92 @@
   {% content_for 'block', type: 'twp-product-usps', id: 'product-usps' %}
 {% enddoc %}
 
-{%- liquid
-  assign usp_icons = block.settings.usp_1_icon | append: ',' | append: block.settings.usp_2_icon | append: ',' | append: block.settings.usp_3_icon | append: ',' | append: block.settings.usp_4_icon | split: ','
-  assign usp_labels = block.settings.usp_1_label | append: '|' | append: block.settings.usp_2_label | append: '|' | append: block.settings.usp_3_label | append: '|' | append: block.settings.usp_4_label | split: '|'
--%}
+{%- assign usp_meta = closest.product.metafields.custom.product_usps.value -%}
 
 <ul class="twp-product-usps" {{ block.shopify_attributes }}>
-  {%- for label in usp_labels -%}
-    {%- if label != blank -%}
-      <li class="twp-product-usps__item">
-        {%- liquid
-          assign icon_name = usp_icons[forloop.index0]
-          assign icon_file = 'icon-' | append: icon_name | append: '.svg'
-          assign icon_svg = icon_file | inline_asset_content
-        -%}
-        {%- if icon_svg != blank -%}
-          <span class="twp-product-usps__icon" aria-hidden="true">{{ icon_svg }}</span>
-        {%- elsif icon_name != 'none' -%}
-          {%- render 'icon-or-image', icon: icon_name, image_upload: blank, width: 12, class_name: 'twp-product-usps__icon' -%}
-        {%- endif -%}
-        <span class="twp-product-usps__label">{{- label -}}</span>
-      </li>
-    {%- endif -%}
-  {%- endfor -%}
+  {%- if usp_meta != blank -%}
+    {%- for i in (1..4) -%}
+      {%- liquid
+        case i
+          when 1
+            assign icon_name = usp_meta.usp_1_icon
+            assign image_upload = usp_meta.usp_1_image
+            assign label = usp_meta.usp_1_label
+          when 2
+            assign icon_name = usp_meta.usp_2_icon
+            assign image_upload = usp_meta.usp_2_image
+            assign label = usp_meta.usp_2_label
+          when 3
+            assign icon_name = usp_meta.usp_3_icon
+            assign image_upload = usp_meta.usp_3_image
+            assign label = usp_meta.usp_3_label
+          when 4
+            assign icon_name = usp_meta.usp_4_icon
+            assign image_upload = usp_meta.usp_4_image
+            assign label = usp_meta.usp_4_label
+        endcase
+      -%}
+      {%- if label != blank -%}
+        <li class="twp-product-usps__item">
+          {%- if image_upload != blank -%}
+            <img src="{{ image_upload.url }}" class="twp-product-usps__icon" width="12" height="12" loading="lazy" alt="" aria-hidden="true">
+          {%- else -%}
+            {%- liquid
+              assign icon_file = 'icon-' | append: icon_name | append: '.svg'
+              assign icon_svg = icon_file | inline_asset_content
+            -%}
+            {%- if icon_svg != blank -%}
+              <span class="twp-product-usps__icon" aria-hidden="true">{{ icon_svg }}</span>
+            {%- elsif icon_name != blank and icon_name != 'none' -%}
+              {%- render 'icon-or-image', icon: icon_name, image_upload: blank, width: 12, class_name: 'twp-product-usps__icon' -%}
+            {%- endif -%}
+          {%- endif -%}
+          <span class="twp-product-usps__label">{{- label -}}</span>
+        </li>
+      {%- endif -%}
+    {%- endfor -%}
+  {%- else -%}
+    {%- for i in (1..4) -%}
+      {%- liquid
+        case i
+          when 1
+            assign icon_name = block.settings.usp_1_icon
+            assign image_upload = block.settings.usp_1_image
+            assign label = block.settings.usp_1_label
+          when 2
+            assign icon_name = block.settings.usp_2_icon
+            assign image_upload = block.settings.usp_2_image
+            assign label = block.settings.usp_2_label
+          when 3
+            assign icon_name = block.settings.usp_3_icon
+            assign image_upload = block.settings.usp_3_image
+            assign label = block.settings.usp_3_label
+          when 4
+            assign icon_name = block.settings.usp_4_icon
+            assign image_upload = block.settings.usp_4_image
+            assign label = block.settings.usp_4_label
+        endcase
+      -%}
+      {%- if label != blank -%}
+        <li class="twp-product-usps__item">
+          {%- if image_upload != blank -%}
+            {%- render 'icon-or-image', icon: 'none', image_upload: image_upload, width: 12, class_name: 'twp-product-usps__icon' -%}
+          {%- else -%}
+            {%- liquid
+              assign icon_file = 'icon-' | append: icon_name | append: '.svg'
+              assign icon_svg = icon_file | inline_asset_content
+            -%}
+            {%- if icon_svg != blank -%}
+              <span class="twp-product-usps__icon" aria-hidden="true">{{ icon_svg }}</span>
+            {%- elsif icon_name != 'none' -%}
+              {%- render 'icon-or-image', icon: icon_name, image_upload: blank, width: 12, class_name: 'twp-product-usps__icon' -%}
+            {%- endif -%}
+          {%- endif -%}
+          <span class="twp-product-usps__label">{{- label -}}</span>
+        </li>
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endif -%}
 </ul>
 
 {% stylesheet %}
@@ -97,6 +160,11 @@
       "default": "linen-house-cotton"
     },
     {
+      "type": "image_picker",
+      "id": "usp_1_image",
+      "label": "Custom icon (PNG override)"
+    },
+    {
       "type": "text",
       "id": "usp_1_label",
       "label": "Label",
@@ -134,6 +202,11 @@
         { "value": "snowflake", "label": "Snowflake" }
       ],
       "default": "linen-house-heart"
+    },
+    {
+      "type": "image_picker",
+      "id": "usp_2_image",
+      "label": "Custom icon (PNG override)"
     },
     {
       "type": "text",
@@ -175,6 +248,11 @@
       "default": "linen-house-feather"
     },
     {
+      "type": "image_picker",
+      "id": "usp_3_image",
+      "label": "Custom icon (PNG override)"
+    },
+    {
       "type": "text",
       "id": "usp_3_label",
       "label": "Label",
@@ -212,6 +290,11 @@
         { "value": "snowflake", "label": "Snowflake" }
       ],
       "default": "linen-house-sleep"
+    },
+    {
+      "type": "image_picker",
+      "id": "usp_4_image",
+      "label": "Custom icon (PNG override)"
     },
     {
       "type": "text",
