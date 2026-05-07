@@ -263,7 +263,12 @@
   .variant-picker__form {
     display: flex;
     flex-direction: column;
+    gap: var(--padding-4xl);
     width: 100%;
+  }
+
+  .variant-option + .variant-option {
+    margin-top: 0;
   }
 
   .variant-option--colour {
