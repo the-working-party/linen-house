@@ -1,22 +1,52 @@
 {%- doc -%}
-  @param [limit] - {number}
+  @param {number} [limit] - The maximum number to display; above the limit, count may be empty for "99+".
 
-  The maximum number of items in the cart to display. If the number of items in the cart is greater than this limit, the
-  count will be displayed as "99+".
+  @param {boolean} [for_header] - Use `for_header: true` only for the **cart drawer trigger** in the header. That
+  instance can show the classic round badge (drawer closed) and switch to the text + “item(s)” style
+  (drawer open) via CSS in `header-actions`. The /cart link in the header also uses this for the bag pill.
+  Other uses (e.g. cart page title, drawer heading) use the default count + “item(s)” line.
+
+  Renders a cart count with optional "item" / "items" suffix and pluralized translation.
 {%- enddoc -%}
+
+{%- liquid
+  assign for_header = for_header | default: false
+  assign item_count = cart.item_count
+  if for_header
+    assign bubble_text_id = 'header-cart-bubble-text'
+  else
+    assign bubble_text_id = 'cart-bubble-text'
+  endif
+
+  assign outer_classes = 'cart-bubble'
+  if for_header
+    assign outer_classes = outer_classes | append: ' cart-bubble--drawer-trigger'
+  endif
+  if cart == empty
+    assign outer_classes = outer_classes | append: ' visually-hidden'
+  endif
+
+  assign use_maintain_ratio = false
+  if for_header and item_count > 0 and item_count <= 99
+    assign use_maintain_ratio = true
+  endif
+-%}
 
 <div
   ref="cartBubble"
-  class="cart-bubble{% if cart == empty %} visually-hidden{% endif %}"
-  {% assign item_count = cart.item_count %}
-  {% if item_count <= 99 %}
+  class="{{ outer_classes | strip }}"
+  data-items-suffix-one="{{ 'accessibility.cart_bubble_items_suffix' | t: count: 1 | escape }}"
+  data-items-suffix-other="{{ 'accessibility.cart_bubble_items_suffix' | t: count: 2 | escape }}"
+  {%- if use_maintain_ratio -%}
     data-maintain-ratio
-  {% endif %}
+  {%- endif -%}
 >
-  <span class="cart-bubble__background"></span>
+  {%- if for_header -%}
+    <span class="cart-bubble__background"></span>
+  {%- endif -%}
   <span
     ref="cartBubbleText"
-    id="cart-bubble-text"
+    id="{{ bubble_text_id }}"
     class="cart-bubble__text"
   >
     <span
@@ -25,51 +55,44 @@
       aria-hidden="true"
       data-testid="cart-bubble"
     >
-      {%- if limit == blank or cart.item_count < limit %}
-        {{- cart.item_count -}}
+      {%- if limit == blank or item_count < limit -%}
+        {{- item_count -}}
       {%- endif -%}
+    </span>
+    <span
+      class="cart-bubble__items-suffix{% if cart == empty %} hidden{% endif %}"
+      ref="cartBubbleItemsSuffix"
+      aria-hidden="true"
+    >
+      {%- unless cart == empty -%}
+        {{ 'accessibility.cart_bubble_items_suffix' | t: count: item_count }}
+      {%- endunless -%}
     </span>
   </span>
 </div>
 
 {% stylesheet %}
-  .cart-bubble {
-    --cart-padding: 0.2em;
+  .cart-bubble:not(.cart-bubble--drawer-trigger):not(.visually-hidden) {
+    position: static;
+  }
 
-    position: relative;
-    width: 20px;
-    aspect-ratio: 1;
-    border-radius: 50%;
-    border-width: 0;
-    display: flex;
+  .cart-bubble:not(.cart-bubble--drawer-trigger) {
+    display: inline-flex;
+    width: auto;
+    min-width: 0;
     line-height: normal;
-    align-items: center;
-    justify-content: center;
-    color: var(--color-primary-button-text);
-    padding-inline: var(--cart-padding);
+    align-items: baseline;
+    color: var(--text-tertiary);
   }
 
-  .cart-bubble[data-maintain-ratio] {
-    aspect-ratio: 1;
-  }
-
-  .cart-bubble[data-maintain-ratio] .cart-bubble__background {
-    border-radius: var(--style-border-radius-50);
-  }
-
-  .cart-bubble__background {
-    position: absolute;
-    inset: 0;
-    background-color: var(--color-primary-button-background);
-    border-radius: var(--style-border-radius-lg);
-  }
-
-  .cart-bubble__text {
-    font-size: var(--font-size--3xs);
-    z-index: var(--layer-flat);
-    line-height: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  .cart-bubble:not(.cart-bubble--drawer-trigger) .cart-bubble__text {
+    font-size: var(--paragraph-large);
+    z-index: auto;
+    line-height: 1.2;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.3em;
+    white-space: nowrap;
+    color: var(--text-tertiary);
   }
 {% endstylesheet %}

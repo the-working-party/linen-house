@@ -13,6 +13,10 @@
     "active_filters": "Active filters:",
     "cart": "Cart",
     "cart_count": "Total items in cart",
+    "cart_bubble_items_suffix": {
+      "one": "item",
+      "other": "items"
+    },
     "close_dialog": "Close dialog",
     "country_region": "Country/Region",
     "country_results_count": "{{ count }} results",
@@ -41,6 +45,8 @@
     "new_window": "Opens in a new window.",
     "quantity": "Quantity",
     "pause_video": "Pause video",
+    "mute_video": "Mute video",
+    "unmute_video": "Unmute video",
     "play_model": "Play 3D model",
     "play_video": "Play video",
     "loading_product_recommendations": "Loading product recommendations",
@@ -65,7 +71,8 @@
     "find_country": "Find country",
     "view_pricing_info": "View pricing information",
     "price_filter_low": "Low price",
-    "price_filter_high": "High price"
+    "price_filter_high": "High price",
+    "free_shipping_progress": "Free shipping progress"
   },
   "actions": {
     // Quick add button on product cards, shortened version of add to cart
@@ -172,10 +179,16 @@
     "account_orders": "Orders",
     "account_profile": "Profile",
     "blog_details_separator": "|",
+    "free_shipping_achieved": "You've unlocked free shipping!",
+    "free_shipping_progress": "{{ amount }} away from free shipping",
+    "free_shipping_threshold": "Free shipping on orders over {{ amount }}",
     "cart_estimated_total": "Estimated total",
     "cart_title": "Cart",
     "cart_subtotal": "Subtotal",
+    "cart_shipping": "Shipping",
+    "cart_shipping_calculated_at_checkout": "Calculated at Checkout",
     "cart_total": "Cart total",
+    "bnpl_afterpay_message": "Buy now pay later with Afterpay.",
     "checkout": "Check out",
     "collection_placeholder": "Collection title",
     "discount_code": "Discount code",

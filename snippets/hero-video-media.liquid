@@ -1,0 +1,61 @@
+{%- doc -%}
+  Renders a hero background video with optional play/pause and mute controls.
+
+  @param {object} video - Shopify video object (required)
+  @param {string} media_wrapper_class - Classes for the outer wrapper (required)
+  @param {string} data_testid - Value for data-testid on the video element
+  @param {boolean} show_controls - When true, overlays custom controls
+{%- enddoc -%}
+
+{%- liquid
+  assign show_controls = show_controls | default: false
+-%}
+
+<div class="{{ media_wrapper_class }}{% if show_controls %} hero__video-shell{% endif %}">
+  {{
+    video
+    | video_tag:
+      poster: nil,
+      autoplay: true,
+      loop: true,
+      controls: false,
+      muted: true,
+      playsinline: true,
+      class: 'hero__media',
+      data-testid: data_testid
+  }}
+  {% if show_controls %}
+    <div class="hero__video-controls">
+      <button
+        type="button"
+        class="hero__video-control button-unstyled"
+        data-hero-video-playpause
+        aria-label="{{ 'accessibility.pause_video' | t }}"
+        data-label-play="{{ 'accessibility.play_video' | t | escape }}"
+        data-label-pause="{{ 'accessibility.pause_video' | t | escape }}"
+      >
+        <span class="hero__video-control-icon" data-hero-video-state="playing" aria-hidden="true">
+          {{- 'icon-pause.svg' | inline_asset_content -}}
+        </span>
+        <span class="hero__video-control-icon hero__video-control-icon--hidden" data-hero-video-state="paused" aria-hidden="true">
+          {{- 'icon-play.svg' | inline_asset_content -}}
+        </span>
+      </button>
+      <button
+        type="button"
+        class="hero__video-control button-unstyled"
+        data-hero-video-mute
+        aria-label="{{ 'accessibility.unmute_video' | t }}"
+        data-label-mute="{{ 'accessibility.mute_video' | t | escape }}"
+        data-label-unmute="{{ 'accessibility.unmute_video' | t | escape }}"
+      >
+        <span class="hero__video-control-icon" data-hero-video-state="muted" aria-hidden="true">
+          {{- 'icon-volume-muted.svg' | inline_asset_content -}}
+        </span>
+        <span class="hero__video-control-icon hero__video-control-icon--hidden" data-hero-video-state="unmuted" aria-hidden="true">
+          {{- 'icon-volume.svg' | inline_asset_content -}}
+        </span>
+      </button>
+    </div>
+  {% endif %}
+</div>

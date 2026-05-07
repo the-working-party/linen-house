@@ -23,9 +23,13 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: var(--font-size--body-md);
-    font-weight: 500;
-    margin-block: var(--margin-sm) var(--margin-xs);
+    font-family: var(--paragraph-family);
+    font-size: var(--paragraph-small);
+    font-weight: var(--paragraph-weight);
+    line-height: 18px;
+    letter-spacing: var(--paragraph-spacing);
+    margin-block-start: var(--margin-sm);
+    margin-block-end: 16px;
     width: 100%;
     text-transform: var(--title-case);
 
@@ -34,7 +38,8 @@
     }
 
     @media screen and (max-width: 749px) {
-      margin-block: var(--margin-lg) var(--margin-sm);
+      margin-block-start: var(--margin-lg);
+      margin-block-end: 16px;
     }
   }
 
@@ -258,6 +263,11 @@
 
   .predictive-search-results__card--product,
   .recently-viewed-wrapper .predictive-search-results__card--product {
+    /* resource-card markup orders title before media; restore image-first layout */
+    .resource-card__media {
+      order: -1;
+    }
+
     &:active {
       transform: scale(0.97);
       transition: transform 100ms var(--animation-timing-active);
@@ -561,7 +571,7 @@
   }
 
   .predictive-search-results__wrapper slideshow-slides {
-    --gutter-slide-width: var(--padding-xl);
+    --gutter-slide-width: 24px;
 
     /* Add padding to prevent hover animations from being clipped in slideshow
        15px accommodates:

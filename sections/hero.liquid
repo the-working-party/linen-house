@@ -1,5 +1,3 @@
-
-
 {% liquid
   assign media_count = 0
   assign media_count_mobile = 0
@@ -112,6 +110,14 @@
   if section.index == 1
     assign fetch_priority = 'high'
   endif
+
+  assign show_hero_video_controls = false
+  assign hero_show_video_controls_setting = section.settings.show_video_controls | default: true
+  if hero_show_video_controls_setting
+    if media_1 == 'video' or media_2 == 'video' or media_1_mobile == 'video' or media_2_mobile == 'video'
+      assign show_hero_video_controls = true
+    endif
+  endif
 %}
 
 {% capture media_slot_1 %}
@@ -165,19 +171,12 @@
   {%- endif -%}
 
   {%- if media_1 == 'video' -%}
-    <div class="{{ media_wrapper_desktop_class }}">
-      {{
-        section.settings.video_1
-        | video_tag:
-          poster: nil,
-          autoplay: true,
-          loop: true,
-          controls: false,
-          muted: true,
-          class: 'hero__media',
-          data-testid: 'hero-desktop-video-1'
-      }}
-    </div>
+    {% render 'hero-video-media',
+      video: section.settings.video_1,
+      media_wrapper_class: media_wrapper_desktop_class,
+      data_testid: 'hero-desktop-video-1',
+      show_controls: show_hero_video_controls
+    %}
   {%- endif -%}
 
   {%- comment -%} Mobile-only slot 1 media (when desktop is different type) {%- endcomment -%}
@@ -201,19 +200,12 @@
     {%- endif -%}
 
     {%- if media_1_mobile == 'video' -%}
-      <div class="{{ media_wrapper_mobile_class }}">
-        {{
-          section.settings.video_1_mobile
-          | video_tag:
-            poster: nil,
-            autoplay: true,
-            loop: true,
-            controls: false,
-            muted: true,
-            class: 'hero__media',
-            data-testid: 'hero-mobile-video-1'
-        }}
-      </div>
+      {% render 'hero-video-media',
+        video: section.settings.video_1_mobile,
+        media_wrapper_class: media_wrapper_mobile_class,
+        data_testid: 'hero-mobile-video-1',
+        show_controls: show_hero_video_controls
+      %}
     {%- endif -%}
   {%- endif -%}
 {% endcapture %}
@@ -269,19 +261,12 @@
   {%- endif -%}
 
   {%- if media_2 == 'video' -%}
-    <div class="{{ media_wrapper_desktop_class }}">
-      {{
-        section.settings.video_2
-        | video_tag:
-          poster: nil,
-          autoplay: true,
-          loop: true,
-          controls: false,
-          muted: true,
-          class: 'hero__media',
-          data-testid: 'hero-desktop-video-2'
-      }}
-    </div>
+    {% render 'hero-video-media',
+      video: section.settings.video_2,
+      media_wrapper_class: media_wrapper_desktop_class,
+      data_testid: 'hero-desktop-video-2',
+      show_controls: show_hero_video_controls
+    %}
   {%- endif -%}
 
   {%- comment -%} Mobile-only slot 2 media (when desktop is different type) {%- endcomment -%}
@@ -305,19 +290,12 @@
     {%- endif -%}
 
     {%- if media_2_mobile == 'video' -%}
-      <div class="{{ media_wrapper_mobile_class }}">
-        {{
-          section.settings.video_2_mobile
-          | video_tag:
-            poster: nil,
-            autoplay: true,
-            loop: true,
-            controls: false,
-            muted: true,
-            class: 'hero__media',
-            data-testid: 'hero-mobile-video-2'
-        }}
-      </div>
+      {% render 'hero-video-media',
+        video: section.settings.video_2_mobile,
+        media_wrapper_class: media_wrapper_mobile_class,
+        data_testid: 'hero-mobile-video-2',
+        show_controls: show_hero_video_controls
+      %}
     {%- endif -%}
   {%- endif -%}
 {% endcapture %}
@@ -578,10 +556,11 @@
     grid-column: 2 / 3;
   }
 
+  /* Stacking: .hero__video-shell uses --layer-raised; content must sit above it so text is not covered. */
   .hero__content-wrapper {
     position: relative;
     inset: 0;
-    z-index: var(--layer-flat);
+    z-index: var(--layer-heightened);
   }
 
   .hero__content-wrapper .group-block-content {
@@ -744,7 +723,139 @@
       }
     }
   }
+
+  /* Stack above the section overlay (.overlay uses --layer-flat) so controls are visible */
+  .hero__video-shell {
+    position: relative;
+    z-index: var(--layer-raised);
+    isolation: isolate;
+  }
+
+  .hero__video-controls {
+    position: absolute;
+    z-index: 1;
+    display: flex;
+    gap: 16px;
+    inset-block-end: var(--padding-md);
+    inset-inline-end: var(--padding-md);
+    pointer-events: auto;
+  }
+
+  .hero__video-control {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    cursor: pointer;
+    border-radius: var(--style-border-radius-buttons-primary);
+    color: var(--button-light-content-inverse);
+    background-color: transparent;
+    box-shadow: none;
+  }
+
+  .hero__video-control:hover,
+  .hero__video-control.button-unstyled:hover {
+    color: var(--button-light-content-inverse);
+    background-color: transparent;
+    opacity: 0.85;
+  }
+
+  .hero__video-control:focus-visible {
+    outline: var(--focus-outline-width) solid var(--button-light-content-inverse);
+    outline-offset: var(--focus-outline-offset);
+  }
+
+  .hero__video-control-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: inherit;
+  }
+
+  .hero__video-control-icon :is(svg) {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    color: inherit;
+  }
+
+  .hero__video-control-icon--hidden {
+    display: none;
+  }
 {% endstylesheet %}
+
+{% javascript %}
+  const initHeroVideoShell = (shell) => {
+    if (!(shell instanceof HTMLElement) || shell.dataset.heroVideoBound === 'true') return;
+
+    const video = shell.querySelector('video');
+    const playPauseBtn = shell.querySelector('[data-hero-video-playpause]');
+    const muteBtn = shell.querySelector('[data-hero-video-mute]');
+    if (!video || !playPauseBtn || !muteBtn) return;
+
+    shell.dataset.heroVideoBound = 'true';
+
+    const playLabel = playPauseBtn.dataset.labelPlay;
+    const pauseLabel = playPauseBtn.dataset.labelPause;
+    const muteLabel = muteBtn.dataset.labelMute;
+    const unmuteLabel = muteBtn.dataset.labelUnmute;
+
+    const syncPlayPause = () => {
+      const isPaused = video.paused;
+      const playingIcon = playPauseBtn.querySelector('[data-hero-video-state="playing"]');
+      const pausedIcon = playPauseBtn.querySelector('[data-hero-video-state="paused"]');
+      if (playingIcon) {
+        playingIcon.classList.toggle('hero__video-control-icon--hidden', isPaused);
+      }
+      if (pausedIcon) {
+        pausedIcon.classList.toggle('hero__video-control-icon--hidden', !isPaused);
+      }
+      playPauseBtn.setAttribute('aria-label', isPaused ? playLabel : pauseLabel);
+    };
+
+    const syncMute = () => {
+      const muted = video.muted;
+      const mutedIcon = muteBtn.querySelector('[data-hero-video-state="muted"]');
+      const unmutedIcon = muteBtn.querySelector('[data-hero-video-state="unmuted"]');
+      if (mutedIcon) {
+        mutedIcon.classList.toggle('hero__video-control-icon--hidden', !muted);
+      }
+      if (unmutedIcon) {
+        unmutedIcon.classList.toggle('hero__video-control-icon--hidden', muted);
+      }
+      muteBtn.setAttribute('aria-label', muted ? unmuteLabel : muteLabel);
+    };
+
+    playPauseBtn.addEventListener('click', () => {
+      if (video.paused) {
+        video.play().catch(() => {});
+      } else {
+        video.pause();
+      }
+    });
+
+    muteBtn.addEventListener('click', () => {
+      video.muted = !video.muted;
+    });
+
+    video.addEventListener('play', syncPlayPause);
+    video.addEventListener('pause', syncPlayPause);
+    video.addEventListener('volumechange', syncMute);
+
+    syncPlayPause();
+    syncMute();
+  };
+
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.hero__video-shell').forEach((el) => initHeroVideoShell(el));
+  });
+
+  document.addEventListener('shopify:section:load', (event) => {
+    const root = event.target;
+    if (!root || typeof root.querySelectorAll !== 'function') return;
+    root.querySelectorAll('.hero__video-shell').forEach((el) => initHeroVideoShell(el));
+  });
+{% endjavascript %}
 
 {% schema %}
 {
@@ -928,6 +1039,18 @@
       "id": "video_2_mobile",
       "label": "t:settings.video",
       "visible_if": "{{ section.settings.custom_mobile_media and section.settings.media_type_2_mobile == 'video' }}"
+    },
+    {
+      "type": "header",
+      "content": "t:content.video_controls"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_video_controls",
+      "label": "t:settings.show_video_controls",
+      "info": "t:info.show_video_controls",
+      "default": true,
+      "visible_if": "{{ section.settings.media_type_1 == 'video' or section.settings.media_type_2 == 'video' or section.settings.media_type_1_mobile == 'video' or section.settings.media_type_2_mobile == 'video' }}"
     },
     {
       "type": "header",
