@@ -16,9 +16,7 @@
   and settings.tagalys_cart_upsell_enabled
   and cart.item_count > 0
   and settings.tagalys_server_url != blank
-  and settings.tagalys_client_code != blank
   and settings.tagalys_api_key != blank
-  and settings.tagalys_store_id != blank
 -%}
   {%- liquid
     assign heading = section.settings.heading | default: 'You may also like'

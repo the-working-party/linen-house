@@ -2632,21 +2632,9 @@
       },
       {
         "type": "text",
-        "id": "tagalys_client_code",
-        "label": "t:settings.tagalys_client_code",
-        "info": "t:info.tagalys_client_code"
-      },
-      {
-        "type": "text",
         "id": "tagalys_api_key",
         "label": "t:settings.tagalys_api_key",
         "info": "t:info.tagalys_api_key"
-      },
-      {
-        "type": "text",
-        "id": "tagalys_store_id",
-        "label": "t:settings.tagalys_store_id",
-        "info": "t:info.tagalys_store_id"
       },
       {
         "type": "text",

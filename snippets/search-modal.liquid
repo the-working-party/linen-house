@@ -18,8 +18,8 @@
 
 {%- comment -%}
   data-search-provider state machine for the Tagalys predictive search hijack:
-    - SET HERE (Liquid) to "loading" when Tagalys predictive is enabled, all
-      Tagalys API credentials are set, and the Storefront access token is set
+    - SET HERE (Liquid) to "loading" when Tagalys predictive is enabled, the
+      Tagalys API key and server URL are set, and the Storefront access token is set
       (required for the Storefront GraphQL predictive API). Otherwise unset, and
       the native predictive component handles input as today.
     - WRITTEN by `assets/tagalys-predictive-search.js` (the Tagalys mount
@@ -36,9 +36,7 @@
   {%- if settings.tagalys_enabled
     and settings.tagalys_predictive_search_enabled
     and settings.tagalys_server_url != blank
-    and settings.tagalys_client_code != blank
     and settings.tagalys_api_key != blank
-    and settings.tagalys_store_id != blank
     and settings.tagalys_storefront_access_token != blank
   -%}
     data-search-provider="loading"

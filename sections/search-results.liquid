@@ -29,9 +29,7 @@
     {% if settings.tagalys_enabled
       and settings.tagalys_search_enabled
       and settings.tagalys_server_url != blank
-      and settings.tagalys_client_code != blank
       and settings.tagalys_api_key != blank
-      and settings.tagalys_store_id != blank
     %}
       {% render 'tagalys-search', page_size: products_per_page %}
     {% else %}
