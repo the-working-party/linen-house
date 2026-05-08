@@ -59,8 +59,10 @@
       locale: {{ request.locale.iso_code | json }},
       marketsEnabled: {{ markets_enabled | json }},
       searchEnabled: {{ settings.tagalys_search_enabled | json }},
-      predictiveSearchEnabled: {{ settings.tagalys_predictive_search_enabled | json }},
-      predictiveMinChars: {{ settings.tagalys_predictive_min_chars | json }},
+      predictiveSearch: {
+        enabled: {{ settings.tagalys_predictive_search_enabled | json }},
+        minimumCharacters: {{ settings.tagalys_predictive_min_chars | default: 2 | json }}
+      },
       cartUpsellEnabled: {{ settings.tagalys_cart_upsell_enabled | json }},
       cartUpsellWidgetType: {{ settings.tagalys_cart_upsell_widget_type | json }},
       cartUpsellWidgetId: {{ settings.tagalys_cart_upsell_widget_id | json }},
@@ -112,15 +114,29 @@
         analyticsStorageConsentProvided: function() {
           return true;
         },
-        track: true
+        track: true,
+        search: {
+          enabled: {{ settings.tagalys_search_enabled | json }},
+          predictiveSearch: {
+            enabled: {{ settings.tagalys_predictive_search_enabled | json }},
+            minimumCharactersToShowSuggestions: {{ settings.tagalys_predictive_min_chars | default: 2 | json }}
+          }
+        }
       });
     }
 
     function setPlatformConfigurationForTagalys() {
       Tagalys.setPlatformConfiguration({
         platform: 'Shopify',
+        {%- comment -%}
+          countryCode / languageCode are required for Storefront GraphQL @inContext —
+          the predictiveSearch query embeds them. When they were only set with Markets,
+          merchants with Markets off sent invalid queries (data null → SDK reads
+          undefined.predictiveSearch).
+        {%- endcomment -%}
+        countryCode: {{ country_iso | json }},
+        languageCode: {{ request.locale.iso_code | json }},
         {%- if markets_enabled -%}
-          countryCode: {{ country_iso | json }},
           baseCountryCode: {{ country_iso | json }},
           useStorefrontAPIForSecondaryMarkets: true,
           waitForStorefrontAPI: true,
@@ -163,7 +179,7 @@
     function onTagalysReady(callback) {
       if (window.Tagalys) {
         __runTagalysConfigurationOnce();
-        callback();
+        if (typeof callback === 'function') callback();
       } else {
         window.addEventListener('DOMContentLoaded', function() {
           if (!window.Tagalys) {
@@ -177,7 +193,7 @@
             return;
           }
           __runTagalysConfigurationOnce();
-          callback();
+          if (typeof callback === 'function') callback();
         });
       }
     }

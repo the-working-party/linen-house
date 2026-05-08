@@ -1,4 +1,4 @@
-import { Component } from '@theme/component';
+import { Component } from "@theme/component";
 
 /**
  * @typedef {Object} TagalysPredictiveSearchRefs
@@ -44,7 +44,7 @@ import { Component } from '@theme/component';
  */
 class TagalysPredictiveSearch extends Component {
   /** @type {string[]} */
-  requiredRefs = ['mount'];
+  requiredRefs = ["mount"];
 
   /** @type {boolean} */
   #initStarted = false;
@@ -78,27 +78,34 @@ class TagalysPredictiveSearch extends Component {
   connectedCallback() {
     super.connectedCallback();
 
-    this.#searchModal = this.closest('.search-modal') || this.closest('dialog-component');
+    this.#searchModal =
+      this.closest(".search-modal") || this.closest("dialog-component");
     if (!this.#searchModal) {
-      this.#fallbackToNative('search-modal-not-found');
+      this.#fallbackToNative("search-modal-not-found");
       return;
     }
 
-    this.#searchModal.dataset.searchProvider ??= 'loading';
+    this.#searchModal.dataset.searchProvider ??= "loading";
 
-    const inputSelector = this.dataset.searchInputSelector || '#cmdk-input';
+    const inputSelector =
+      this.dataset.searchInputSelector ||
+      "#search-modal input[data-tagalys-modal-search-input]";
     this.#searchInput = /** @type {HTMLInputElement | null} */ (
       document.querySelector(inputSelector)
     );
 
     if (!this.#searchInput) {
-      this.#fallbackToNative('search-input-not-found');
+      this.#fallbackToNative("search-input-not-found");
       return;
     }
 
     this.#boundInitOnFirstInput = this.#initOnFirstInput.bind(this);
-    this.#searchInput.addEventListener('input', this.#boundInitOnFirstInput, { once: true });
-    this.#searchInput.addEventListener('focus', this.#boundInitOnFirstInput, { once: true });
+    this.#searchInput.addEventListener("input", this.#boundInitOnFirstInput, {
+      once: true,
+    });
+    this.#searchInput.addEventListener("focus", this.#boundInitOnFirstInput, {
+      once: true,
+    });
 
     // Safety timeout — fires regardless of whether the user types, so a 404'd
     // SDK does not leave the modal stranded in "loading" state with both
@@ -106,9 +113,9 @@ class TagalysPredictiveSearch extends Component {
     // since users may hover the modal open before typing.
     const safetyMs = (parseInt(this.dataset.initTimeoutMs, 10) || 2000) * 2;
     this.#safetyTimeoutId = setTimeout(() => {
-      if (this.#searchModal?.dataset.searchProvider === 'tagalys') return;
+      if (this.#searchModal?.dataset.searchProvider === "tagalys") return;
       if (this.#initStarted) return;
-      this.#fallbackToNative('safety-timeout-no-input');
+      this.#fallbackToNative("safety-timeout-no-input");
     }, safetyMs);
   }
 
@@ -123,8 +130,14 @@ class TagalysPredictiveSearch extends Component {
     if (this.#pollIntervalId) clearInterval(this.#pollIntervalId);
 
     if (this.#searchInput && this.#boundInitOnFirstInput) {
-      this.#searchInput.removeEventListener('input', this.#boundInitOnFirstInput);
-      this.#searchInput.removeEventListener('focus', this.#boundInitOnFirstInput);
+      this.#searchInput.removeEventListener(
+        "input",
+        this.#boundInitOnFirstInput,
+      );
+      this.#searchInput.removeEventListener(
+        "focus",
+        this.#boundInitOnFirstInput,
+      );
     }
   }
 
@@ -142,15 +155,19 @@ class TagalysPredictiveSearch extends Component {
       this.#safetyTimeoutId = null;
     }
 
-    if (typeof window.whenTagalysReady !== 'function') {
-      this.#fallbackToNative('whenTagalysReady-missing');
+    if (typeof window.whenTagalysReady !== "function") {
+      this.#fallbackToNative("whenTagalysReady-missing");
       return;
     }
 
     const timeoutMs = parseInt(this.dataset.initTimeoutMs, 10) || 2000;
     this.#initTimeoutId = setTimeout(() => {
-      if (!this.#searchModal || this.#searchModal.dataset.searchProvider === 'tagalys') return;
-      this.#fallbackToNative('init-timeout');
+      if (
+        !this.#searchModal ||
+        this.#searchModal.dataset.searchProvider === "tagalys"
+      )
+        return;
+      this.#fallbackToNative("init-timeout");
     }, timeoutMs);
 
     this.#pollIntervalId = window.whenTagalysReady(() => this.#initWidget());
@@ -167,21 +184,23 @@ class TagalysPredictiveSearch extends Component {
 
     const Tagalys = window.Tagalys;
     if (!Tagalys?.UIWidgets?.ShopifySearchSuggestions) {
-      this.#fallbackToNative('widget-class-missing');
+      this.#fallbackToNative("widget-class-missing");
       return;
     }
 
     const minChars = parseInt(this.dataset.minChars, 10) || 2;
-    const inputSelector = this.dataset.searchInputSelector || '#cmdk-input';
-    const mountSelector = '[data-tagalys-predictive-mount]';
+    const inputSelector =
+      this.dataset.searchInputSelector ||
+      "#search-modal input[data-tagalys-modal-search-input]";
+    const mountSelector = "[data-tagalys-predictive-mount]";
     const searchInput = this.#searchInput;
     const searchModal = this.#searchModal;
     const mount = this.refs.mount;
 
-    if (mount) mount.setAttribute('aria-busy', 'true');
+    if (mount) mount.setAttribute("aria-busy", "true");
 
     try {
-      Tagalys.UIWidgets.ShopifySearchSuggestions.init(inputSelector, {
+      const result = Tagalys.UIWidgets.ShopifySearchSuggestions.init(inputSelector, {
         templates: {
           widget: {
             options: {
@@ -196,39 +215,61 @@ class TagalysPredictiveSearch extends Component {
                * @returns {void}
                */
               onSearchSubmit(query) {
-                const dialogComponent = searchModal?.closest('dialog-component') || searchModal;
-                dialogComponent?.dispatchEvent?.(new CustomEvent('dialog:close'));
-                window.location.href = `/search?q=${encodeURIComponent(query || searchInput?.value || '')}`;
+                const dialogComponent =
+                  searchModal?.closest("dialog-component") || searchModal;
+                dialogComponent?.dispatchEvent?.(
+                  new CustomEvent("dialog:close"),
+                );
+                window.location.href = `/search?q=${encodeURIComponent(query || searchInput?.value || "")}`;
               },
             },
           },
         },
-        searchResultsURL: '/search',
+        searchResultsURL: "/search",
         callbacks: {
           afterInitialRender: () => {
             if (this.#initTimeoutId) clearTimeout(this.#initTimeoutId);
             if (this.#safetyTimeoutId) clearTimeout(this.#safetyTimeoutId);
-            if (searchModal) searchModal.dataset.searchProvider = 'tagalys';
-            this.refs.mount?.setAttribute('aria-busy', 'false');
+            if (searchModal) searchModal.dataset.searchProvider = "tagalys";
+            this.refs.mount?.setAttribute("aria-busy", "false");
           },
           afterEveryRender: () => {
-            this.refs.mount?.setAttribute('aria-busy', 'false');
+            this.refs.mount?.setAttribute("aria-busy", "false");
+            /* Prefer afterInitialRender for the provider flip; some SDK paths
+             render suggestions without firing it — unblock CSS gates anyway. */
+            if (
+              searchModal &&
+              searchModal.dataset.searchProvider === "loading"
+            ) {
+              searchModal.dataset.searchProvider = "tagalys";
+            }
           },
           /**
            * @param {TagalysSDKCallbackPayload} event - SDK pre-API-call event payload.
            * @returns {TagalysSDKCallbackPayload}
            */
           beforeAPICall: (event) => {
-            this.refs.mount?.setAttribute('aria-busy', 'true');
+            this.refs.mount?.setAttribute("aria-busy", "true");
             return event;
           },
           onFailedAPICall: () => {
-            this.#fallbackToNative('api-call-failed');
+            this.#fallbackToNative("api-call-failed");
           },
         },
       });
+      /* Drop "loading" immediately so native pane is removed from layout
+         (visibility:hidden still reserved space) and modal overflow fixes apply. */
+      if (searchModal) searchModal.dataset.searchProvider = "tagalys";
+
+      // SDK may return a Promise — catch async rejections so they don't go unhandled
+      if (result && typeof result.then === "function") {
+        result.catch((error) => {
+          const message = error instanceof Error ? error.message : String(error);
+          this.#fallbackToNative(`init-promise-rejected: ${message}`);
+        });
+      }
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'unknown';
+      const message = error instanceof Error ? error.message : "unknown";
       this.#fallbackToNative(`init-threw: ${message}`);
     }
   }
@@ -247,14 +288,16 @@ class TagalysPredictiveSearch extends Component {
     if (this.#safetyTimeoutId) clearTimeout(this.#safetyTimeoutId);
     if (this.#pollIntervalId) clearInterval(this.#pollIntervalId);
     if (this.#searchModal) {
-      this.#searchModal.dataset.searchProvider = 'native';
+      this.#searchModal.dataset.searchProvider = "native";
     }
-    if (typeof console !== 'undefined' && console.warn) {
-      console.warn(`[tagalys-predictive-search] falling back to native: ${reason}`);
+    if (typeof console !== "undefined" && console.warn) {
+      console.warn(
+        `[tagalys-predictive-search] falling back to native: ${reason}`,
+      );
     }
   }
 }
 
-if (!customElements.get('tagalys-predictive-search')) {
-  customElements.define('tagalys-predictive-search', TagalysPredictiveSearch);
+if (!customElements.get("tagalys-predictive-search")) {
+  customElements.define("tagalys-predictive-search", TagalysPredictiveSearch);
 }

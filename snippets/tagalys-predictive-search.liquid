@@ -17,12 +17,18 @@
   {% render 'tagalys-predictive-search' %}
 {%- enddoc -%}
 
+{%- comment -%}
+  Storefront access token is required: ShopifySearchSuggestions calls the
+  Storefront GraphQL predictiveSearch API — without a token the SDK rejects
+  with Uncaught (in promise) reading 'predictiveSearch' on undefined data.
+{%- endcomment -%}
 {%- if settings.tagalys_enabled
   and settings.tagalys_predictive_search_enabled
   and settings.tagalys_server_url != blank
   and settings.tagalys_client_code != blank
   and settings.tagalys_api_key != blank
   and settings.tagalys_store_id != blank
+  and settings.tagalys_storefront_access_token != blank
 -%}
   <script
     src="{{ 'tagalys-predictive-search.js' | asset_url }}"
@@ -32,7 +38,7 @@
 
   <tagalys-predictive-search
     class="tagalys-predictive-search"
-    data-search-input-selector="#cmdk-input"
+    data-search-input-selector="#search-modal input[data-tagalys-modal-search-input]"
     data-min-chars="{{ settings.tagalys_predictive_min_chars | default: 2 }}"
     data-init-timeout-ms="2000"
     role="region"
@@ -59,11 +65,12 @@
 {% stylesheet %}
   /* Tagalys predictive search visibility gate.
      Search modal carries data-search-provider on the dialog-component:
-       "loading" — hide both until Tagalys SDK ready or timeout
-       "tagalys" — show Tagalys mount, hide native results
-       "native"  — show native results, hide Tagalys mount (default fallback) */
-  .search-modal[data-search-provider='loading'] .predictive-search-form__content,
-  .search-modal[data-search-provider='loading'] .tagalys-predictive-search__results {
+       "loading" — hide native pane only (Tagalys mount must stay visible:
+         SDK may not fire afterInitialRender consistently; hiding both kept
+         injected suggestions invisible while network returned 200).
+       "tagalys" — hide native results (display), Tagalys mount visible
+       "native"  — show native results, hide Tagalys mount */
+  .search-modal[data-search-provider='loading'] .predictive-search-form__content {
     visibility: hidden;
   }
 
@@ -80,7 +87,21 @@
     display: block;
   }
 
+  /* Native pane is display:none — give Tagalys the flex space in the dropdown column */
+  .search-modal[data-search-provider='tagalys'] tagalys-predictive-search {
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+  }
+
   .tagalys-predictive-search__results {
     min-height: 1px;
+  }
+
+  /* Tagalys emits .search-suggestions inside the mount — defensive against theme
+     rules that inherit visibility:hidden from ancestors during widget init. */
+  .search-modal[data-search-provider] .search-suggestions {
+    visibility: visible;
+    opacity: 1;
   }
 {% endstylesheet %}

@@ -249,7 +249,7 @@
     "tagalys_client_code": "Provided by Tagalys.",
     "tagalys_api_key": "Provided by Tagalys.",
     "tagalys_store_id": "Provided by Tagalys.",
-    "tagalys_storefront_access_token": "From a Shopify Custom App. Required for multi-currency and product tile rendering.",
+    "tagalys_storefront_access_token": "From a Shopify Custom App. Required for Tagalys predictive search (Storefront GraphQL), product tiles, and multi-currency when Markets is enabled.",
     "tagalys_search_enabled": "Replace Shopify native search with Tagalys-powered search results.",
     "tagalys_no_results_widget_id": "Smart widget ID to display when search returns no results.",
     "tagalys_predictive_search_enabled": "Replace native predictive search dropdown with Tagalys instant search. Falls back to native if SDK fails to load.",
