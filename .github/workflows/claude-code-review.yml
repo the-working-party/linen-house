@@ -24,6 +24,11 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.TWP_MARKETPLACE_DEPLOY_KEY }}
 
+      # claude-code-action only accepts https://...\.git marketplace URLs (not git@...).
+      # Rewrite GitHub HTTPS → SSH so the deploy key above still authenticates.
+      - name: Git HTTPS → SSH for github.com
+        run: git config --global url."git@github.com:".insteadOf "https://github.com/"
+
       - name: Run Claude Code Review
         id: claude-review
         uses: anthropics/claude-code-action@v1
@@ -32,10 +37,10 @@ jobs:
           plugin_marketplaces: |
             https://github.com/anthropics/claude-code.git
             https://github.com/EveryInc/every-marketplace.git
-            git@github.com:the-working-party/twp-plugin-marketplace.git
+            https://github.com/the-working-party/twp-plugin-marketplace.git
           plugins: |
             shopify-theme-development@the-working-party-plugins
-            compound-engineering@every-marketplace
+            compound-engineering@compound-engineering-plugin
           prompt: |
             Review PR #${{ github.event.pull_request.number }} in this Shopify Horizon theme.
 

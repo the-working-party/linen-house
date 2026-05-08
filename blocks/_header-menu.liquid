@@ -125,7 +125,7 @@
                       parent_link: link,
                       id: list_id,
                       section: section,
-                      grid_columns_count: 6,
+                      grid_columns_count: 5,
                       grid_columns_count_tablet: 4,
                       grid_columns_count_collection_images: 8,
                       menu_content_type: menu_content_type,
@@ -626,6 +626,11 @@
     display: grid;
     justify-content: end;
     gap: var(--menu-vertical-gap) var(--menu-horizontal-gap);
+  }
+
+  .mega-menu__content-list--products,
+  .mega-menu__content-list--collections {
+    column-gap: 8px;
   }
 
   .mega-menu__content-list--products {

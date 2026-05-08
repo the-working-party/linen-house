@@ -211,10 +211,7 @@
             </div>
           </details>
         {% endcapture %}
-        {% render 'accordion-custom-component',
-          children: cart_discount_accordion_children,
-          class: 'cart-discount'
-        %}
+        {% render 'accordion-custom-component', children: cart_discount_accordion_children, class: 'cart-discount' %}
       {% endif %}
     </div>
   {% endif %}
@@ -232,7 +229,7 @@
       class="cart-totals__item cart-totals__total"
       role="status"
     >
-      <span class="cart-totals__total-label cart-primary-typography">{{ 'content.cart_estimated_total' | t }}</span>
+      <span class="cart-totals__total-label cart-primary-typography">{{ 'content.cart_subtotal' | t }}</span>
       <text-component
         ref="cartTotal"
         value="{{ total_price | strip_html }}"
@@ -244,6 +241,15 @@
         {{ total_price }}
       </text-component>
     </span>
+    <span
+      class="cart-totals__item cart-totals__shipping"
+      role="group"
+    >
+      <span class="cart-totals__shipping-label cart-primary-typography">{{ 'content.cart_shipping' | t }}</span>
+      <span class="cart-totals__shipping-value cart-secondary-typography">
+        {{- 'content.cart_shipping_calculated_at_checkout' | t -}}
+      </span>
+    </span>
     {% if settings.show_installments %}
       <span class="cart-totals__item cart-totals__installments">
         {% form 'cart', cart %}
@@ -251,9 +257,6 @@
         {% endform %}
       </span>
     {% endif %}
-    <div class="cart-totals__item cart-totals__tax-note cart-primary-typography">
-      {% render 'tax-info', has_discounts_enabled: settings.show_add_discount_code %}
-    </div>
   </div>
 </div>
 
@@ -272,6 +275,12 @@
       {{ 'content.checkout' | t }}
     </span>
   </button>
+
+  {% if settings.show_cart_bnpl_message %}
+    <p class="cart__bnpl-message" role="note">
+      {{ 'content.bnpl_afterpay_message' | t }}
+    </p>
+  {% endif %}
 
   {% if additional_checkout_buttons and settings.show_accelerated_checkout_buttons %}
     <div
@@ -302,6 +311,9 @@
   .cart-totals:not(:has(.cart-actions)) {
     margin-block-start: var(--margin-3xs);
     border-block-start: 1px solid var(--color-border);
+  }
+
+  .cart-drawer__summary .cart-totals:not(:has(.cart-actions)) {
     padding-block-start: var(--margin-xl);
   }
 
@@ -309,14 +321,6 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-  }
-
-  .cart-totals__tax-note {
-    color: rgb(var(--color-foreground-rgb) / var(--opacity-subdued-text));
-  }
-
-  .cart-totals__tax-note small {
-    font-size: var(--font-size--2xs);
   }
 
   .cart-discounts {
@@ -390,6 +394,20 @@
 
   .cart-totals__total-label {
     font-size: var(--cart-font-size--sm);
+    letter-spacing: var(--paragraph-spacing);
+  }
+
+  .cart-totals__shipping {
+    align-items: baseline;
+  }
+
+  .cart-totals__shipping-label {
+    font-size: var(--cart-font-size--sm);
+    letter-spacing: var(--paragraph-spacing);
+  }
+
+  .cart-totals__shipping-value {
+    font-size: var(--cart-font-size--sm);
   }
 
   .cart-totals__total-value {
@@ -462,9 +480,20 @@
   .cart__ctas {
     width: 100%;
     display: grid;
-    gap: var(--checkout-button-gap);
+    gap: 24px;
     grid-auto-flow: row;
     grid-template-columns: 1fr;
+  }
+
+  .cart__bnpl-message {
+    margin: 0;
+    width: 100%;
+    text-align: center;
+    color: var(--text-tertiary);
+    font-family: var(--paragraph-family);
+    font-size: var(--paragraph-small);
+    font-weight: var(--paragraph-weight);
+    letter-spacing: var(--paragraph-spacing);
   }
 
   .cart__ctas .cart__checkout-button {

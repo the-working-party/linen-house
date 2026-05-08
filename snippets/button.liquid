@@ -153,6 +153,7 @@
     --link-color: currentcolor;
     --link-color-hover: var(--button-dark-content-hover);
 
+    line-height: 1;
     color: var(--button-dark-content-inverse);
     border-bottom: 1px solid var(--button-dark-content-inverse);
     text-decoration: none;
@@ -170,6 +171,7 @@
     --ghost-color: currentcolor;
     --ghost-color-hover: var(--button-dark-content-hover);
 
+    line-height: 1;
     color: var(--button-dark-content-inverse);
     text-decoration: none;
     text-decoration-color: currentcolor;
@@ -185,6 +187,10 @@
     display: flex;
     align-items: center;
     gap: var(--button-spaced);
+  }
+
+  .button-ghost.button--with-icon {
+    gap: 12px;
   }
 
   .button__icon {

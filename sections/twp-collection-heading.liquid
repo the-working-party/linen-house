@@ -237,6 +237,14 @@
       width: 100%;
       max-height: 300px;
     }
+
+    /* Split layout: 3:2 image frame on desktop */
+    .layout-panel-flex--row .twp-collection-heading__media {
+      aspect-ratio: 3 / 2;
+      min-height: 0;
+      align-self: flex-start;
+      width: 100%;
+    }
   }
 
   @media screen and (max-width: 749px) {

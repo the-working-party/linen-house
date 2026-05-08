@@ -34,6 +34,11 @@
   %}
 {% endcapture %}
 
+{%- assign display_blog_title = closest.blog.title | default: section.settings.blog.title -%}
+{% capture blog_label %}
+  {% content_for 'block', id: 'blog-label', type: '_heading', text: display_blog_title %}
+{% endcapture %}
+
 {% capture title %}
   {% content_for 'block', id: 'title', type: '_heading', text: display_title %}
 {% endcapture %}
@@ -57,6 +62,10 @@
     should_truncate: truncate_description,
     onboarding_text: display_description
   %}
+{% endcapture %}
+
+{% capture card_button %}
+  {% content_for 'block', id: 'card-button', type: 'button', link: article.url %}
 {% endcapture %}
 
 <div
@@ -94,9 +103,11 @@
     {% endif %}
 
     <div class="featured-blog-posts-card__content layout-panel-flex--column">
+      {{ blog_label }}
       <h4>{{ title }}</h4>
       {{ details }}
       {{ description }}
+      {{ card_button }}
     </div>
   </div>
 </div>
