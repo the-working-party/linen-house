@@ -1,0 +1,130 @@
+{% comment %}
+  Tagalys Recommendations Section
+  ==================================
+  A universal recommendation widget section usable on any page.
+  Add via the theme editor — available on all templates.
+
+  When Tagalys is enabled: renders a SDK widget container.
+  When Tagalys is disabled: falls back to products from a Shopify collection.
+
+  Widget types:
+    - smart_widget: Homepage, blog, marketing pages (no product context needed)
+    - similar_products: PDP — similar products
+    - cross_selling: PDP — cross-sell (requires widget ID)
+    - viewed_also_viewed: PDP — users who viewed also viewed
+    - bought_also_bought: PDP/Cart — users who bought also bought
+
+  Product-based widgets auto-detect product.id from the template context.
+{% endcomment %}
+
+{%- liquid
+  assign heading = section.settings.heading
+  assign widget_type = section.settings.widget_type
+  assign widget_id = section.settings.widget_id
+  assign product_limit = section.settings.product_limit
+  assign fallback_collection = section.settings.fallback_collection
+-%}
+
+<div class="tagalys-recommendations-section" data-section-id="{{ section.id }}">
+  {%- if settings.tagalys_enabled -%}
+    <div
+      class="tagalys-widget"
+      data-tagalys-widget="{{ widget_type | replace: '_', '-' }}"
+      data-limit="{{ product_limit }}"
+      {%- if widget_id != blank -%}
+        data-widget-id="{{ widget_id }}"
+      {%- endif -%}
+      {%- if product and widget_type != 'smart_widget' -%}
+        data-product-id="{{ product.id }}"
+      {%- endif -%}
+      {%- if heading != blank -%}
+        data-widget-heading="{{ heading | escape }}"
+      {%- endif -%}
+    ></div>
+  {%- elsif fallback_collection != blank -%}
+    {%- if heading != blank -%}
+      <h2 class="tagalys-recommendations__heading">{{ heading }}</h2>
+    {%- endif -%}
+
+    <!--
+      ADAPT: fallback_product_card — Replace this minimal grid with the theme's product card snippet, e.g. {% render 'product-card', product: product %}
+    -->
+    <div class="tagalys-recommendations__grid">
+      {%- for product in fallback_collection.products limit: product_limit -%}
+        <div class="tagalys-recommendations__product">
+          <a href="{{ product.url }}">
+            {%- if product.featured_image -%}
+              <img
+                src="{{ product.featured_image | image_url: width: 400 }}"
+                alt="{{ product.featured_image.alt | escape }}"
+                width="{{ product.featured_image.width }}"
+                height="{{ product.featured_image.height }}"
+                loading="lazy"
+              >
+            {%- endif -%}
+            <p>{{ product.title }}</p>
+            <p>{{ product.price | money }}</p>
+          </a>
+        </div>
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "Tagalys Recommendations",
+  "class": "tagalys-recommendations",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "You may also like"
+    },
+    {
+      "type": "select",
+      "id": "widget_type",
+      "label": "Widget Type",
+      "options": [
+        { "value": "smart_widget", "label": "Smart Widget" },
+        { "value": "similar_products", "label": "Similar Products" },
+        { "value": "cross_selling", "label": "Cross Selling" },
+        { "value": "viewed_also_viewed", "label": "Viewed Also Viewed" },
+        { "value": "bought_also_bought", "label": "Bought Also Bought" }
+      ],
+      "default": "smart_widget",
+      "info": "Smart Widget works on any page. Other types require product context (PDP, cart)."
+    },
+    {
+      "type": "text",
+      "id": "widget_id",
+      "label": "Widget ID",
+      "info": "Required for Smart Widget and Cross Selling types. Found in the Tagalys dashboard."
+    },
+    {
+      "type": "range",
+      "id": "product_limit",
+      "label": "Product Limit",
+      "min": 4,
+      "max": 16,
+      "step": 1,
+      "default": 8
+    },
+    {
+      "type": "collection",
+      "id": "fallback_collection",
+      "label": "Fallback Collection",
+      "info": "Shopify collection to display when Tagalys is disabled. Provides graceful degradation."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Tagalys Recommendations"
+    }
+  ],
+  "enabled_on": {
+    "templates": ["*"]
+  }
+}
+{% endschema %}

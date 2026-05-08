@@ -41,6 +41,25 @@
     {{ content_for_header }}
     {%- render 'typography-heading-weights' -%}
     {% # theme-check-enable RemoteAsset %}
+
+    <script src="https://storage.googleapis.com/tagalys-public-assets/tagalys-ui-widgets-3.0.12.min.js" defer></script>
+    <script src="{{ 'tagalys-customisations.js' | asset_url }}" defer></script>
+
+    <script>
+      function onTagalysReady(callback) {
+        if (window.Tagalys) {
+          TagalysCustomisations.setTagalysConfiguration();
+          TagalysCustomisations.setPlatformConfiguration();
+          callback();
+        } else {
+          window.addEventListener('DOMContentLoaded', function () {
+            TagalysCustomisations.setTagalysConfiguration();
+            TagalysCustomisations.setPlatformConfiguration();
+            callback();
+          });
+        }
+      }
+    </script>
   </head>
 
   <body class="page-width-{{ settings.page_width }} card-hover-effect-{{ settings.card_hover_effect }}">
@@ -137,5 +156,28 @@
     {% if settings.quick_add or settings.mobile_quick_add %}
       {% render 'quick-add-modal' %}
     {% endif %}
+
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      #search-input {
+        padding: 10px;
+        width: 100%;
+        box-sizing: border-box;
+      }
+    </style>
+
+    <div style="padding: 20px">
+      <!-- Initialising search suggestions widget -->
+      <input data-search-input placeholder="Search products" id="search-input">
+    </div>
+    <script>
+      onTagalysReady(function () {
+        TagalysCustomisations.initSearchSuggestions();
+      });
+    </script>
   </body>
 </html>
