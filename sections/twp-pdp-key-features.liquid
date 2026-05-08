@@ -1,7 +1,7 @@
 {%- assign kf = product.metafields.custom.key_features.value -%}
 
-{% capture children %}
-  {%- if kf != blank -%}
+{%- if kf != blank -%}
+  {% capture children %}
     <div class="twp-key-features">
       <div class="twp-key-features__left">
         {%- if kf.heading.value != blank -%}
@@ -32,10 +32,10 @@
         </div>
       {%- endif -%}
     </div>
-  {%- endif -%}
-{% endcapture %}
+  {% endcapture %}
 
-{% render 'section', section: section, children: children %}
+  {% render 'section', section: section, children: children %}
+{%- endif -%}
 
 {% stylesheet %}
   .twp-key-features {

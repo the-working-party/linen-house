@@ -44,8 +44,8 @@
 {% stylesheet %}
   .twp-product-breadcrumb {
     position: absolute;
-    left: 16px;
-    top: 14px;
+    left: 32px;
+    top: 30px;
     z-index: 2;
   }
 
@@ -77,15 +77,23 @@
     text-decoration: underline;
   }
 
+  .twp-product-breadcrumb__separator {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 12px;
+    height: 12px;
+  }
+
   .twp-product-breadcrumb__separator svg {
-    width: 6px;
+    width: 4px;
     height: auto;
   }
 
   @media screen and (max-width: 749px) {
     .twp-product-breadcrumb {
       position: static;
-      padding: var(--section-margin) var(--section-margin) 0;
+      padding: var(--section-margin) var(--section-margin) 0 0;
     }
   }
 {% endstylesheet %}

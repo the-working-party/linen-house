@@ -44,6 +44,16 @@
     <form class="variant-picker__form">
       {%- for product_option in product_resource.options_with_values -%}
         {%- liquid
+          assign opt_name_lower = product_option.name | downcase
+          assign is_colour_option = false
+          if colour_option_list contains opt_name_lower
+            assign is_colour_option = true
+          endif
+          assign show_size_guide = false
+          if size_guide_page != blank and size_option_list contains opt_name_lower
+            assign show_size_guide = true
+          endif
+
           assign swatch_count = product_option.values | map: 'swatch' | compact | size
           assign variant_style = block_settings.variant_style
 
@@ -53,22 +63,14 @@
             else
               assign variant_style = 'swatch'
             endif
+          elsif is_colour_option and block_settings.show_swatches
+            assign variant_style = 'swatch'
           endif
 
           if variant_style == 'buttons' and settings.variant_button_width == 'equal-width-buttons'
             assign fieldset_id = section.id | append: '-' | append: product_resource.id | append: '-' | append: product_option.name | handleize
             assign option_id_attribute = 'data-option-id="' | append: fieldset_id | append: '"'
             assign longest_value = 0
-          endif
-
-          assign opt_name_lower = product_option.name | downcase
-          assign show_size_guide = false
-          if size_guide_page != blank and size_option_list contains opt_name_lower
-            assign show_size_guide = true
-          endif
-          assign is_colour_option = false
-          if colour_option_list contains opt_name_lower
-            assign is_colour_option = true
           endif
         -%}
 
@@ -375,6 +377,68 @@
     width: 12px;
     height: 12px;
     color: inherit;
+  }
+
+  /* Force pill shape for text-style variant buttons (size, etc.) */
+  .variant-option__button-label:not(.variant-option__button-label--has-swatch) {
+    border-radius: 9999px;
+  }
+
+  /* Colour swatches: selection ring pattern */
+  .variant-option--swatches .variant-option__button-label--has-swatch {
+    width: 40px;
+    height: 40px;
+    padding: 4px;
+    border-radius: 9999px;
+    border: 1px solid transparent;
+    outline: none;
+  }
+
+  .variant-option--swatches .variant-option__button-label--has-swatch:hover {
+    border-color: rgb(var(--color-foreground-rgb) / 0.35);
+    outline: none;
+  }
+
+  .variant-option--swatches .variant-option__button-label--has-swatch:has(:checked) {
+    border-color: var(--color-foreground);
+    outline: none;
+  }
+
+  .variant-option--swatches .variant-option__button-label--has-swatch:has(:checked):hover {
+    border-color: var(--color-foreground);
+  }
+
+  /* Suppress Horizon's outline-based selection ring in Safari < 16.4 */
+  @supports not (background-color: rgb(from red 150 g b / alpha)) {
+    .variant-option--swatches .variant-option__button-label--has-swatch:has(:checked) {
+      overflow: clip;
+    }
+
+    .variant-option--swatches .variant-option__button-label--has-swatch:has(:checked)::after {
+      display: none;
+    }
+  }
+
+  /* Inner swatch: fill the content area created by the padding gap */
+  .variant-option--swatches .variant-option__button-label--has-swatch .swatch {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 9999px;
+    border: none;
+    background-size: cover;
+  }
+
+  /* Placeholder when no swatch image or colour is configured yet */
+  .variant-option--swatches .swatch--unavailable {
+    background-color: var(--color-border);
+  }
+
+  /* OOS strikethrough: clip to inner swatch circle.
+     SVG starts 2px from outer (border 1px + options-border-width 1px),
+     inner circle starts 5px from outer — 3px inset gives exact match. */
+  .variant-option--swatches .variant-option__button-label--has-swatch .variant-option__strikethrough {
+    clip-path: inset(3px round 9999px);
   }
 {% endstylesheet %}
 
