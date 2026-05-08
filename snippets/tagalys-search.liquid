@@ -1,43 +1,88 @@
 {%- doc -%}
   Tagalys Search Results Widget container.
 
-  Renders a Tagalys-powered search results container for the /search page.
-  The Tagalys SDK auto-detects the search query from the URL and populates
-  the data-tagalys-widget container with results.
+  Renders the mount for `/search` and runs `TagalysCustomisations.initSearchResults`
+  after `whenTagalysReady` (deferred SDK + `setConfiguration`), matching the
+  Tagalys custom integration pattern:
 
-  This snippet is a conditional include — wrap the theme's existing search
-  markup with `{% if settings.tagalys_enabled and settings.tagalys_search_enabled %}`.
+    Tagalys.UIWidgets.SearchResults.init("[data-search-results]", { query: "…", templates: … }).
+    The Tagalys API requires `query`; declarative mounts may infer it, but programmatic
+    `init` does not — we pass `search.terms` / URL `q` as fallback.
 
-  Outputs nothing when either setting is false.
+  Uses `data-search-results` only (no `data-tagalys-widget="search-results"`) so the
+  SDK does not auto-mount the same surface twice.
 
-  @param {number} [page_size] - Optional override for the products-per-page limit (defaults to settings.tagalys_no_results_limit)
+  @param {number} [page_size] - Optional products-per-page hint (`data-limit`).
 
   @example
-  {% if settings.tagalys_enabled and settings.tagalys_search_enabled %}
-    {% render 'tagalys-search', page_size: 24 %}
-  {% else %}
-    {% comment %} ...native search markup... {% endcomment %}
-  {% endif %}
+  {% render 'tagalys-search', page_size: 24 %}
 {%- enddoc -%}
 
-{%- comment -%}
-  Gate on credentials too — `tagalys-config.liquid` only loads the SDK when
-  server URL and API key are set, so rendering this mount when credentials are
-  missing would leave an empty container with no widget to populate it (broken
-  search page). Mirror the SDK gate here.
-{%- endcomment -%}
-{%- if settings.tagalys_enabled
-  and settings.tagalys_search_enabled
-  and settings.tagalys_server_url != blank
-  and settings.tagalys_api_key != blank
+{%- liquid
+  assign tagalys_search_mount_ok = false
+  if settings.tagalys_enabled and settings.tagalys_search_enabled and settings.tagalys_sdk_url != blank and settings.tagalys_server_url != blank and settings.tagalys_api_key != blank
+    assign tagalys_search_mount_ok = true
+  endif
+
+  assign tagalys_search_query = ''
+  if search
+    assign tagalys_search_query = search.terms | default: ''
+  endif
 -%}
+
+{%- if tagalys_search_mount_ok -%}
   <div
     class="tagalys-search-results"
-    data-tagalys-widget="search-results"
+    data-search-results
     data-limit="{{ page_size | default: 24 }}"
-    {%- if settings.tagalys_no_results_widget_id != blank -%}
-      data-no-results-widget="{{ settings.tagalys_no_results_widget_id }}"
-      data-no-results-widget-limit="{{ settings.tagalys_no_results_limit | default: 8 }}"
-    {%- endif -%}
   ></div>
+
+  {%- comment -%}
+    `whenTagalysReady` polls until `window.Tagalys` exists, then runs
+    `onTagalysReady` so `setConfiguration` / `setPlatformConfiguration` apply
+    before `SearchResults.init` — same pattern as `tagalys-recommendations.liquid`.
+  {%- endcomment -%}
+  <script>
+    (function () {
+      window.TagalysCustomisations = window.TagalysCustomisations || {};
+
+      TagalysCustomisations.initSearchResults = function () {
+        var SR =
+          window.Tagalys &&
+          window.Tagalys.UIWidgets &&
+          window.Tagalys.UIWidgets.SearchResults;
+        if (!SR || typeof SR.init !== 'function') return;
+
+        var searchQuery = {{ tagalys_search_query | json }};
+        if (searchQuery == null) searchQuery = '';
+        if (!searchQuery && typeof URLSearchParams !== 'undefined') {
+          try {
+            searchQuery = new URLSearchParams(window.location.search).get('q') || '';
+          } catch (_e) {}
+        }
+
+        var config = { query: searchQuery };
+        {%- if settings.tagalys_no_results_widget_id != blank -%}
+        config.templates = {
+          noResults: {
+            options: {
+              widgets: [
+                {
+                  recommendationId: {{ settings.tagalys_no_results_widget_id | json }},
+                },
+              ],
+            },
+          },
+        };
+        {%- endif -%}
+
+        SR.init('[data-search-results]', config);
+      };
+
+      if (typeof whenTagalysReady !== 'function') return;
+      whenTagalysReady(function () {
+        TagalysCustomisations.initSearchResults();
+      });
+    })();
+  </script>
 {%- endif -%}
