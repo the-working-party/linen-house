@@ -1375,9 +1375,15 @@ input:not(:placeholder-shown)::placeholder {
 }
 
 .button[aria-disabled="true"],
-.button-secondary[aria-disabled="true"],
-.button:disabled {
+.button-secondary[aria-disabled="true"] {
   opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.button:disabled {
+  opacity: 1;
+  background: var(--button-dark-background-disabled, #f7f7f7);
+  color: rgb(var(--color-foreground-rgb) / 0.4);
   cursor: not-allowed;
 }
 
