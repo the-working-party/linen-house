@@ -2,10 +2,15 @@
   Size guide modal overlay. Opened by any element with
   [data-dialog-target="twp-size-guide-component"].
 
-  @param {page} size_guide_page - Shopify page whose content renders in the modal body.
+  Product-level content takes priority: if the product has a `custom.size_chart` metaobject
+  assigned, its `content` field (rich text) is rendered. Falls back to the global
+  `size_guide_page` Shopify page selected in the theme editor.
+
+  @param {metaobject} [size_chart] - The product's custom.size_chart metaobject value.
+  @param {page} [size_guide_page] - Fallback Shopify page rendered when size_chart is blank.
 
   @example
-  {% render 'twp-size-guide-modal', size_guide_page: size_guide_page %}
+  {% render 'twp-size-guide-modal', size_chart: product.metafields.custom.size_chart.value, size_guide_page: size_guide_page %}
 {% enddoc %}
 
 <dialog-component id="twp-size-guide-component">
@@ -26,7 +31,9 @@
       </button>
     </div>
     <div class="twp-size-guide-modal__body rte">
-      {%- if size_guide_page != blank -%}
+      {%- if size_chart != blank -%}
+        {{ size_chart.content | metafield_tag }}
+      {%- elsif size_guide_page != blank -%}
         {{ size_guide_page.content }}
       {%- endif -%}
     </div>

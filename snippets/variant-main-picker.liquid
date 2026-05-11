@@ -50,7 +50,11 @@
             assign is_colour_option = true
           endif
           assign show_size_guide = false
-          if size_guide_page != blank and size_option_list contains opt_name_lower
+          assign has_size_chart = false
+          if product.metafields.custom.size_chart != blank or size_guide_page != blank
+            assign has_size_chart = true
+          endif
+          if has_size_chart and size_option_list contains opt_name_lower
             assign show_size_guide = true
           endif
 
@@ -450,6 +454,9 @@
   });
 {% endjavascript %}
 
-{%- if size_guide_page != blank -%}
-  {%- render 'twp-size-guide-modal', size_guide_page: size_guide_page -%}
+{%- if product.metafields.custom.size_chart != blank or size_guide_page != blank -%}
+  {%- render 'twp-size-guide-modal',
+    size_chart: product.metafields.custom.size_chart.value,
+    size_guide_page: size_guide_page
+  -%}
 {%- endif -%}
