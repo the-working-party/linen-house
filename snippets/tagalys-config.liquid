@@ -8,6 +8,10 @@
   Sets `window.tagalysDisableLegacyScript = true` to prevent the legacy
   jQuery template script from loading — v3 uses Preact internally.
 
+  Loads `tagalys-shared-templates.js` (sync) before the deferred SDK so
+  `TagalysCustomisations.getSharedFiltersTemplate` is defined for collection
+  and search widgets without a deferred-script race.
+
   @example
   {% render 'tagalys-config' %}
 {%- enddoc -%}
@@ -74,6 +78,13 @@
     <script defer src="https://storage.googleapis.com/tagalys-front-end-components/tagalys-shopify-market-translations.js"></script>
     {% # theme-check-enable RemoteAsset %}
   {%- endif -%}
+
+  {%- comment -%}
+    Shared Tagalys template overrides (e.g. filters `render`). Loaded synchronously
+    so `TagalysCustomisations.getSharedFiltersTemplate` exists before any deferred
+    SDK callback runs (avoids a race between consecutive deferred scripts).
+  {%- endcomment -%}
+  {{ 'tagalys-shared-templates.js' | asset_url | script_tag }}
 
   {% # theme-check-disable RemoteAsset %}
   <script

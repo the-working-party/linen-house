@@ -5,7 +5,8 @@
   editor (Customise > Add Section > Tagalys Recommendations).
 
   - When Tagalys is enabled: renders an SDK widget container; SDK populates
-    Preact tiles. Visual parity with theme product card via assets/tagalys-skin.css.
+    Preact tiles. Product tile template override via `getSharedProductTemplate` in
+    assets/tagalys-shared-templates.js; styling via assets/tagalys-skin.css.
   - When Tagalys is disabled: falls back to a fallback collection's products
     rendered via the theme's own `_product-card` block — so card markup
     matches the rest of the site exactly when Tagalys is off.
@@ -75,23 +76,25 @@
 </div>
 
 {%- comment -%}
-  whenTagalysReady polls until window.Tagalys exists (deferred SDK), then runs
-  onTagalysReady which applies Tagalys.setConfiguration — same timing as cart upsell.
+  `whenTagalysReady` polls until `window.Tagalys` exists, then runs
+  `onTagalysReady` so `setConfiguration` / `setPlatformConfiguration` apply
+  before `Recommendations.init`. Product tile markup lives in
+  `assets/tagalys-shared-templates.js` (`getSharedProductTemplate`).
 {%- endcomment -%}
 {%- if tagalys_active -%}
   <script>
     (function () {
       window.TagalysCustomisations = window.TagalysCustomisations || {};
 
-      TagalysCustomisations.initProductBasedWidget = function () {
-        var Rec =
+      function initProductBasedWidget() {
+        const Rec =
           window.Tagalys &&
           window.Tagalys.UIWidgets &&
           window.Tagalys.UIWidgets.Recommendations;
         if (!Rec || typeof Rec.init !== 'function') return;
 
-        var recommendationId = {{ widget_id | json }};
-        var productIds = {% if product -%}
+        const recommendationId = {{ widget_id | json }};
+        const productIds = {% if product -%}
           [{{ product.id | json }}]
         {%- else -%}
           []
@@ -99,87 +102,24 @@
 
         if (!recommendationId) return;
 
-        Rec.init('[data-product-based-widget]', {
+        const initOpts = {
           recommendationId: recommendationId,
           productIds: productIds,
-          templates: {
-            product: {
-              render: function (html, args) {
-                var props = args.props;
-                var product = props.product;
-                var helpers = props.helpers;
-        
-                var navigateToProductDetailPage = (event) => {
-                  helpers.navigateToProductDetailPage(event, product)
-                }
-        
-                var productOptions = helpers.getTemplateOptions('product')
-                var productLink = productOptions.productPageUrl(product)
-        
-                return html`
-                  <div class="product" onClick=${navigateToProductDetailPage}>
-                    <a
-                      class="product-link"
-                      href=${productLink}
-                      target="_blank"
-                    >
-                      <span class="product-image-container">
-                        ${product.featured_image ? (
-                          html `<img
-                            class="product-image"
-                            data-src=${product.featured_image.src}
-                            alt=${product.title}
-                          />`
-                        ) : null}
-                      </span>
-                      <div class="product-details">
-                        <span class="product-name">${product.title} - template override!!!</span>
-                        ${helpers.isStorefrontAPICallPending() ? (
-                          html `<span class="skeleton-box"></span>`
-                        ) : (
-                          html `<span
-                            class=${`product-prices${
-                              helpers.isProductOnSale(
-                                product.compare_at_price,
-                                product.price
-                              )
-                                ? " discounted"
-                                : " full-price"
-                            }`}
-                          >
-                            ${helpers.isProductOnSale(
-                              product.compare_at_price,
-                              product.price
-                            )
-                              ? html`
-                                  <span class="product-price-discounted"
-                                    >${helpers.formatCurrency(product.price)}</span
-                                  >
-                                `
-                              : null}
-                            <span class="product-price-regular">
-                              ${helpers.formatCurrency(
-                                product.compare_at_price === null
-                                  ? product.price
-                                  : product.compare_at_price
-                              )}
-                            </span>
-                          </span>`
-                        )}
-                      </div>
-                    </a>
-                  </div>
-                `;
-              },
-            },
-          },
-        });
-      };
+        };
+        const TC = window.TagalysCustomisations;
+        if (TC && typeof TC.getSharedProductTemplate === 'function') {
+          initOpts.templates = {
+            product: TC.getSharedProductTemplate(),
+          };
+        }
+
+        Rec.init('[data-product-based-widget]', initOpts);
+      }
+
+      TagalysCustomisations.initProductBasedWidget = initProductBasedWidget;
 
       if (typeof whenTagalysReady !== 'function') return;
-      whenTagalysReady(function () {
-        TagalysCustomisations.initProductBasedWidget();
-      });
+      whenTagalysReady(initProductBasedWidget);
     })();
   </script>
 {%- endif -%}

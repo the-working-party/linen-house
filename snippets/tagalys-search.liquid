@@ -12,6 +12,9 @@
   Uses `data-search-results` only (no `data-tagalys-widget="search-results"`) so the
   SDK does not auto-mount the same surface twice.
 
+  Shares filter templates with collection via `TagalysCustomisations.getSharedFiltersTemplate`
+  (`assets/tagalys-shared-templates.js`).
+
   @param {number} [page_size] - Optional products-per-page hint (`data-limit`).
 
   @example
@@ -40,20 +43,20 @@
   {%- comment -%}
     `whenTagalysReady` polls until `window.Tagalys` exists, then runs
     `onTagalysReady` so `setConfiguration` / `setPlatformConfiguration` apply
-    before `SearchResults.init` — same pattern as `tagalys-recommendations.liquid`.
+    before `SearchResults.init`.
   {%- endcomment -%}
   <script>
     (function () {
       window.TagalysCustomisations = window.TagalysCustomisations || {};
 
-      TagalysCustomisations.initSearchResults = function () {
-        var SR =
+      function initSearchResults() {
+        const SR =
           window.Tagalys &&
           window.Tagalys.UIWidgets &&
           window.Tagalys.UIWidgets.SearchResults;
         if (!SR || typeof SR.init !== 'function') return;
 
-        var searchQuery = {{ tagalys_search_query | json }};
+        let searchQuery = {{ tagalys_search_query | json }};
         if (searchQuery == null) searchQuery = '';
         if (!searchQuery && typeof URLSearchParams !== 'undefined') {
           try {
@@ -61,28 +64,38 @@
           } catch (_e) {}
         }
 
-        var config = { query: searchQuery };
+        const config = { query: searchQuery };
+
+        const templates = {};
+        const TC = window.TagalysCustomisations;
+        if (TC && typeof TC.getSharedFiltersTemplate === 'function') {
+          templates.filters = TC.getSharedFiltersTemplate();
+        }
+        if (TC && typeof TC.getSharedProductTemplate === 'function') {
+          templates.product = TC.getSharedProductTemplate();
+        }
         {%- if settings.tagalys_no_results_widget_id != blank -%}
-        config.templates = {
-          noResults: {
-            options: {
-              widgets: [
-                {
-                  recommendationId: {{ settings.tagalys_no_results_widget_id | json }},
-                },
-              ],
-            },
+        templates.noResults = {
+          options: {
+            widgets: [
+              {
+                recommendationId: {{ settings.tagalys_no_results_widget_id | json }},
+              },
+            ],
           },
         };
         {%- endif -%}
+        if (Object.keys(templates).length) {
+          config.templates = templates;
+        }
 
         SR.init('[data-search-results]', config);
-      };
+      }
+
+      TagalysCustomisations.initSearchResults = initSearchResults;
 
       if (typeof whenTagalysReady !== 'function') return;
-      whenTagalysReady(function () {
-        TagalysCustomisations.initSearchResults();
-      });
+      whenTagalysReady(initSearchResults);
     })();
   </script>
 {%- endif -%}

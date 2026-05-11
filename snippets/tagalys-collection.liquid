@@ -1,6 +1,9 @@
 {%- doc -%}
   Tagalys collection page widget (SDK).
 
+  Filter UI templates come from `assets/tagalys-shared-templates.js` via
+  `TagalysCustomisations.getSharedFiltersTemplate` (loaded in `tagalys-config`).
+
   Renders the mount for collection templates and initialises
   `Tagalys.UIWidgets.ShopifyCollection` after `whenTagalysReady`, matching the
   pattern used by `snippets/tagalys-search.liquid`:
@@ -45,25 +48,39 @@
     data-limit="{{ page_size | default: 24 }}"
   ></div>
 
+  {%- comment -%}
+    `whenTagalysReady` polls until `window.Tagalys` exists, then runs
+    `onTagalysReady` so `setConfiguration` / `setPlatformConfiguration` apply
+    before `ShopifyCollection.init`.
+  {%- endcomment -%}
   <script>
     (function () {
-      var mountSuffix = {{ mount_suffix | json }};
-      var mountSelector =
+      const mountSuffix = {{ mount_suffix | json }};
+      const mountSelector =
         '[data-tagalys-collection-mount=' + JSON.stringify(String(mountSuffix)) + ']';
-      var collectionId = {{ collection.id | json }};
+      const collectionId = {{ collection.id | json }};
 
       function initShopifyCollection() {
-        var SC =
+        const SC =
           window.Tagalys &&
           window.Tagalys.UIWidgets &&
           window.Tagalys.UIWidgets.ShopifyCollection;
         if (!SC || typeof SC.init !== 'function') return;
 
-        SC.init(mountSelector, {
+        const TC = window.TagalysCustomisations;
+        const initOpts = {
           params: {
             collectionId: String(collectionId),
           },
-        });
+        };
+        if (TC && typeof TC.getSharedFiltersTemplate === 'function') {
+          initOpts.templates = {
+            filters: TC.getSharedFiltersTemplate(),
+            product: TC.getSharedProductTemplate(),
+          };
+        }
+
+        SC.init(mountSelector, initOpts);
       }
 
       if (typeof whenTagalysReady !== 'function') return;
