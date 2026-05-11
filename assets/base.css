@@ -326,7 +326,7 @@ p:empty {
   flex-grow: 1;
 }
 
-/* Set up page widths & margins */
+/* Set up page widths & margins (drives section 3-col grid side tracks: minmax(--page-margin, 1fr)) */
 .page-width-wide,
 .page-width-normal,
 .page-width-narrow,
@@ -3839,6 +3839,20 @@ fly-to-cart.fly-to-cart--sticky {
   display: none;
 }
 
+/* Title row: 24px horizontal inset on mobile and desktop (page-width grid uses larger margins on desktop) */
+.section.section-resource-list.section--page-width .section-resource-list__header,
+.section.section-resource-list.section--page-width > .section-resource-list__content:first-child {
+  grid-column: 1 / -1;
+  padding-inline: 24px;
+  box-sizing: border-box;
+}
+
+.section.section-resource-list.section--full-width .section-resource-list__header,
+.section.section-resource-list.section--full-width > .section-resource-list__content:first-child {
+  padding-inline: 24px;
+  box-sizing: border-box;
+}
+
 :where(.section-resource-list.section--full-width)
   product-card[data-product-transition]
   > .group-block,
@@ -4169,6 +4183,13 @@ text-component {
   .h6.h6 textarea,
   .h6.h6 select {
     font-size: max(1rem, 100%);
+  }
+}
+
+/* Cart/line-item quantity: use paragraph size; exclude from iOS min-1rem input rule */
+@media screen and (max-width: 1200px) {
+  cart-quantity-selector-component.quantity-selector input[type='number'] {
+    font-size: var(--paragraph-base);
   }
 }
 

@@ -32,6 +32,7 @@
     "text": "Text"
   },
   "content": {
+    "video_controls": "Video controls",
     "visible_if_collection_has_more_products": "Visible if collection has more products than shown",
     "advanced": "Advanced",
     "appearance": "Appearance",
@@ -51,6 +52,7 @@
     "carousel_navigation": "Carousel navigation",
     "carousel_pagination": "Carousel pagination",
     "cart_features": "Cart features",
+    "free_shipping": "Free shipping",
     "colors": "Colors",
     "collection_page": "Collection page",
     "complementary_products": "Complementary products must be set up using the Search & Discovery app. [Learn more](https://help.shopify.com/manual/online-store/search-and-discovery)",
@@ -211,6 +213,7 @@
     "work_quickly_to_ship": "<p>We will work quickly to ship your order as soon as possible. Once your order has shipped, you will receive an email with further information. Delivery times vary depending on your location.</p>"
   },
   "info": {
+    "free_shipping_threshold": "Enter the minimum order value in dollars (e.g. 200 for $200)",
     "actions_display_style": "Icons are always used on mobile",
     "applies_on_image_only": "Applies to images only",
     "aspect_ratio_adjusted": "Adjusted in some layouts",
@@ -230,6 +233,7 @@
     "manage_languages": "[Manage languages](/admin/settings/languages)",
     "transparent_background": "Review each template where transparent background is applied for readability",
     "video_alt_text": "Describe the video for assistive tech users",
+    "show_video_controls": "Play, pause, and sound buttons appear on the hero video",
     "video_autoplay": "Videos will be muted by default",
     "video_external": "Use a YouTube or Vimeo URL",
     "pills_usage": "Used for applied filters, discount codes, and search suggestions",
@@ -705,6 +709,7 @@
     // Uniform style option for borders and overlays
     "solid": "Solid",
     "space_between": "Space between",
+    "title_center_button_bottom": "Title centered, button at bottom",
     "spotify": "Spotify",
     "spotlight": "Spotlight",
     "square": "Square",
@@ -816,6 +821,8 @@
     // Setting label for cart display format (page vs drawer)
     "cart_type": "Type",
     "auto_open_cart_drawer": "\"Add to cart\" auto-opens drawer",
+    "show_free_shipping_indicator": "Show free shipping indicator",
+    "free_shipping_threshold": "Free shipping threshold ($)",
     // Text case setting for typography (uppercase/lowercase)
     "case": "Case",
     "checkout_buttons": "Accelerated checkout buttons",
@@ -1090,6 +1097,7 @@
     "show_as_accordion": "Show as accordion on mobile",
     "show_author": "Author",
     "show_alignment": "Show alignment",
+    "show_cart_bnpl_message": "Show buy now, pay later message (Afterpay)",
     "show_count": "Show count",
     "show_date": "Date",
     "show_filter_label": "Text labels for applied filters",
@@ -1103,6 +1111,7 @@
     "show_second_image_on_hover": "Show second image on hover",
     "show_swatch_label": "Text labels for swatches",
     "show_tax_info": "Tax information",
+    "show_video_controls": "Show video controls",
     // Font size or element dimensions setting
     "size": "Size",
     "skus": "SKUs",
@@ -1185,7 +1194,8 @@
     "cs_slider_inner_color": "Slider inner color",
     "text_on_images": "Text on images",
     "x_position": "Horizontal position",
-    "y_position": "Vertical position"
+    "y_position": "Vertical position",
+    "testimonial": "Testimonial"
   },
   "text_defaults": {
     "accordion_heading": "Accordion heading",

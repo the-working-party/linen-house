@@ -33,6 +33,11 @@
   if collection == blank
     assign onboarding = true
   endif
+
+  assign content_vertical_alignment = block_settings.vertical_alignment
+  if block_settings.vertical_alignment == 'title_center_button_bottom'
+    assign content_vertical_alignment = 'flex-start'
+  endif
 %}
 
 <div
@@ -51,7 +56,7 @@
   style="
     {% render 'border-override', settings: block_settings %}
     --horizontal-alignment: {{ block_settings.horizontal_alignment }};
-    --vertical-alignment: {{ block_settings.vertical_alignment }};
+    --vertical-alignment: {{ content_vertical_alignment }};
     --background-overlay-color: {{ block_settings.overlay_color }};
     --gap: {{ block_settings.collection_card_gap }}px;
   "
@@ -67,7 +72,12 @@
   </a>
   <div class="collection-card__inner">
     {{ card_image }}
-    <div class="collection-card__content layout-panel-flex--column">
+    <div
+      class="
+        collection-card__content layout-panel-flex--column
+        {% if block_settings.vertical_alignment == 'title_center_button_bottom' %}collection-card__content--title-center-button-bottom{% endif %}
+      "
+    >
       {{ children }}
     </div>
   </div>
@@ -107,6 +117,22 @@
   .collection-card__content {
     max-width: 100%;
     --flex-wrap: wrap;
+  }
+
+  /*
+    Position: "Title centered, button at bottom" (on image).
+    First block fills space and centers its content; later blocks sit at the bottom.
+  */
+  .collection-card__content--title-center-button-bottom > *:first-child {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    justify-content: var(--horizontal-alignment);
+    min-height: 0;
+  }
+
+  .collection-card__content--title-center-button-bottom > *:not(:first-child) {
+    flex-shrink: 0;
   }
 
   /* Nested image block rules */

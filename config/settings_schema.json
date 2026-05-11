@@ -1999,6 +1999,24 @@
         "content": "t:content.cart_features"
       },
       {
+        "type": "header",
+        "content": "t:content.free_shipping"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_free_shipping_indicator",
+        "label": "t:settings.show_free_shipping_indicator",
+        "default": true
+      },
+      {
+        "type": "number",
+        "id": "free_shipping_threshold",
+        "label": "t:settings.free_shipping_threshold",
+        "info": "t:info.free_shipping_threshold",
+        "default": 200,
+        "visible_if": "{{ settings.show_free_shipping_indicator == true }}"
+      },
+      {
         "type": "checkbox",
         "id": "show_cart_note",
         "label": "t:settings.seller_note",
@@ -2029,6 +2047,12 @@
         "label": "t:settings.checkout_buttons",
         "info": "t:info.checkout_buttons",
         "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_cart_bnpl_message",
+        "label": "t:settings.show_cart_bnpl_message",
+        "default": false
       },
       {
         "type": "url",

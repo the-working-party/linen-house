@@ -65,15 +65,15 @@
     }
   }
 
-  /* Slideshow control shape styles */
+  /* Slideshow control shape styles (resource carousels, featured blog, slideshow-controls, etc.) */
   .slideshow-control.slideshow-control--shape-square,
   .slideshow-control.slideshow-control--shape-circle {
     display: flex;
     align-items: center;
     justify-content: center;
     aspect-ratio: 1 / 1;
-    background-color: var(--color-primary-button-background);
-    color: var(--color-primary-button-text);
+    background-color: var(--button-light-background-default);
+    color: var(--button-light-content-default);
   }
 
   .slideshow-control.slideshow-control--shape-circle {
@@ -81,7 +81,7 @@
   }
 
   .slideshow-control.slideshow-control--shape-square {
-    border-radius: 0;
+    border-radius: var(--button-radius-default);
   }
 
   .slideshow-control .icon-caret {

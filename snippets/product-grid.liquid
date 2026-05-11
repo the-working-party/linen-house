@@ -118,10 +118,6 @@
       {% if pagination_type == 'infinite_scroll' %}
         <span ref="viewMorePrevious"></span>
       {% endif %}
-
-      {% if title %}
-        <h4 class="main-collection-grid__title">{{ title }}</h4>
-      {% endif %}
       <ul
         class="product-grid product-grid--{{ section.id }} product-grid--{{ section.settings.layout_type }} {% if section.settings.mobile_product_card_size == 'large' %} product-grid-mobile--large{% endif %}"
         data-testid="product-grid"

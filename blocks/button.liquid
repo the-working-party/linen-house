@@ -1,4 +1,5 @@
-{% render 'button', link: block.settings.link %}
+{%- assign button_link = link | default: block.settings.link -%}
+{% render 'button', link: button_link %}
 
 {% schema %}
 {
@@ -59,7 +60,7 @@
       "id": "show_icon",
       "label": "t:settings.show_icon",
       "default": false,
-      "visible_if": "{{ block.settings.style_class == 'button' or block.settings.style_class == 'button-secondary' or block.settings.style_class == 'button-inverse' or block.settings.style_class == 'button-secondary-inverse' }}"
+      "visible_if": "{{ block.settings.style_class != 'link' }}"
     },
     {
       "type": "header",

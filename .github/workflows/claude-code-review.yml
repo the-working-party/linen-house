@@ -1,0 +1,67 @@
+name: Claude Code Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, ready_for_review, reopened]
+
+jobs:
+  claude-review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+      issues: read
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up SSH for TWP marketplace (read-only deploy key)
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.TWP_MARKETPLACE_DEPLOY_KEY }}
+
+      # claude-code-action only accepts https://...\.git marketplace URLs (not git@...).
+      # Rewrite GitHub HTTPS → SSH so the deploy key above still authenticates.
+      - name: Git HTTPS → SSH for github.com
+        run: git config --global url."git@github.com:".insteadOf "https://github.com/"
+
+      - name: Run Claude Code Review
+        id: claude-review
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          plugin_marketplaces: |
+            https://github.com/anthropics/claude-code.git
+            https://github.com/EveryInc/every-marketplace.git
+            https://github.com/the-working-party/twp-plugin-marketplace.git
+          plugins: |
+            shopify-theme-development@the-working-party-plugins
+            compound-engineering@compound-engineering-plugin
+          prompt: |
+            Review PR #${{ github.event.pull_request.number }} in this Shopify Horizon theme.
+
+            Context: this codebase serves TWO brands (Linen House + Aura Home) from one
+            theme. Read CLAUDE.md before reviewing — pay particular attention to the
+            dual-brand constraints and token discipline rules.
+
+            Run, in order:
+              1. /shopify-theme-development:theme-review on the changed Liquid/JSON/CSS/JS files
+              2. /compound-engineering:ce-code-review for general correctness, security,
+                 maintainability, and performance
+
+            Then synthesise into a single PR comment. Surface explicitly:
+              - Any hardcoded colour, spacing, or typography values
+                (must use var(--color-*) etc.)
+              - Any change that affects one brand's tokens but not the other's
+              - Any new section/block/snippet not validated against both Figma files
+              - Missing {% doc %} headers on new snippets/blocks
+              - Untranslated user-facing strings (must use {{ 'key' | t }})
+              - {% include %} usages (must be {% render %})
+
+            Only report issues at ≥80% confidence. Include file:line for every finding.
+            Group by severity: CRITICAL / HIGH / MEDIUM / LOW. End with a recommendation:
+            APPROVE, COMMENT, or REQUEST CHANGES.
