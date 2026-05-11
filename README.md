@@ -66,6 +66,7 @@ Third-party search, recommendations, A/B testing, and cart upsell behind a maste
 - `snippets/tagalys-primary-collection.liquid` — A/B test variant resolver (reference only — Liquid render scope is isolated, see snippet header)
 - `snippets/tagalys-analytics.liquid` — page-level event tracking
 - `snippets/tagalys-search.liquid` — `/search` results page widget container
+- `snippets/tagalys-collection.liquid` + `sections/tagalys-collection.liquid` — collection page SDK mount when Theme settings > Tagalys > Collections mode is **API**
 - `snippets/tagalys-predictive-search.liquid` + `assets/tagalys-predictive-search.js` — predictive search swap (hijack-on-ready Component subclass)
 - `sections/tagalys-recommendations.liquid` — universal recommendation widget with theme-card fallback
 - `sections/tagalys-cart-upsell.liquid` — in-cart cross-sell widget
@@ -170,7 +171,7 @@ The script updates `config/settings_data.json` with 9 colour schemes, font picke
 
 | Surface | Tagalys mode | When credentials are blank or master switch is off |
 |---|---|---|
-| Collection grids | **Native (server-side)** — Tagalys writes Shopify's manual sort order via Admin API; theme renders via `_product-card` block | Native Shopify sort + theme renders cards |
+| Collection grids | **Native (server-side)** when Collection mode is Native — Tagalys writes Shopify manual sort; theme renders via `_product-card`. **API mode** — `Tagalys.UIWidgets.ShopifyCollection` via `snippets/tagalys-collection.liquid` from `main-collection` (or standalone `sections/tagalys-collection.liquid`) | Incomplete credentials or Native mode: theme grid + `_product-card` |
 | `/search` results page | SDK widget (`tagalys-search-results`) | Native paginate fallback in `sections/search-results.liquid` |
 | Predictive search dropdown | Hijack-on-ready: `Tagalys.UIWidgets.ShopifySearchSuggestions` mounted in the existing search modal | Horizon's `<predictive-search-component>` |
 | Product recommendations | SDK widget (`tagalys-widget`) | Fallback collection rendered via theme's `_product-card` block |

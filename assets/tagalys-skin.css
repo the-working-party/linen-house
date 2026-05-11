@@ -64,6 +64,9 @@
  *   .tagalys-search-results-wrapper  — /search outer wrapper (replaces
  *                                      .collection-wrapper.grid when SDK path)
  *   .tagalys-search-results          — /search results page mount
+ *   .tagalys-collection-results-wrapper — collection outer wrapper (API mode;
+ *                                      replaces .collection-wrapper.grid)
+ *   .tagalys-collection-results      — collection page SDK mount
  *   .tagalys-cart-upsell             — cart upsell mount
  *   .tagalys-predictive-search__results  — predictive dropdown mount (theme-owned)
  *
@@ -79,6 +82,8 @@
 .tagalys-widget,
 .tagalys-search-results-wrapper,
 .tagalys-search-results,
+.tagalys-collection-results-wrapper,
+.tagalys-collection-results,
 .tagalys-cart-upsell,
 .tagalys-predictive-search__results,
 .tagalys-search-suggestions {
@@ -93,15 +98,23 @@
   min-width: 0;
 }
 
+/* Collection template when Theme settings use Tagalys API collection mode. */
+.tagalys-collection-results-wrapper {
+  width: 100%;
+  min-width: 0;
+}
+
 /* -----------------------------------------------------------------------------
  * GRID LAYOUT — match Horizon's product-grid spacing.
  * Tagalys's tile container varies by widget type; once the actual grid wrapper
  * class is enumerated, replace the placeholder selector.
  * ----------------------------------------------------------------------------- */
-.tagalys-widget [class*='product-grid'],
-.tagalys-widget [class*='tile-grid'],
-.tagalys-search-results [class*='product-grid'],
-.tagalys-search-results [class*='tile-grid'] {
+.tagalys-widget [class*="product-grid"],
+.tagalys-widget [class*="tile-grid"],
+.tagalys-search-results [class*="product-grid"],
+.tagalys-search-results [class*="tile-grid"],
+.tagalys-collection-results [class*="product-grid"],
+.tagalys-collection-results [class*="tile-grid"] {
   /* TODO[runtime-class]: confirm Tagalys's grid container class and pin selector.
      Horizon product grids use grid + gap-style — match column behaviour. */
   display: grid;

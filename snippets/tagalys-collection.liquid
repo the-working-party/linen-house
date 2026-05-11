@@ -1,0 +1,73 @@
+{%- doc -%}
+  Tagalys collection page widget (SDK).
+
+  Renders the mount for collection templates and initialises
+  `Tagalys.UIWidgets.ShopifyCollection` after `whenTagalysReady`, matching the
+  pattern used by `snippets/tagalys-search.liquid`:
+
+    Tagalys.UIWidgets.ShopifyCollection.init(selector, { params: { collectionId } }).
+
+  Uses `data-tagalys-collection-mount` for a unique selector per render (the SDK
+  rejects mount elements that have an `id` attribute).
+
+  @param {collection} collection - Current collection (required).
+  @param {number} [page_size] - Optional hint for future SDK options (`data-limit`).
+  @param {string} [mount_suffix] - Unique suffix for `data-tagalys-collection-mount` (e.g. `section.id`).
+
+  @example
+  {% render 'tagalys-collection', collection: collection, page_size: 24, mount_suffix: section.id %}
+{%- enddoc -%}
+
+{%- liquid
+  assign tagalys_collection_mount_ok = false
+  if collection
+    if settings.tagalys_enabled
+      if settings.tagalys_collections_mode == 'api'
+        if settings.tagalys_sdk_url != blank
+          if settings.tagalys_server_url != blank
+            if settings.tagalys_api_key != blank
+              assign tagalys_collection_mount_ok = true
+            endif
+          endif
+        endif
+      endif
+    endif
+  endif
+
+  assign mount_suffix = mount_suffix | default: 'default'
+-%}
+
+{%- if tagalys_collection_mount_ok -%}
+  <div
+    class="tagalys-collection-results"
+    data-tagalys-collection-results
+    data-tagalys-collection-mount="{{ mount_suffix | escape }}"
+    data-limit="{{ page_size | default: 24 }}"
+  ></div>
+
+  <script>
+    (function () {
+      var mountSuffix = {{ mount_suffix | json }};
+      var mountSelector =
+        '[data-tagalys-collection-mount=' + JSON.stringify(String(mountSuffix)) + ']';
+      var collectionId = {{ collection.id | json }};
+
+      function initShopifyCollection() {
+        var SC =
+          window.Tagalys &&
+          window.Tagalys.UIWidgets &&
+          window.Tagalys.UIWidgets.ShopifyCollection;
+        if (!SC || typeof SC.init !== 'function') return;
+
+        SC.init(mountSelector, {
+          params: {
+            collectionId: String(collectionId),
+          },
+        });
+      }
+
+      if (typeof whenTagalysReady !== 'function') return;
+      whenTagalysReady(initShopifyCollection);
+    })();
+  </script>
+{%- endif -%}

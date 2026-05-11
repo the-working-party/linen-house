@@ -22,7 +22,14 @@
       {%- endif -%}
 
       {%- if request.page_type == 'collection' -%}
-        Tagalys.Analytics.trackProductListingPageView('{{ collection.id }}');
+        {%- comment -%} SDK v3.0.12+: `trackProductListingPageView` removed; use `trackCollectionView`. {%- endcomment -%}
+        if (
+          window.Tagalys &&
+          Tagalys.Analytics &&
+          typeof Tagalys.Analytics.trackCollectionView === 'function'
+        ) {
+          Tagalys.Analytics.trackCollectionView('{{ collection.id }}');
+        }
       {%- endif -%}
 
       document.addEventListener('click', function(event) {

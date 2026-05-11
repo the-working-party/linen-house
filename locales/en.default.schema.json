@@ -158,7 +158,8 @@
     "tagalys_ab_testing": "A/B testing",
     "tagalys_markets": "Markets",
     "tagalys_recommendations_header": "Recommendations",
-    "tagalys_cart_upsell_paragraph": "Widget type and ID are configured in Theme Settings > Tagalys integration > Recommendations."
+    "tagalys_cart_upsell_paragraph": "Widget type and ID are configured in Theme Settings > Tagalys integration > Recommendations.",
+    "tagalys_collection_section": "Renders the Tagalys collection widget when Collection mode is API in theme settings. Prefer using the main collection section for default templates; use this section only for alternate layouts or extra mounts (avoid duplicate grids on one page)."
   },
   "html_defaults": {
     "join_our_email_list": "<h2>Join our email list</h2>",
@@ -465,7 +466,8 @@
     "comparison_slider": "Comparison slider",
     "tagalys": "Tagalys integration",
     "tagalys_recommendations": "Tagalys recommendations",
-    "tagalys_cart_upsell": "Tagalys cart upsell"
+    "tagalys_cart_upsell": "Tagalys cart upsell",
+    "tagalys_collection": "Tagalys collection"
   },
   "options": {
     "above_carousel": "Above carousel",
