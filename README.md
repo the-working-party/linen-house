@@ -200,7 +200,7 @@ The predictive search swap uses a hijack-on-ready pattern that preserves Horizon
 |---|---|---|
 | `loading` | Liquid (initial) when Tagalys + predictive both enabled | CSS hides both panes during SDK boot |
 | `tagalys` | `assets/tagalys-predictive-search.js` on `afterInitialRender` | CSS hides the native pane, Tagalys mount visible |
-| `native` | Component on init failure / 2 s init timeout / 4 s safety timeout | CSS hides the Tagalys mount, native predictive resumes |
+| `native` | Component on init failure or 2 s init timeout (after first input/focus) | CSS hides the Tagalys mount, native predictive resumes |
 | (unset) | Liquid when Tagalys or predictive is disabled | CSS shows native predictive; Tagalys mount not rendered |
 
 The native handler in `assets/predictive-search.js` bails when provider is `tagalys` or `loading` so only one provider drives the dropdown at any time. The component (`<tagalys-predictive-search>`) is initialised lazily on the first input or focus event to avoid wasted SDK work for users who never open the search modal.

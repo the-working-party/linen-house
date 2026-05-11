@@ -102,6 +102,77 @@
         Rec.init('[data-product-based-widget]', {
           recommendationId: recommendationId,
           productIds: productIds,
+          templates: {
+            product: {
+              render: function (html, args) {
+                var props = args.props;
+                var product = props.product;
+                var helpers = props.helpers;
+        
+                var navigateToProductDetailPage = (event) => {
+                  helpers.navigateToProductDetailPage(event, product)
+                }
+        
+                var productOptions = helpers.getTemplateOptions('product')
+                var productLink = productOptions.productPageUrl(product)
+        
+                return html`
+                  <div class="product" onClick=${navigateToProductDetailPage}>
+                    <a
+                      class="product-link"
+                      href=${productLink}
+                      target="_blank"
+                    >
+                      <span class="product-image-container">
+                        ${product.featured_image ? (
+                          html `<img
+                            class="product-image"
+                            data-src=${product.featured_image.src}
+                            alt=${product.title}
+                          />`
+                        ) : null}
+                      </span>
+                      <div class="product-details">
+                        <span class="product-name">${product.title} - template override!!!</span>
+                        ${helpers.isStorefrontAPICallPending() ? (
+                          html `<span class="skeleton-box"></span>`
+                        ) : (
+                          html `<span
+                            class=${`product-prices${
+                              helpers.isProductOnSale(
+                                product.compare_at_price,
+                                product.price
+                              )
+                                ? " discounted"
+                                : " full-price"
+                            }`}
+                          >
+                            ${helpers.isProductOnSale(
+                              product.compare_at_price,
+                              product.price
+                            )
+                              ? html`
+                                  <span class="product-price-discounted"
+                                    >${helpers.formatCurrency(product.price)}</span
+                                  >
+                                `
+                              : null}
+                            <span class="product-price-regular">
+                              ${helpers.formatCurrency(
+                                product.compare_at_price === null
+                                  ? product.price
+                                  : product.compare_at_price
+                              )}
+                            </span>
+                          </span>`
+                        )}
+                      </div>
+                    </a>
+                  </div>
+                `;
+              },
+            },
+          },
         });
       };
 

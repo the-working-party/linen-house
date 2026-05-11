@@ -8,6 +8,20 @@
 
 <div class="section-background color-{{ section.settings.color_scheme }}"></div>
 
+{%- liquid
+  assign tagalys_search_active = false
+  if settings.tagalys_enabled
+    if settings.tagalys_search_enabled
+      if settings.tagalys_sdk_url != blank
+        if settings.tagalys_server_url != blank
+          if settings.tagalys_api_key != blank
+            assign tagalys_search_active = true
+          endif
+        endif
+      endif
+    endif
+  endif
+-%}
 <results-list
   class="section product-grid-container spacing-style color-{{ section.settings.color_scheme }}"
   style="--padding-block-start: {{ section.settings.padding-block-start }}px; --padding-block-end: {{ section.settings.padding-block-end }}px;"
@@ -17,7 +31,11 @@
   {% render 'skip-to-content-link', href: '#ResultsList', text: 'accessibility.skip_to_results_list' %}
 
   <div
-    class="collection-wrapper grid gap-style"
+    {% if tagalys_search_active %}
+      class="tagalys-search-results-wrapper"
+    {% else %}
+      class="collection-wrapper grid gap-style"
+    {% endif %}
   >
     {% assign products_per_page = 24 %}
 
@@ -26,12 +44,7 @@
     {% endif %}
 
     {%- comment -%} Same credential gate as `snippets/tagalys-search.liquid` — when credentials are blank, the SDK never loads, so we must fall through to native to avoid an empty mount. {%- endcomment -%}
-    {% if settings.tagalys_enabled
-      and settings.tagalys_search_enabled
-      and settings.tagalys_sdk_url != blank
-      and settings.tagalys_server_url != blank
-      and settings.tagalys_api_key != blank
-    %}
+    {% if tagalys_search_active %}
       {% render 'tagalys-search', page_size: products_per_page %}
     {% else %}
       {% paginate search.results by products_per_page %}

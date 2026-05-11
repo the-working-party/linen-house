@@ -9,7 +9,7 @@
   The `<tagalys-predictive-search>` web component (assets/tagalys-predictive-search.js)
   initialises `Tagalys.UIWidgets.ShopifySearchSuggestions` once on first input
   and binds it to the modal's existing `<input ref="searchInput">`. On SDK
-  ready or 2-second timeout it flips `data-search-provider` on the search
+  ready or post-interaction init timeout it flips `data-search-provider` on the search
   modal element to swap between Tagalys and native results via the CSS
   gate below.
 
