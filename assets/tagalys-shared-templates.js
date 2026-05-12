@@ -69,10 +69,11 @@
 
   TagalysCustomisations.getSharedProductTemplate =
     function getSharedProductTemplate() {
-      console.log("getSharedProductTemplate");
-
       return {
         render: function renderProduct(html, args) {
+          console.log("args", args);
+          console.log("html", html);
+          console.log("args.templates", args.templates);
           const props = args.props;
           const product = props.product;
           const helpers = props.helpers;
@@ -97,9 +98,7 @@
                     : null}
                 </span>
                 <div class="product-details">
-                  <span class="product-name"
-                    >${product.title} - template override!!!</span
-                  >
+                  <span class="product-name">${product.title}</span>
                   ${helpers.isStorefrontAPICallPending()
                     ? html`<span class="skeleton-box"></span>`
                     : html`<span
