@@ -224,7 +224,7 @@
                                 {% endif %}
                                 data-variant-id="{{ variant.id }}"
                               >
-                                {{- 'icon-delete.svg' | inline_asset_content -}}
+                                {%- render 'icon-brand', name: 'bin' -%}
                                 <span class="visually-hidden">{{ 'actions.remove' | t }}</span>
                               </button>
                             {% else %}
@@ -281,7 +281,7 @@
                         {% endif %}
                         data-variant-id="{{ variant.id }}"
                       >
-                        {{- 'icon-delete.svg' | inline_asset_content -}}
+                        {%- render 'icon-brand', name: 'bin' -%}
                         <span class="visually-hidden">{{ 'actions.remove' | t }}</span>
                       </button>
                     </div>
@@ -370,7 +370,7 @@
                 data-action="confirm"
                 on:click="quick-order-list-component/showRemoveAllConfirmation"
               >
-                {{- 'icon-delete.svg' | inline_asset_content -}}
+                {%- render 'icon-brand', name: 'bin' -%}
                 <span>{{ 'content.remove_all' | t }}</span>
               </button>
             {% endif %}
@@ -387,7 +387,7 @@
               <span
                 class="svg-wrapper icon-success"
               >
-                {{ 'icon-checkmark.svg' | inline_asset_content }}
+                {%- render 'icon-brand', name: 'tick' -%}
               </span>
               <span ref="successText"></span>
             </span>
@@ -396,7 +396,7 @@
               ref="errorContainer"
             >
               <span class="svg-wrapper quick-order-list-total__icon--error">
-                {{- 'icon-error.svg' | inline_asset_content -}}
+                {%- render 'icon-brand', name: 'warning-circle' -%}
               </span>
               <span ref="errorText"></span>
             </span>

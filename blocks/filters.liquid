@@ -291,7 +291,7 @@
           aria-haspopup="dialog"
         >
           <span class="svg-wrapper">
-            {{ 'icon-filter.svg' | inline_asset_content }}
+            {%- render 'icon-brand', name: 'filter' -%}
           </span>
 
           {{ 'actions.show_filters' | t }}
@@ -413,7 +413,7 @@
               autofocus
             >
               <span class="svg-wrapper svg-wrapper--small">
-                {{ 'icon-close.svg' | inline_asset_content }}
+                {%- render 'icon-brand', name: 'close' -%}
               </span>
             </button>
           </div>

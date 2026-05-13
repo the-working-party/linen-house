@@ -100,7 +100,7 @@
           {{- status -}}
         </span>
         <span class="svg-wrapper icon-caret icon-animated">
-          {{- 'icon-caret.svg' | inline_asset_content -}}
+          {%- render 'icon-brand', name: 'chevron-down' -%}
         </span>
       </summary>
       <floating-panel-component
@@ -138,7 +138,7 @@
                   aria-hidden="true"
                 >
                 <span class="svg-wrapper icon-checkmark sorting-filter__checkmark">
-                  {{- 'icon-checkmark.svg' | inline_asset_content -}}
+                  {%- render 'icon-brand', name: 'tick' -%}
                 </span>
                 <span class="sorting-filter__label">{{ option.name }}</span>
               </div>

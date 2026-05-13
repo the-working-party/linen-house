@@ -48,11 +48,11 @@
           {{ heading | default: menu.title }}
           {% if block_settings.accordion_icon == 'plus' %}
             <span class="menu__heading__toggle svg-wrapper icon-plus">
-              {{- 'icon-plus.svg' | inline_asset_content -}}
+              {%- render 'icon-brand', name: 'plus' -%}
             </span>
           {% else %}
             <span class="menu__heading__toggle svg-wrapper icon-caret icon-animated">
-              {{- 'icon-caret.svg' | inline_asset_content -}}
+              {%- render 'icon-brand', name: 'chevron-down' -%}
             </span>
           {% endif %}
         </span>

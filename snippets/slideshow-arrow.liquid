@@ -41,9 +41,9 @@
 >
   <span class="svg-wrapper icon-{{ icon_name }}">
     {%- if icon_name == 'caret' -%}
-      {{- 'icon-caret.svg' | inline_asset_content -}}
+      {%- render 'icon-brand', name: 'chevron-down' -%}
     {%- else -%}
-      {{- 'icon-arrow.svg' | inline_asset_content -}}
+      {%- render 'icon-brand', name: 'arrow-right' -%}
     {%- endif -%}
   </span>
 </button>

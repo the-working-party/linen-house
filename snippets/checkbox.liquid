@@ -51,7 +51,7 @@
       ref="{{ labelRef }}"
     {% endif %}
   >
-    {{ 'icon-checkmark.svg' | inline_asset_content }}
+    {%- render 'icon-brand', name: 'tick' -%}
     <span class="checkbox__label-text">{{- label -}}</span>
   </label>
 </div>
