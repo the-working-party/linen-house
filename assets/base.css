@@ -711,6 +711,11 @@ p:empty {
 
 .icon-default {
   fill: currentColor;
+
+  svg {
+    width: 100%;
+    height: 100%;
+  }
 }
 
 [data-placeholder="true"] * {
