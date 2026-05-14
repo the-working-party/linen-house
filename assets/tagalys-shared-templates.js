@@ -67,13 +67,18 @@
       };
     };
 
+  // SVG icon matching assets/icon-add-to-cart.svg, inlined so it is available
+  // in this synchronous non-module script without Liquid filter access.
+  var QUICK_ADD_ICON =
+    '<svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="none">' +
+    '<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="var(--icon-stroke-width)" d="M16.608 9.421V6.906H3.392v8.016c0 .567.224 1.112.624 1.513.4.402.941.627 1.506.627H8.63M8.818 3h2.333c.618 0 1.212.247 1.649.686a2.35 2.35 0 0 1 .683 1.658v1.562H6.486V5.344c0-.622.246-1.218.683-1.658A2.33 2.33 0 0 1 8.82 3"/>' +
+    '<path stroke="currentColor" stroke-linecap="round" stroke-width="var(--icon-stroke-width)" d="M14.608 12.563v5m2.5-2.5h-5"/>' +
+    '</svg>';
+
   TagalysCustomisations.getSharedProductTemplate =
     function getSharedProductTemplate() {
       return {
         render: function renderProduct(html, args) {
-          console.log("args", args);
-          console.log("html", html);
-          console.log("args.templates", args.templates);
           const props = args.props;
           const product = props.product;
           const helpers = props.helpers;
@@ -85,9 +90,23 @@
           const productOptions = helpers.getTemplateOptions("product");
           const productLink = productOptions.productPageUrl(product);
 
+          /**
+           * Opens the native Horizon quick-add dialog for this tile.
+           * Stops propagation so the tile's navigateToProductDetailPage
+           * handler is not also triggered.
+           * @param {MouseEvent} event
+           */
+          const handleQuickAdd = (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            if (typeof window.tagalysOpenQuickAdd === 'function') {
+              window.tagalysOpenQuickAdd(productLink);
+            }
+          };
+
           return html`
-            <div class="product" onClick=${navigateToProductDetailPage}>
-              <a class="product-link" href=${productLink} target="_blank">
+            <div class="product tagalys-product-tile" onClick=${navigateToProductDetailPage}>
+              <a class="product-link" href=${productLink}>
                 <span class="product-image-container">
                   ${product.featured_image
                     ? html`<img
@@ -129,6 +148,33 @@
                       </span>`}
                 </div>
               </a>
+
+              ${/*
+                Quick-add overlay — mirrors the .quick-add positioning pattern
+                from snippets/quick-add.liquid. Rendered outside the <a> so the
+                button click does not trigger link navigation.
+                The button delegates to window.tagalysOpenQuickAdd (defined in
+                assets/tagalys-quick-add.js) which fetches the product page,
+                morphs #quick-add-modal-content, and opens #quick-add-dialog.
+              */ null}
+              <div class="quick-add tagalys-quick-add" aria-hidden="true">
+                <button
+                  class="button quick-add__button quick-add__button--choose add-to-cart-button"
+                  type="button"
+                  aria-label=${"Quick add: " + product.title}
+                  onClick=${handleQuickAdd}
+                >
+                  <span class="add-to-cart-text">
+                    <span
+                      class="svg-wrapper add-to-cart-icon"
+                      dangerouslySetInnerHTML=${{ __html: QUICK_ADD_ICON }}
+                    />
+                    <span class="add-to-cart-text__content is-visually-hidden-mobile">
+                      <span><span>Choose</span></span>
+                    </span>
+                  </span>
+                </button>
+              </div>
             </div>
           `;
         },

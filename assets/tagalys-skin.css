@@ -213,6 +213,35 @@
 */
 
 /* -----------------------------------------------------------------------------
+ * QUICK-ADD BUTTON — Tagalys product tiles
+ *
+ * The native `.quick-add` overlay + `.quick-add__button` styles in
+ * snippets/quick-add-styles.liquid handle all positioning, sizing, and
+ * animation. The only native rule that cannot apply here is the hover gate:
+ *
+ *   product-card:is(:hover, :focus-within) .quick-add__button { opacity: 1; }
+ *
+ * …because Tagalys tiles have no `<product-card>` ancestor. The rules below
+ * provide the equivalent, plus `position: relative` so the `inset: 0`
+ * `.quick-add` overlay positions correctly inside the tile.
+ * ----------------------------------------------------------------------------- */
+
+/* Tagalys tile must be a positioning context for the absolute .quick-add overlay */
+.tagalys-product-tile {
+  position: relative;
+}
+
+/* Reveal the quick-add button on hover / keyboard-focus within the tile */
+.tagalys-product-tile:is(:hover, :focus-within) .quick-add__button {
+  opacity: 1;
+}
+
+/* The overlay itself carries pointer-events:none; only the button is interactive */
+.tagalys-quick-add {
+  pointer-events: none;
+}
+
+/* -----------------------------------------------------------------------------
  * PREDICTIVE SEARCH MOUNT (theme-owned wrapper)
  * The wrapper class .tagalys-predictive-search__results is owned by
  * snippets/tagalys-predictive-search.liquid; Tagalys's emitted children

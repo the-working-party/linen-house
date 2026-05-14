@@ -86,6 +86,21 @@
   {%- endcomment -%}
   {{ 'tagalys-shared-templates.js' | asset_url | script_tag }}
 
+  {%- comment -%}
+    tagalys-quick-add.js — Horizon quick-add bridge for Tagalys product tiles.
+    Loaded as a deferred module (same timing as the SDK). Exposes
+    window.tagalysOpenQuickAdd which tagalys-shared-templates.js calls from
+    tile click handlers. Must load after tagalys-shared-templates.js (which
+    defines TagalysCustomisations) but the deferred/module scheduling ensures
+    template handlers only fire after user interaction, by which time this
+    module is long resolved.
+  {%- endcomment -%}
+  <script
+    src="{{ 'tagalys-quick-add.js' | asset_url }}"
+    type="module"
+    fetchpriority="low"
+  ></script>
+
   {% # theme-check-disable RemoteAsset %}
   <script
     defer
