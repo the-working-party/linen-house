@@ -1,0 +1,48 @@
+<div
+  class="twp-product-reviews yotpo bottomLine"
+  data-product-id="{{ product.id }}"
+  data-url="{{ shop.url }}{{ product.url }}"
+  {{ block.shopify_attributes }}
+></div>
+
+{% stylesheet %}
+  .twp-product-reviews {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .twp-product-reviews * {
+    font-family: var(--font-body--family) !important;
+    color: var(--color-foreground) !important;
+  }
+
+  .twp-product-reviews .yotpo-stars .yotpo-star {
+    color: var(--color-foreground) !important;
+  }
+
+  .twp-product-reviews .yotpo-bottomline-rating-count,
+  .twp-product-reviews .text-m {
+    font-size: 0.75rem !important;
+    letter-spacing: 0.2px !important;
+    line-height: 1.5 !important;
+  }
+
+  .twp-product-reviews .yotpo-bottomline-rating-count {
+    color: rgb(var(--color-foreground-rgb) / var(--opacity-subdued-text)) !important;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Reviews",
+  "tag": null,
+  "settings": [],
+  "presets": [
+    {
+      "name": "Reviews",
+      "category": "t:categories.product"
+    }
+  ]
+}
+{% endschema %}

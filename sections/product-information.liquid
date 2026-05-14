@@ -4,12 +4,20 @@
   {{ closest.product | structured_data }}
 </script>
 
+{%- if request.page_type == 'product' and product != blank -%}
+  {%- render 'twp-product-schema', product: product -%}
+{%- endif -%}
+
 {% capture media_gallery %}
   {%- content_for 'block',
     type: '_product-media-gallery',
     id: 'media-gallery',
     closest.product: closest.product
   -%}
+  {%- if request.page_type == 'product' and product != blank -%}
+    {%- render 'twp-product-breadcrumb', product: product -%}
+    {%- render 'twp-gallery-sale-badge', product: product -%}
+  {%- endif -%}
 {% endcapture %}
 
 {% capture product_details %}
@@ -38,9 +46,11 @@
     data-current-variant-id="{{ current_variant.id }}"
     data-initial-quantity="{{ initial_quantity }}"
     data-default-variant-title="{{ 'products.product.default_title' | t }}"
+    data-colour-option-index="{{ sticky_colour_option_index | default: '' }}"
+    data-size-option-index="{{ sticky_size_option_index | default: '' }}"
   >
     <div
-      class="sticky-add-to-cart__bar color-{{ settings.popover_color_scheme }}"
+      class="sticky-add-to-cart__bar"
       data-stuck="false"
       ref="stickyBar"
       role="region"
@@ -49,71 +59,155 @@
       {% liquid
         assign image_to_show = current_variant.featured_image | default: product.featured_image
       %}
-      {% if image_to_show %}
+      <div class="sticky-add-to-cart__info-bar">
+        {% if image_to_show %}
+          <div
+            class="sticky-add-to-cart__image"
+          >
+            {% assign image_alt = image_to_show.alt | default: product.title | escape %}
+            {{
+              image_to_show
+              | image_url: width: 120
+              | image_tag:
+                loading: 'lazy',
+                alt: image_alt,
+                class: 'sticky-add-to-cart__image-img',
+                data-testid: 'sticky-product-image',
+                srcset: null,
+                sizes: null,
+                ref: 'productImage'
+            }}
+          </div>
+        {% endif %}
+
+        {% liquid
+          assign has_single_option = false
+          if product.has_only_default_variant != true and product.options.size == 1
+            assign has_single_option = true
+          endif
+
+          if image_to_show == blank
+            assign has_image = false
+          else
+            assign has_image = true
+          endif
+
+          # Detect colour and non-colour option indices for split variant display
+          assign sticky_colour_option_names = 'color,colour,colore,farbe,couleur,cor'
+          assign sticky_colour_option_list = sticky_colour_option_names | split: ','
+          assign sticky_colour_option_index = nil
+          assign sticky_colour_option_obj = nil
+          assign sticky_size_option_index = nil
+
+          for opt in product.options_with_values
+            assign opt_name_lower = opt.name | downcase
+            if sticky_colour_option_list contains opt_name_lower
+              assign sticky_colour_option_index = forloop.index0
+              assign sticky_colour_option_obj = opt
+            else
+              if sticky_size_option_index == nil
+                assign sticky_size_option_index = forloop.index0
+              endif
+            endif
+          endfor
+
+          assign sticky_colour_name = ''
+          assign sticky_colour_swatch_bg = ''
+          assign sticky_size_name = ''
+
+          if sticky_colour_option_index != nil and current_variant != blank
+            assign sticky_colour_name = current_variant.options[sticky_colour_option_index]
+            if sticky_colour_option_obj != nil
+              for value in sticky_colour_option_obj.values
+                if value.name == sticky_colour_name
+                  if value.swatch
+                    if value.swatch.image
+                      assign _swatch_url = value.swatch.image | image_url: width: 64
+                      assign sticky_colour_swatch_bg = 'url(' | append: _swatch_url | append: ') center / cover'
+                    elsif value.swatch.color
+                      assign sticky_colour_swatch_bg = value.swatch.color
+                    endif
+                  else
+                    assign _swatch_handle = value | handleize
+                    assign _swatch_filename = 'swatch-' | append: _swatch_handle | append: '.jpg'
+                    assign _swatch_asset = images[_swatch_filename]
+                    if _swatch_asset
+                      assign _swatch_asset_url = _swatch_asset | image_url: width: 64
+                      assign sticky_colour_swatch_bg = 'url(' | append: _swatch_asset_url | append: ') center / cover'
+                    else
+                      assign sticky_colour_swatch_bg = value | handleize | replace: '-', ''
+                    endif
+                  endif
+                  break
+                endif
+              endfor
+            endif
+          endif
+
+          if sticky_size_option_index != nil and current_variant != blank
+            assign sticky_size_name = current_variant.options[sticky_size_option_index]
+          endif
+
+          assign has_split_display = false
+          if product.has_only_default_variant != true
+            if sticky_colour_option_index != nil or sticky_size_option_index != nil
+              assign has_split_display = true
+            endif
+          endif
+        %}
         <div
-          class="sticky-add-to-cart__image"
+          class="sticky-add-to-cart__info"
+          data-has-image="{{ has_image }}"
+          data-singleton="{{ product.has_only_default_variant }}"
+          data-single-option="{{ has_single_option }}"
         >
-          {% assign image_alt = image_to_show.alt | default: product.title | escape %}
-          {{
-            image_to_show
-            | image_url: width: 120
-            | image_tag:
-              loading: 'lazy',
-              alt: image_alt,
-              class: 'sticky-add-to-cart__image-img',
-              data-testid: 'sticky-product-image',
-              srcset: null,
-              sizes: null,
-              ref: 'productImage'
-          }}
+          <p
+            class="sticky-add-to-cart__title"
+            data-testid="sticky-product-title"
+          >
+            {{ product.title | escape }}
+          </p>
+          {%- unless product.has_only_default_variant -%}
+            {%- comment -%} Hidden element kept for Horizon JS compatibility (variant unavailable handler) {%- endcomment -%}
+            <div
+              class="sticky-add-to-cart__variant"
+              data-testid="sticky-variant-title"
+              aria-hidden="true"
+              style="display: none;"
+            >
+              {%- if current_variant != blank -%}
+                {{- current_variant.title | escape -}}
+              {%- endif -%}
+            </div>
+            {%- if has_split_display -%}
+              {%- if sticky_colour_option_index != nil and sticky_colour_name != blank -%}
+                <div class="sticky-add-to-cart__variant-colour">
+                  <span
+                    class="sticky-add-to-cart__variant-swatch"
+                    style="--swatch-inner-bg: {%- if sticky_colour_swatch_bg contains 'url(' -%}{{ sticky_colour_swatch_bg }}{%- elsif sticky_colour_swatch_bg != blank -%}{{ sticky_colour_swatch_bg }}{%- endif -%};"
+                    aria-hidden="true"
+                  ></span>
+                  <span class="sticky-add-to-cart__variant-colour-name">{{- sticky_colour_name | escape -}}</span>
+                </div>
+              {%- endif -%}
+              {%- if sticky_size_option_index != nil and sticky_size_name != blank -%}
+                <span class="sticky-add-to-cart__variant-size">{{- sticky_size_name | escape -}}</span>
+              {%- endif -%}
+            {%- else -%}
+              {%- comment -%} Fallback for products without detectable colour/size options {%- endcomment -%}
+              {%- if current_variant != blank -%}
+                <span class="sticky-add-to-cart__variant-fallback">{{- current_variant.title | escape -}}</span>
+              {%- endif -%}
+            {%- endif -%}
+          {%- endunless -%}
         </div>
-      {% endif %}
 
-      {% liquid
-        assign has_single_option = false
-        if product.has_only_default_variant != true and product.options.size == 1
-          assign has_single_option = true
-        endif
-
-        if image_to_show == blank
-          assign has_image = false
-        else
-          assign has_image = true
-        endif
-      %}
-      <div
-        class="sticky-add-to-cart__info"
-        data-has-image="{{ has_image }}"
-        data-singleton="{{ product.has_only_default_variant }}"
-        data-single-option="{{ has_single_option }}"
-      >
-        <p
-          class="sticky-add-to-cart__title"
-          data-testid="sticky-product-title"
-        >
-          {{ product.title | escape }}
-        </p>
         <div
-          class="sticky-add-to-cart__variant"
-          data-testid="sticky-variant-title"
-          {% if product.has_only_default_variant %}
-            style="display: none;"
-          {% endif %}
+          class="sticky-add-to-cart__price"
+          data-testid="sticky-price-display"
         >
-          {% unless product.has_only_default_variant %}
-            {% if current_variant != blank %}
-              {% assign variant_title = current_variant.title | escape %}
-            {% endif %}
-            {{ variant_title }}
-          {% endunless %}
+          {% render 'price', product_resource: product, show_sale_price_first: true %}
         </div>
-      </div>
-
-      <div
-        class="sticky-add-to-cart__price"
-        data-testid="sticky-price-display"
-      >
-        {% render 'price', product_resource: product, show_sale_price_first: true %}
       </div>
 
       <button
@@ -173,45 +267,24 @@
   settings: section.settings,
   media_gallery: media_gallery,
   product_details: product_details,
-  additional_blocks: additional_blocks
+  additional_blocks: additional_blocks,
+  product: product
 %}
 
 {% stylesheet %}
+  /* ── Base: shared across all sizes ── */
   .sticky-add-to-cart__bar {
     position: fixed;
-    bottom: 20px;
-    left: 50%;
-    opacity: 0;
-    transform: translateX(-50%) translateY(calc(100% + 40px));
-    z-index: calc(var(--layer-sticky) - 1); /* Below sticky header */
-    display: block;
-    width: 600px;
-    border-radius: calc(
-      var(--style-border-radius-buttons-primary) + min(var(--padding-sm), var(--style-border-radius-buttons-primary))
-    );
-    box-shadow: var(--shadow-popover);
-    padding: var(--padding-sm);
-    /* Layout styling */
     display: flex;
-    align-items: center;
-    gap: var(--gap-md);
+    z-index: calc(var(--layer-sticky) - 1);
+    opacity: 0;
+    transform: translateY(calc(100% + 40px));
+  }
 
-    @starting-style {
+  @starting-style {
+    .sticky-add-to-cart__bar {
       opacity: 0;
-      transform: translateX(-50%) translateY(calc(100% + 40px));
-    }
-
-    &::before {
-      --border: 2px;
-      content: '';
-      position: absolute;
-      inset: calc(var(--border) * -1);
-      background: linear-gradient(var(--color-background) 0 100%), linear-gradient(hsl(0 0% 0% / 0.15) 0 100%);
-      background-clip: content-box, border-box;
-      border: var(--border) solid #0000;
-      border-radius: inherit;
-      z-index: -1;
-      backdrop-filter: blur(20px) saturate(180%) brightness(1.5);
+      transform: translateY(calc(100% + 40px));
     }
   }
 
@@ -225,141 +298,235 @@
   }
 
   .sticky-add-to-cart__bar[data-stuck='true'] {
-    transform: translateX(-50%) translateY(0%);
+    transform: translateY(0%);
     opacity: 1;
   }
 
   sticky-add-to-cart:not([data-variant-available='true']) .sticky-add-to-cart__bar {
     opacity: 0;
-    transform: translateX(-50%) translateY(calc(100% + 40px));
+    transform: translateY(calc(100% + 40px));
     display: none;
   }
 
-  .sticky-add-to-cart__info[data-has-image='false'] {
-    padding-left: var(--padding-lg);
+  /* Image and price hidden on all sizes */
+  .sticky-add-to-cart__image,
+  .sticky-add-to-cart__price {
+    display: none;
   }
 
-  .sticky-add-to-cart__image {
-    flex-shrink: 0;
-    aspect-ratio: 1;
-    height: var(--height-buy-buttons);
-    overflow: hidden;
-    border-radius: var(--style-border-radius-buttons-primary);
-    background: var(--color-background-secondary);
-  }
-
-  .sticky-add-to-cart__image-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+  .sticky-add-to-cart__info-bar {
+    display: flex;
+    align-items: center;
+    min-width: 0;
   }
 
   .sticky-add-to-cart__info {
-    flex: 1;
-    min-width: 0; /* Allow text truncation */
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    min-width: 0;
   }
 
   .sticky-add-to-cart__title {
-    font-size: var(--font-paragraph-medium--size);
-    font-weight: var(--font-weight-semibold);
-    line-height: var(--font-paragraph--line-height);
+    font-weight: normal;
+    line-height: 1.5;
+    letter-spacing: 0.2px;
     margin: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
-  .sticky-add-to-cart__variant {
-    color: rgb(var(--color-foreground-rgb) / var(--opacity-subdued-text));
+  .sticky-add-to-cart__variant-colour {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .sticky-add-to-cart__variant-swatch {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: var(--style-border-radius-buttons-primary);
+    border: 1px solid var(--color-foreground);
+    padding: 4px;
+    flex-shrink: 0;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+
+  .sticky-add-to-cart__variant-swatch::after {
+    content: '';
+    flex: 1;
+    height: 100%;
+    border-radius: var(--style-border-radius-buttons-primary);
+    background: var(--swatch-inner-bg);
+  }
+
+  .sticky-add-to-cart__variant-colour-name,
+  .sticky-add-to-cart__variant-size,
+  .sticky-add-to-cart__variant-fallback {
     font-size: var(--font-paragraph-small--size);
-    margin-top: var(--margin-3xs);
+    color: var(--color-foreground);
+    white-space: nowrap;
   }
 
-  .sticky-add-to-cart__price {
-    font-weight: var(--font-weight-semibold);
+  /* ATC button — element selector beats .add-to-cart-button height (0,1,0) */
+  sticky-add-to-cart .sticky-add-to-cart__bar .sticky-add-to-cart__button {
+    flex-shrink: 0;
+    height: 40px;
+    padding-block: 0;
+    overflow: hidden;
   }
 
-  .sticky-add-to-cart__button {
-    height: var(--height-buy-buttons);
-    position: relative;
+  /* ── Desktop ── */
+  @media screen and (min-width: 750px) {
+    .sticky-add-to-cart__bar {
+      left: 16px;
+      right: 16px;
+      bottom: 16px;
+      height: 48px;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 4px 0 16px;
+      background-color: var(--background-secondary);
+      border-radius: var(--style-border-radius-buttons-primary);
+    }
+
+    .sticky-add-to-cart__info-bar {
+      flex: 1;
+    }
+
+    .sticky-add-to-cart__info {
+      gap: 24px;
+    }
+
+    .sticky-add-to-cart__title {
+      font-size: 1rem;
+    }
+
+    sticky-add-to-cart .sticky-add-to-cart__bar .sticky-add-to-cart__button {
+      width: 300px;
+    }
   }
 
-  /* Mobile adjustments */
+  /* ── Mobile ── */
   @media screen and (max-width: 749px) {
     .sticky-add-to-cart__bar {
+      left: 0;
+      right: 0;
       bottom: 0;
-      width: 100%;
-      max-width: none;
-      border-radius: 0;
-
-      &::before {
-        --border: 1px;
-      }
+      flex-direction: column;
+      align-items: stretch;
+      gap: 8px;
+      padding: 16px;
+      background-color: transparent;
     }
 
-    .sticky-add-to-cart__bar .add-to-cart-text__content {
-      display: none;
+    .sticky-add-to-cart__info-bar {
+      align-self: stretch;
+      flex: none;
+      height: 40px;
+      background-color: var(--background-secondary);
+      border-radius: var(--style-border-radius-buttons-primary);
+      padding-inline: 16px;
     }
 
-    .sticky-add-to-cart__info[data-has-image='false'] {
-      padding-left: 0;
+    .sticky-add-to-cart__info {
+      gap: 12px;
     }
 
     .sticky-add-to-cart__title {
-      font-size: var(--font-paragraph--size);
+      font-size: 0.875rem;
+      flex: 1;
     }
 
-    .sticky-add-to-cart__button {
-      padding: var(--padding-lg);
-    }
-
-    .sticky-add-to-cart__price {
-      font-size: var(--font-paragraph-small--size);
-    }
-
-    .sticky-add-to-cart__button {
-      width: var(--height-buy-buttons);
-    }
-
-    sticky-add-to-cart:not([data-variant-available='true']) .add-to-cart-text__content {
-      display: initial;
-    }
-
-    sticky-add-to-cart:not([data-variant-available='true']) .sticky-add-to-cart__button {
-      width: auto;
+    sticky-add-to-cart .sticky-add-to-cart__bar .sticky-add-to-cart__button {
+      align-self: stretch;
+      width: 100%;
     }
   }
 
-  /* Small mobile - hide text content and compare price */
-  @media screen and (max-width: 389px) {
-    .sticky-add-to-cart__bar {
-      .compare-at-price {
-        display: none;
-      }
+  @media screen and (max-width: 749px) {
+    .product-information {
+      row-gap: 0;
     }
 
-    .sticky-add-to-cart__title {
-      display: none;
+    .product-information .product-information__grid {
+      grid-template-columns: var(--section-margin) 1fr var(--section-margin);
     }
 
-    /* For product with only default variant show title */
-    .sticky-add-to-cart__info[data-singleton='true'] .sticky-add-to-cart__title {
-      display: block;
+    .product-information .media-gallery.sticky-content {
+      position: static;
+      top: auto;
     }
 
-    /* For single variant show title and variant, truncate both. variant should be identifiable with truncation */
-    .sticky-add-to-cart__info[data-single-option='true'] .sticky-add-to-cart__title {
-      display: block;
-    }
-
-    .sticky-add-to-cart__info[data-single-option='true'] .sticky-add-to-cart__variant {
-      display: block;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+    .product-information .media-gallery--hint :not(.dialog-zoomed-gallery) > .product-media-container:not(:only-child) {
+      width: calc(100% - 55px);
     }
   }
 {% endstylesheet %}
+
+{% javascript %}
+  // Sync the split colour/size display when Horizon JS updates the hidden variant element
+  // (occurs when the selected variant combination is unavailable)
+  (function () {
+    const COLOUR_OPTION_NAMES = ['color', 'colour', 'colore', 'farbe', 'couleur', 'cor'];
+
+    function getSwatchBgFromPicker(variantPicker, colourOptionIndex) {
+      const checkedInputs = Array.from(variantPicker.querySelectorAll('input:checked'));
+      const colourInput = checkedInputs[colourOptionIndex];
+      if (!colourInput) return null;
+      const swatchSpan = colourInput.closest('label')?.querySelector('.swatch');
+      if (!swatchSpan) return null;
+      return swatchSpan.style.getPropertyValue('--swatch-background').trim() || null;
+    }
+
+    function syncStickyVariant(stickyEl) {
+      const variantEl = stickyEl.querySelector('.sticky-add-to-cart__variant');
+      if (!variantEl) return;
+
+      const colourNameEl = stickyEl.querySelector('.sticky-add-to-cart__variant-colour-name');
+      const sizeEl = stickyEl.querySelector('.sticky-add-to-cart__variant-size');
+      const swatchEl = stickyEl.querySelector('.sticky-add-to-cart__variant-swatch');
+      if (!colourNameEl && !sizeEl) return;
+
+      const title = variantEl.textContent.trim();
+      if (!title) return;
+
+      const parts = title.split(' / ');
+      const colourIdx = parseInt(stickyEl.dataset.colourOptionIndex || '0');
+      const sizeIdx = parseInt(stickyEl.dataset.sizeOptionIndex || '1');
+
+      if (colourNameEl && parts[colourIdx] !== undefined) colourNameEl.textContent = parts[colourIdx];
+      if (sizeEl && parts[sizeIdx] !== undefined) sizeEl.textContent = parts[sizeIdx];
+
+      if (swatchEl) {
+        const variantPicker = document.querySelector(
+          `variant-picker[data-product-id="${stickyEl.dataset.productId}"]`
+        );
+        if (variantPicker) {
+          const bg = getSwatchBgFromPicker(variantPicker, colourIdx);
+          if (bg) swatchEl.style.setProperty('--swatch-inner-bg', bg);
+        }
+      }
+    }
+
+    document.querySelectorAll('sticky-add-to-cart').forEach((stickyEl) => {
+      const variantEl = stickyEl.querySelector('.sticky-add-to-cart__variant');
+      if (!variantEl) return;
+
+      new MutationObserver(() => syncStickyVariant(stickyEl)).observe(variantEl, {
+        childList: true,
+        characterData: true,
+        subtree: true,
+      });
+    });
+  })();
+{% endjavascript %}
 
 {% schema %}
 {

@@ -1,0 +1,148 @@
+{% capture children %}
+  <div class="twp-pdp-reviews">
+    <div
+      class="yotpo yotpo-main-widget"
+      data-product-id="{{ product.id }}"
+      data-name="{{ product.title | escape }}"
+      data-url="{{ shop.url }}{{ product.url }}"
+      data-image-url="{{ product.featured_image | img_url: 'large' }}"
+      data-description="{{ product.description | strip_html | escape }}"
+      data-bread-crumbs="{{ product.type | escape }}"
+    ></div>
+  </div>
+{% endcapture %}
+
+{% render 'section', section: section, children: children %}
+
+{% stylesheet %}
+  .twp-pdp-reviews .yotpo,
+  .twp-pdp-reviews .yotpo * {
+    font-family: var(--font-body--family) !important;
+    color: var(--color-foreground) !important;
+  }
+
+  .twp-pdp-reviews .yotpo a {
+    color: var(--color-foreground) !important;
+  }
+
+  /* Heading */
+  .twp-pdp-reviews .yotpo .yotpo-header-title,
+  .twp-pdp-reviews .yotpo .main-widget-title {
+    font-family: var(--font-primary--family) !important;
+    font-size: var(--font-h5--size, 2rem) !important;
+    font-weight: var(--font-heading--weight) !important;
+    letter-spacing: 0.2px !important;
+    text-align: center !important;
+  }
+
+  /* Stars */
+  .twp-pdp-reviews .yotpo .yotpo-star,
+  .twp-pdp-reviews .yotpo .star-rating {
+    color: var(--color-foreground) !important;
+  }
+
+  /* "Write a review" / "Ask a question" / "Show more" buttons */
+  .twp-pdp-reviews .yotpo .yotpo-submit,
+  .twp-pdp-reviews .yotpo .write-review-btn,
+  .twp-pdp-reviews .yotpo .write-question-btn,
+  .twp-pdp-reviews .yotpo .yotpo-more-reviews-btn,
+  .twp-pdp-reviews .yotpo [data-action="toggleReviewForm"],
+  .twp-pdp-reviews .yotpo .form-submit-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 40px !important;
+    padding-inline: 24px !important;
+    border-radius: var(--buttons-radius, 64px) !important;
+    background-color: var(--color-button) !important;
+    color: var(--color-button-text) !important;
+    font-family: var(--font-body--family) !important;
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.2px !important;
+    border: none !important;
+    cursor: pointer !important;
+    text-decoration: none !important;
+  }
+
+  /* Input fields */
+  .twp-pdp-reviews .yotpo input,
+  .twp-pdp-reviews .yotpo textarea,
+  .twp-pdp-reviews .yotpo select {
+    font-family: var(--font-body--family) !important;
+    border-color: var(--color-border) !important;
+    color: var(--color-foreground) !important;
+    background-color: var(--color-background) !important;
+  }
+
+  /* Subdued text */
+  .twp-pdp-reviews .yotpo .yotpo-user-name,
+  .twp-pdp-reviews .yotpo .yotpo-review-date,
+  .twp-pdp-reviews .yotpo .yotpo-user-related-fields {
+    color: rgb(var(--color-foreground-rgb) / var(--opacity-subdued-text, 0.65)) !important;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Customer reviews",
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Colour scheme",
+      "default": "scheme-2"
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-start",
+      "label": "Left",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-end",
+      "label": "Right",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "Customer reviews",
+      "category": "t:categories.product"
+    }
+  ]
+}
+{% endschema %}

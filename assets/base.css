@@ -334,6 +334,15 @@ p:empty {
   --page-margin: 24px;
 }
 
+@media screen and (min-width: 750px) {
+  .page-width-wide,
+  .page-width-normal,
+  .page-width-narrow,
+  .page-width-content {
+    --page-margin: 40px;
+  }
+}
+
 .page-width-wide {
   /* NOTE: This results in a page width of 2400px because of how we set up margins with grid */
   --page-content-width: var(--wide-page-width);
@@ -1366,9 +1375,15 @@ input:not(:placeholder-shown)::placeholder {
 }
 
 .button[aria-disabled="true"],
-.button-secondary[aria-disabled="true"],
-.button:disabled {
+.button-secondary[aria-disabled="true"] {
   opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.button:disabled {
+  opacity: 1;
+  background: var(--button-dark-background-disabled, #f7f7f7);
+  color: rgb(var(--color-foreground-rgb) / 0.4);
   cursor: not-allowed;
 }
 

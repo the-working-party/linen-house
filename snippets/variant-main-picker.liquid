@@ -9,6 +9,16 @@
 
 {% assign block_settings = block.settings %}
 
+{% liquid
+  assign size_option_names = 'size,größe,taille,tamaño,maat,misura,taglia'
+  assign size_option_list = size_option_names | split: ','
+  assign colour_option_names = 'color,colour,colore,farbe,couleur,cor'
+
+  assign size_guide_handle = product.type | downcase | replace: ' & ', '-' | replace: ' + ', '-' | replace: ' - ', '-' | replace: '™', '' | replace: ' ', '' | prepend: 'size-guide-'
+  assign size_guide_page = pages[size_guide_handle]
+  assign colour_option_list = colour_option_names | split: ','
+%}
+
 {% unless product_resource.has_only_default_variant %}
   {% liquid
     assign button_background_brightness = section.settings.color_scheme.settings.foreground | color_brightness
@@ -37,6 +47,20 @@
     <form class="variant-picker__form">
       {%- for product_option in product_resource.options_with_values -%}
         {%- liquid
+          assign opt_name_lower = product_option.name | downcase
+          assign is_colour_option = false
+          if colour_option_list contains opt_name_lower
+            assign is_colour_option = true
+          endif
+          assign show_size_guide = false
+          assign has_size_chart = false
+          if product.metafields.custom.size_chart != blank or size_guide_page != blank
+            assign has_size_chart = true
+          endif
+          if has_size_chart and size_option_list contains opt_name_lower
+            assign show_size_guide = true
+          endif
+
           assign swatch_count = product_option.values | map: 'swatch' | compact | size
           assign variant_style = block_settings.variant_style
 
@@ -46,6 +70,8 @@
             else
               assign variant_style = 'swatch'
             endif
+          elsif is_colour_option and block_settings.show_swatches
+            assign variant_style = 'swatch'
           endif
 
           if variant_style == 'buttons' and settings.variant_button_width == 'equal-width-buttons'
@@ -71,7 +97,7 @@
         {%- elsif variant_style == 'swatch' or block_settings.variant_style == 'buttons' -%}
           {%- assign fieldset_index = forloop.index0 -%}
           <fieldset
-            class="variant-option variant-option--buttons{% if variant_style == 'swatch' %} variant-option--swatches{% else %} variant-option--{{ settings.variant_button_width }}{% endif %}"
+            class="variant-option variant-option--buttons{% if variant_style == 'swatch' %} variant-option--swatches{% else %} variant-option--{{ settings.variant_button_width }}{% endif %}{% if show_size_guide %} variant-option--has-size-guide{% endif %}{% if is_colour_option %} variant-option--colour{% endif %}"
             data-fieldset-index="{{ fieldset_index }}"
             ref="fieldsets[]"
             {{ option_id_attribute }}
@@ -81,6 +107,19 @@
               {%- if variant_style == 'swatch' -%}
                 <span class="variant-option__swatch-value">{{ product_option.selected_value }}</span>
               {%- endif %}
+              {%- if show_size_guide -%}
+                <button
+                  type="button"
+                  class="twp-size-guide__trigger button-unstyled"
+                  data-dialog-target="twp-size-guide-component"
+                >
+                  {{- 'products.size_guide.label' | t -}}
+                  <span class="twp-size-guide__trigger-icon" aria-hidden="true">
+                    {%- assign ruler_icon = 'icon-' | append: settings.brand | append: '-ruler.svg' -%}
+                    {{- ruler_icon | inline_asset_content -}}
+                  </span>
+                </button>
+              {%- endif -%}
             </legend>
             {%- for product_option_value in product_option.values -%}
               {% if product_option_value.size > longest_value and option_id_attribute %}
@@ -231,7 +270,18 @@
   }
 
   .variant-picker__form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--padding-4xl);
     width: 100%;
+  }
+
+  .variant-option + .variant-option {
+    margin-top: 0;
+  }
+
+  .variant-option--colour {
+    order: -1;
   }
 
   .variant-picker[data-shopify-visual-preview] {
@@ -309,4 +359,107 @@
     text-align: right;
     justify-content: right;
   }
+
+  .variant-option--has-size-guide legend {
+    display: flex;
+    align-items: center;
+    width: 100%;
+  }
+
+  .twp-size-guide__trigger {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: var(--font-paragraph-small--size, 0.875rem);
+    font-weight: 500;
+    letter-spacing: 0.2px;
+    color: var(--color-foreground);
+    cursor: pointer;
+    flex-shrink: 0;
+    text-decoration: none;
+  }
+
+  .twp-size-guide__trigger-icon svg {
+    width: 12px;
+    height: 12px;
+    color: inherit;
+  }
+
+  /* Force pill shape for text-style variant buttons (size, etc.) */
+  .variant-option__button-label:not(.variant-option__button-label--has-swatch) {
+    border-radius: 9999px;
+  }
+
+  /* Colour swatches: selection ring pattern */
+  .variant-option--swatches .variant-option__button-label--has-swatch {
+    width: 40px;
+    height: 40px;
+    padding: 4px;
+    border-radius: 9999px;
+    border: 1px solid transparent;
+    outline: none;
+  }
+
+  .variant-option--swatches .variant-option__button-label--has-swatch:hover {
+    border-color: rgb(var(--color-foreground-rgb) / 0.35);
+    outline: none;
+  }
+
+  .variant-option--swatches .variant-option__button-label--has-swatch:has(:checked) {
+    border-color: var(--color-foreground);
+    outline: none;
+  }
+
+  .variant-option--swatches .variant-option__button-label--has-swatch:has(:checked):hover {
+    border-color: var(--color-foreground);
+  }
+
+  /* Suppress Horizon's outline-based selection ring in Safari < 16.4 */
+  @supports not (background-color: rgb(from red 150 g b / alpha)) {
+    .variant-option--swatches .variant-option__button-label--has-swatch:has(:checked) {
+      overflow: clip;
+    }
+
+    .variant-option--swatches .variant-option__button-label--has-swatch:has(:checked)::after {
+      display: none;
+    }
+  }
+
+  /* Inner swatch: fill the content area created by the padding gap */
+  .variant-option--swatches .variant-option__button-label--has-swatch .swatch {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 9999px;
+    border: none;
+    background-size: cover;
+  }
+
+  /* Placeholder when no swatch image or colour is configured yet */
+  .variant-option--swatches .swatch--unavailable {
+    background-color: var(--color-border);
+  }
+
+  /* OOS strikethrough: clip to inner swatch circle.
+     SVG starts 2px from outer (border 1px + options-border-width 1px),
+     inner circle starts 5px from outer — 3px inset gives exact match. */
+  .variant-option--swatches .variant-option__button-label--has-swatch .variant-option__strikethrough {
+    clip-path: inset(3px round 9999px);
+  }
 {% endstylesheet %}
+
+{% javascript %}
+  document.querySelectorAll('[data-dialog-target]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      document.getElementById(btn.dataset.dialogTarget)?.showDialog();
+    });
+  });
+{% endjavascript %}
+
+{%- if product.metafields.custom.size_chart != blank or size_guide_page != blank -%}
+  {%- render 'twp-size-guide-modal',
+    size_chart: product.metafields.custom.size_chart.value,
+    size_guide_page: size_guide_page
+  -%}
+{%- endif -%}

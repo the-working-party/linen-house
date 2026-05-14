@@ -1,0 +1,36 @@
+{% doc %}
+  Accordion row for Care — hidden when custom.care_instructions metafield is blank.
+
+  @example
+  {% content_for 'block', type: '_accordion-row-care', id: 'care' %}
+{% enddoc %}
+
+{%- assign care_label = closest.product.metafields.custom.care_instructions.value.label.value -%}
+{%- unless care_label == blank -%}
+  {%- capture row_children -%}
+    <details class="details" {{ block.shopify_attributes }}>
+      <summary class="details__header">
+        Care
+        <span class="svg-wrapper icon-caret icon-animated">
+          {{- 'icon-caret.svg' | inline_asset_content -}}
+        </span>
+        <span class="svg-wrapper icon-plus">{{- 'icon-plus.svg' | inline_asset_content -}}</span>
+      </summary>
+      <div class="details-content">
+        {{ care_label }}
+      </div>
+    </details>
+  {%- endcapture -%}
+  {%- render 'accordion-custom-component',
+    children: row_children,
+    open_by_default_on_desktop: false,
+    open_by_default_on_mobile: false
+  -%}
+{%- endunless -%}
+
+{% schema %}
+{
+  "name": "Care accordion",
+  "tag": null
+}
+{% endschema %}
