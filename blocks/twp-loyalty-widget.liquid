@@ -1,0 +1,42 @@
+{%- doc -%}
+  Renders a Yotpo loyalty widget (earn-points messaging, redemption, etc.).
+  Instance ID is configured in the Yotpo Loyalty dashboard under On-site widgets.
+
+  @example
+  {% content_for 'block', type: 'twp-loyalty-widget', id: 'loyalty' %}
+{%- enddoc -%}
+
+{%- if block.settings.instance_id != blank -%}
+  <div
+    class="twp-loyalty-widget yotpo-widget-instance"
+    data-yotpo-instance-id="{{ block.settings.instance_id | escape }}"
+    {{ block.shopify_attributes }}
+  ></div>
+{%- endif -%}
+
+{% stylesheet %}
+  .twp-loyalty-widget {
+    display: block;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Loyalty widget",
+  "tag": null,
+  "settings": [
+    {
+      "type": "text",
+      "id": "instance_id",
+      "label": "Yotpo widget instance ID",
+      "info": "Found in Yotpo dashboard → On-site widgets → Widget ID"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Loyalty widget",
+      "category": "t:categories.product"
+    }
+  ]
+}
+{% endschema %}

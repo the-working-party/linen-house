@@ -158,6 +158,11 @@
                 "price_tVjtKg"
               ]
             },
+            "loyalty_twp": {
+              "type": "twp-loyalty-widget",
+              "settings": {},
+              "blocks": {}
+            },
             "divider_VJhene": {
               "type": "_divider",
               "name": "t:names.divider",
@@ -246,6 +251,7 @@
           },
           "block_order": [
             "group_icgrde",
+            "loyalty_twp",
             "divider_VJhene",
             "variant_picker_R3rGDr",
             "buy_buttons_eYQEYi",
