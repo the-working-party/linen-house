@@ -1,0 +1,22 @@
+mutation CreatePage($title: String!, $handle: String!, $templateSuffix: String, $body: String) {
+  pageCreate(
+    page: {
+      title: $title
+      handle: $handle
+      templateSuffix: $templateSuffix
+      body: $body
+      isPublished: true
+    }
+  ) {
+    page {
+      id
+      title
+      handle
+      templateSuffix
+    }
+    userErrors {
+      field
+      message
+    }
+  }
+}

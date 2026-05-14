@@ -11,8 +11,7 @@
   {% render 'variant-main-picker',
     product_resource: product_resource,
     section: section,
-    product: product,
-    size_guide_page: block.settings.size_guide_page
+    product: product
   %}
 {% endunless %}
 
@@ -56,16 +55,6 @@
       "id": "alignment",
       "label": "t:settings.alignment",
       "default": "left"
-    },
-    {
-      "type": "header",
-      "content": "Size guide"
-    },
-    {
-      "type": "page",
-      "id": "size_guide_page",
-      "label": "Size guide page",
-      "info": "Page containing the size measurements table."
     },
     {
       "type": "header",

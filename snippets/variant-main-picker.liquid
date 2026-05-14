@@ -13,6 +13,9 @@
   assign size_option_names = 'size,größe,taille,tamaño,maat,misura,taglia'
   assign size_option_list = size_option_names | split: ','
   assign colour_option_names = 'color,colour,colore,farbe,couleur,cor'
+
+  assign size_guide_handle = product.type | downcase | replace: ' & ', '-' | replace: ' + ', '-' | replace: ' - ', '-' | replace: '™', '' | replace: ' ', '' | prepend: 'size-guide-'
+  assign size_guide_page = pages[size_guide_handle]
   assign colour_option_list = colour_option_names | split: ','
 %}
 
