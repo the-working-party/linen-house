@@ -99,8 +99,8 @@
         >
           {{- status -}}
         </span>
-        <span class="svg-wrapper icon-caret icon-animated">
-          {%- render 'icon-brand', name: 'chevron-down' -%}
+        <span class="svg-wrapper icon-caret">
+          {%- render 'icon-brand', name: 'arrow-sort' -%}
         </span>
       </summary>
       <floating-panel-component
@@ -221,6 +221,14 @@
     @media screen and (min-width: 750px) {
       z-index: var(--facets-upper-z-index);
     }
+  }
+
+  .sorting-filter .facets__summary .icon-caret {
+    color: var(--button-dark-content-inverse);
+  }
+
+  .sorting-filter .facets__summary:hover .icon-caret {
+    color: var(--button-dark-content-inverse);
   }
 
   .sorting-filter .icon-caret svg {
