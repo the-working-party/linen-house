@@ -368,6 +368,16 @@
     "blog_post_description": "An excerpt of your blog post's content"
   },
   "products": {
+    "save_percent": "Save {{ percent }}%",
+    "sale": "Sale",
+    "bnpl": {
+      "message": "Buy now pay later with Afterpay",
+      "see_options": "See options"
+    },
+    "size_guide": {
+      "label": "Size guide",
+      "title": "Size guide"
+    },
     "product": {
       "add_to_cart": "Add to cart",
       "adding_to_cart": "Adding...",

@@ -1315,7 +1315,7 @@
   }
 
   .checkbox .icon-checkmark {
-    border: 1.2px solid #cfcfcf;
+    border: 1.2px solid var(--color-border);
     background-color: transparent;
     height: 20px;
     width: 20px;
@@ -1431,7 +1431,7 @@
     align-items: center;
     justify-content: center;
     padding: 48px var(--custom-spacing-lg) var(--custom-spacing-lg);
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 20%);
+    background: linear-gradient(180deg, transparent 0%, var(--color-background) 20%);
 
     @media screen and (min-width: 750px) {
       padding: 48px var(--custom-spacing-xl) var(--custom-spacing-xl);
@@ -1528,7 +1528,7 @@
   .facets .variant-option__swatch-wrapper {
     width: 20px;
     height: 20px;
-    border: 1.2px solid #cfcfcf;
+    border: 1.2px solid var(--color-border);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -1546,7 +1546,7 @@
   }
 
   .facets .variant-option__button-label:has(:checked) .variant-option__swatch-wrapper {
-    border-color: #000000;
+    border-color: var(--color-foreground);
   }
 
   .facets .variant-option__button-label--has-swatch:has(:checked) {

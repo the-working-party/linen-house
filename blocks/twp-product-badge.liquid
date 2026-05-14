@@ -1,0 +1,66 @@
+{% doc %}
+  Renders a badge pill above the product title.
+  Reads the first product tag prefixed with "badge:" (e.g. "badge:New", "badge:Sale").
+
+  @example
+  {% content_for 'block', type: 'twp-product-badge', id: 'product-badge' %}
+{% enddoc %}
+
+{%- liquid
+  assign badge_label = nil
+  if block.settings.show_badge
+    for tag in closest.product.tags
+      if tag contains 'badge:'
+        assign badge_label = tag | remove_first: 'badge:'
+        break
+      endif
+    endfor
+  endif
+-%}
+
+{%- if badge_label -%}
+  <div class="twp-product-badge" {{ block.shopify_attributes }}>
+    <span class="twp-product-badge__label">{{- badge_label -}}</span>
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  .twp-product-badge {
+    display: flex;
+  }
+
+  .twp-product-badge__label {
+    display: inline-flex;
+    align-items: center;
+    height: 32px;
+    padding-inline: 12px;
+    border-radius: var(--buttons-radius, 64px);
+    background-color: var(--color-accent-1);
+    color: var(--color-accent-1-contrast);
+    font-size: 0.75rem;
+    line-height: 1.5;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Product badge",
+  "tag": null,
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_badge",
+      "label": "Show badge",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product badge",
+      "category": "t:categories.product"
+    }
+  ]
+}
+{% endschema %}

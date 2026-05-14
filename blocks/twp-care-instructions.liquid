@@ -1,0 +1,24 @@
+{% doc %}
+  Renders care instructions from the product's care_instructions metaobject reference.
+  Reads: product.metafields.custom.care_instructions (metaobject_reference → shopify--care-instructions)
+  Outputs the metaobject's label field as a paragraph.
+  Renders nothing if the metafield is not set.
+
+  @example
+  {% content_for 'block', type: 'twp-care-instructions', id: 'care' %}
+{% enddoc %}
+
+{%- assign care = closest.product.metafields.custom.care_instructions.value -%}
+
+{%- if care != blank -%}
+  <div class="twp-care-instructions rte" {{ block.shopify_attributes }}>
+    <p>{{ care.label }}</p>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Care instructions",
+  "tag": null
+}
+{% endschema %}

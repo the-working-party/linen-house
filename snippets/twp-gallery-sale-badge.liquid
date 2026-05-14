@@ -1,0 +1,59 @@
+{% doc %}
+  Renders a "Sale" pill badge overlaid on the product gallery.
+  Shown when the product has a tag matching "sale" (case-insensitive).
+
+  @param {product} product - The current product
+
+  @example
+  {% render 'twp-gallery-sale-badge', product: product %}
+{% enddoc %}
+
+{%- liquid
+  assign show_sale_badge = false
+  for tag in product.tags
+    assign tag_lower = tag | downcase
+    if tag_lower == 'sale'
+      assign show_sale_badge = true
+      break
+    endif
+  endfor
+-%}
+
+{%- if show_sale_badge -%}
+  <span class="twp-gallery-sale-badge" aria-hidden="true">
+    {{- 'products.sale' | t -}}
+  </span>
+{%- endif -%}
+
+{% stylesheet %}
+  .product-information__media {
+    position: relative;
+  }
+
+  .twp-gallery-sale-badge {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 32px;
+    padding-inline: 12px;
+    border-radius: 64px;
+    background: var(--colour-background-secondary, #f9f8f5);
+    font-family: var(--font-body--family);
+    font-size: 0.75rem;
+    line-height: 1.5;
+    letter-spacing: 0.2px;
+    color: var(--color-foreground);
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
+  @media screen and (min-width: 750px) {
+    .product-information--media-left .twp-gallery-sale-badge {
+      right: calc(24px + calc(var(--gap, 0) / 2));
+    }
+  }
+{% endstylesheet %}

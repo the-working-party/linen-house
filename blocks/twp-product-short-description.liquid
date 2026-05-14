@@ -1,0 +1,30 @@
+{%- unless closest.product.metafields.custom.short_description == blank -%}
+  <p class="twp-product-short-description" {{ block.shopify_attributes }}>
+    {{- closest.product.metafields.custom.short_description -}}
+  </p>
+{%- endunless -%}
+
+{% stylesheet %}
+  .twp-product-short-description {
+    margin: 0;
+    font-family: var(--font-body--family);
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1.5;
+    letter-spacing: 0.2px;
+    color: var(--color-foreground);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Short description",
+  "tag": null,
+  "presets": [
+    {
+      "name": "Short description",
+      "category": "t:categories.product"
+    }
+  ]
+}
+{% endschema %}

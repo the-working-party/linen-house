@@ -65,6 +65,10 @@
     line-height: var(--summary-font-line-height);
     text-transform: var(--summary-font-case);
     min-height: var(--minimum-touch-target);
+
+    @media screen and (min-width: 750px) {
+      gap: 12px;
+    }
   }
 {% endstylesheet %}
 
@@ -76,6 +80,12 @@
   "blocks": [
     {
       "type": "_accordion-row"
+    },
+    {
+      "type": "_accordion-row-sizing"
+    },
+    {
+      "type": "_accordion-row-care"
     }
   ],
   "settings": [

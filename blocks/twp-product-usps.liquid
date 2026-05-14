@@ -1,0 +1,313 @@
+{% doc %}
+  Renders a 2x2 grid of USP (unique selling point) items below the add-to-cart button.
+  Each item has a configurable icon and label.
+
+  @example
+  {% content_for 'block', type: 'twp-product-usps', id: 'product-usps' %}
+{% enddoc %}
+
+{%- assign usp_meta = closest.product.metafields.custom.product_usps.value -%}
+
+<ul class="twp-product-usps" {{ block.shopify_attributes }}>
+  {%- if usp_meta != blank -%}
+    {%- for i in (1..4) -%}
+      {%- liquid
+        case i
+          when 1
+            assign icon_name = usp_meta.usp_1_icon
+            assign image_upload = usp_meta.usp_1_image
+            assign label = usp_meta.usp_1_label
+          when 2
+            assign icon_name = usp_meta.usp_2_icon
+            assign image_upload = usp_meta.usp_2_image
+            assign label = usp_meta.usp_2_label
+          when 3
+            assign icon_name = usp_meta.usp_3_icon
+            assign image_upload = usp_meta.usp_3_image
+            assign label = usp_meta.usp_3_label
+          when 4
+            assign icon_name = usp_meta.usp_4_icon
+            assign image_upload = usp_meta.usp_4_image
+            assign label = usp_meta.usp_4_label
+        endcase
+      -%}
+      {%- if label != blank -%}
+        <li class="twp-product-usps__item">
+          {%- if image_upload != blank -%}
+            <img src="{{ image_upload.url }}" class="twp-product-usps__icon" width="12" height="12" loading="lazy" alt="" aria-hidden="true">
+          {%- else -%}
+            {%- liquid
+              assign icon_file = 'icon-' | append: icon_name | append: '.svg'
+              assign icon_svg = icon_file | inline_asset_content
+            -%}
+            {%- if icon_svg != blank -%}
+              <span class="twp-product-usps__icon" aria-hidden="true">{{ icon_svg }}</span>
+            {%- elsif icon_name != blank and icon_name != 'none' -%}
+              {%- render 'icon-or-image', icon: icon_name, image_upload: blank, width: 12, class_name: 'twp-product-usps__icon' -%}
+            {%- endif -%}
+          {%- endif -%}
+          <span class="twp-product-usps__label">{{- label -}}</span>
+        </li>
+      {%- endif -%}
+    {%- endfor -%}
+  {%- else -%}
+    {%- for i in (1..4) -%}
+      {%- liquid
+        case i
+          when 1
+            assign icon_name = block.settings.usp_1_icon
+            assign image_upload = block.settings.usp_1_image
+            assign label = block.settings.usp_1_label
+          when 2
+            assign icon_name = block.settings.usp_2_icon
+            assign image_upload = block.settings.usp_2_image
+            assign label = block.settings.usp_2_label
+          when 3
+            assign icon_name = block.settings.usp_3_icon
+            assign image_upload = block.settings.usp_3_image
+            assign label = block.settings.usp_3_label
+          when 4
+            assign icon_name = block.settings.usp_4_icon
+            assign image_upload = block.settings.usp_4_image
+            assign label = block.settings.usp_4_label
+        endcase
+      -%}
+      {%- if label != blank -%}
+        <li class="twp-product-usps__item">
+          {%- if image_upload != blank -%}
+            {%- render 'icon-or-image', icon: 'none', image_upload: image_upload, width: 12, class_name: 'twp-product-usps__icon' -%}
+          {%- else -%}
+            {%- liquid
+              assign icon_file = 'icon-' | append: icon_name | append: '.svg'
+              assign icon_svg = icon_file | inline_asset_content
+            -%}
+            {%- if icon_svg != blank -%}
+              <span class="twp-product-usps__icon" aria-hidden="true">{{ icon_svg }}</span>
+            {%- elsif icon_name != 'none' -%}
+              {%- render 'icon-or-image', icon: icon_name, image_upload: blank, width: 12, class_name: 'twp-product-usps__icon' -%}
+            {%- endif -%}
+          {%- endif -%}
+          <span class="twp-product-usps__label">{{- label -}}</span>
+        </li>
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endif -%}
+</ul>
+
+{% stylesheet %}
+  .twp-product-usps {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    row-gap: 16px;
+    column-gap: 12px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .twp-product-usps__item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.875rem;
+    color: var(--color-foreground);
+  }
+
+  .twp-product-usps__icon {
+    flex-shrink: 0;
+    width: 12px;
+    height: 12px;
+    color: var(--color-foreground);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Product USPs",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "USP 1"
+    },
+    {
+      "type": "select",
+      "id": "usp_1_icon",
+      "label": "Icon",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "linen-house-cotton", "label": "Cotton (LH)" },
+        { "value": "linen-house-heart", "label": "Heart (LH)" },
+        { "value": "linen-house-feather", "label": "Feather (LH)" },
+        { "value": "linen-house-sleep", "label": "Sleep (LH)" },
+        { "value": "leaf", "label": "Leaf" },
+        { "value": "heart", "label": "Heart" },
+        { "value": "star", "label": "Star" },
+        { "value": "truck", "label": "Truck" },
+        { "value": "return", "label": "Return" },
+        { "value": "lock", "label": "Lock" },
+        { "value": "recycle", "label": "Recycle" },
+        { "value": "check_box", "label": "Check" },
+        { "value": "washing", "label": "Washing" },
+        { "value": "dryer", "label": "Dryer" },
+        { "value": "iron", "label": "Iron" },
+        { "value": "ruler", "label": "Ruler" },
+        { "value": "shirt", "label": "Shirt" },
+        { "value": "plane", "label": "Plane" },
+        { "value": "map_pin", "label": "Map pin" },
+        { "value": "snowflake", "label": "Snowflake" }
+      ],
+      "default": "linen-house-cotton"
+    },
+    {
+      "type": "image_picker",
+      "id": "usp_1_image",
+      "label": "Custom icon (PNG override)"
+    },
+    {
+      "type": "text",
+      "id": "usp_1_label",
+      "label": "Label",
+      "default": "100% Cotton"
+    },
+    {
+      "type": "header",
+      "content": "USP 2"
+    },
+    {
+      "type": "select",
+      "id": "usp_2_icon",
+      "label": "Icon",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "linen-house-cotton", "label": "Cotton (LH)" },
+        { "value": "linen-house-heart", "label": "Heart (LH)" },
+        { "value": "linen-house-feather", "label": "Feather (LH)" },
+        { "value": "linen-house-sleep", "label": "Sleep (LH)" },
+        { "value": "leaf", "label": "Leaf" },
+        { "value": "heart", "label": "Heart" },
+        { "value": "star", "label": "Star" },
+        { "value": "truck", "label": "Truck" },
+        { "value": "return", "label": "Return" },
+        { "value": "lock", "label": "Lock" },
+        { "value": "recycle", "label": "Recycle" },
+        { "value": "check_box", "label": "Check" },
+        { "value": "washing", "label": "Washing" },
+        { "value": "dryer", "label": "Dryer" },
+        { "value": "iron", "label": "Iron" },
+        { "value": "ruler", "label": "Ruler" },
+        { "value": "shirt", "label": "Shirt" },
+        { "value": "plane", "label": "Plane" },
+        { "value": "map_pin", "label": "Map pin" },
+        { "value": "snowflake", "label": "Snowflake" }
+      ],
+      "default": "linen-house-heart"
+    },
+    {
+      "type": "image_picker",
+      "id": "usp_2_image",
+      "label": "Custom icon (PNG override)"
+    },
+    {
+      "type": "text",
+      "id": "usp_2_label",
+      "label": "Label",
+      "default": "Designed in Australia"
+    },
+    {
+      "type": "header",
+      "content": "USP 3"
+    },
+    {
+      "type": "select",
+      "id": "usp_3_icon",
+      "label": "Icon",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "linen-house-cotton", "label": "Cotton (LH)" },
+        { "value": "linen-house-heart", "label": "Heart (LH)" },
+        { "value": "linen-house-feather", "label": "Feather (LH)" },
+        { "value": "linen-house-sleep", "label": "Sleep (LH)" },
+        { "value": "leaf", "label": "Leaf" },
+        { "value": "heart", "label": "Heart" },
+        { "value": "star", "label": "Star" },
+        { "value": "truck", "label": "Truck" },
+        { "value": "return", "label": "Return" },
+        { "value": "lock", "label": "Lock" },
+        { "value": "recycle", "label": "Recycle" },
+        { "value": "check_box", "label": "Check" },
+        { "value": "washing", "label": "Washing" },
+        { "value": "dryer", "label": "Dryer" },
+        { "value": "iron", "label": "Iron" },
+        { "value": "ruler", "label": "Ruler" },
+        { "value": "shirt", "label": "Shirt" },
+        { "value": "plane", "label": "Plane" },
+        { "value": "map_pin", "label": "Map pin" },
+        { "value": "snowflake", "label": "Snowflake" }
+      ],
+      "default": "linen-house-feather"
+    },
+    {
+      "type": "image_picker",
+      "id": "usp_3_image",
+      "label": "Custom icon (PNG override)"
+    },
+    {
+      "type": "text",
+      "id": "usp_3_label",
+      "label": "Label",
+      "default": "Crafted for Comfort"
+    },
+    {
+      "type": "header",
+      "content": "USP 4"
+    },
+    {
+      "type": "select",
+      "id": "usp_4_icon",
+      "label": "Icon",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "linen-house-cotton", "label": "Cotton (LH)" },
+        { "value": "linen-house-heart", "label": "Heart (LH)" },
+        { "value": "linen-house-feather", "label": "Feather (LH)" },
+        { "value": "linen-house-sleep", "label": "Sleep (LH)" },
+        { "value": "leaf", "label": "Leaf" },
+        { "value": "heart", "label": "Heart" },
+        { "value": "star", "label": "Star" },
+        { "value": "truck", "label": "Truck" },
+        { "value": "return", "label": "Return" },
+        { "value": "lock", "label": "Lock" },
+        { "value": "recycle", "label": "Recycle" },
+        { "value": "check_box", "label": "Check" },
+        { "value": "washing", "label": "Washing" },
+        { "value": "dryer", "label": "Dryer" },
+        { "value": "iron", "label": "Iron" },
+        { "value": "ruler", "label": "Ruler" },
+        { "value": "shirt", "label": "Shirt" },
+        { "value": "plane", "label": "Plane" },
+        { "value": "map_pin", "label": "Map pin" },
+        { "value": "snowflake", "label": "Snowflake" }
+      ],
+      "default": "linen-house-sleep"
+    },
+    {
+      "type": "image_picker",
+      "id": "usp_4_image",
+      "label": "Custom icon (PNG override)"
+    },
+    {
+      "type": "text",
+      "id": "usp_4_label",
+      "label": "Label",
+      "default": "Ideal for Sleep"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product USPs",
+      "category": "t:categories.product"
+    }
+  ]
+}
+{% endschema %}

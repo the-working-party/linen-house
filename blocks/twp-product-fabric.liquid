@@ -1,0 +1,30 @@
+{%- unless closest.product.metafields.custom.fabric == blank -%}
+  <p class="twp-product-fabric" {{ block.shopify_attributes }}>
+    {{- closest.product.metafields.custom.fabric -}}
+  </p>
+{%- endunless -%}
+
+{% stylesheet %}
+  .twp-product-fabric {
+    margin: 0;
+    color: var(--color-foreground);
+    font-family: var(--font-body--family);
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1.5;
+    letter-spacing: 0.2px;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Fabric label",
+  "tag": null,
+  "presets": [
+    {
+      "name": "Fabric label",
+      "category": "t:categories.product"
+    }
+  ]
+}
+{% endschema %}
