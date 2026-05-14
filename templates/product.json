@@ -216,6 +216,8 @@
                 "bnpl_twp"
               ]
             },
+            "loyalty_twp": {
+              "type": "twp-loyalty-widget",
             "short_desc_twp": {
               "type": "twp-product-short-description",
               "settings": {},
@@ -394,6 +396,7 @@
           },
           "block_order": [
             "group_icgrde",
+            "loyalty_twp",
             "short_desc_twp",
             "divider_VJhene",
             "variant_picker_R3rGDr",
