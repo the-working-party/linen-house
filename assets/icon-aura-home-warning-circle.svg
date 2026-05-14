@@ -1,3 +1,3 @@
-<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M12.0001 6.25008V13.9167M12.0001 15.8334V17.7501M2.41675 2.41675H21.5834V21.5834H2.41675V2.41675Z" stroke="currentColor"/>
+<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M12.0001 6.25008V13.9167M12.0001 15.8334V17.7501M2.41675 2.41675H21.5834V21.5834H2.41675V2.41675Z" stroke="currentColor" stroke-width="var(--icon-stroke-width)"/>
 </svg>
