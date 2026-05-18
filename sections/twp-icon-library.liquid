@@ -1,0 +1,96 @@
+{% liquid
+  assign icon_names = 'arrow-down|arrow-left|arrow-return|arrow-right|arrow-sort|arrow-topright|arrow-undo|arrow-up|bag|bed|bin|calendar|chat|chat-review|chevron-down|chevron-left|chevron-right|chevron-up|close|cog|cotton|coupon|cross|earth|feather|filter|gift|globe|gps|hamburger|hanger|heart|heart-fill|info-circle|info-square|iron|laundry|laundry-basket|layer|leaf|location-gps|location-pin|location-target|lock|mail|minus|pause|payment|phone|play|plus|profile|question-circle|question-square|returns|ruler|save|search|share|shipping|sleep|star|star-fill|swatch|swatches|tag|thread|thumb-down|thumb-up|thumbs-down|thumbs-up|tick|tick-circle|tick-square|towel|volume-off|volume-on|warning-circle|warning-square|wrench' | split: '|'
+%}
+
+<div class="icon-library color-{{ section.settings.color_scheme }}">
+  <div class="icon-library__inner">
+    <h1 class="icon-library__heading">Icon library — {{ settings.brand }}</h1>
+    <div class="icon-library__grid">
+      {%- for name in icon_names -%}
+        {%- capture icon_output -%}{%- render 'icon-brand', name: name -%}{%- endcapture -%}
+        {%- if icon_output != blank -%}
+          <div class="icon-library__cell">
+            <span class="icon-library__icon">{{ icon_output }}</span>
+            <span class="icon-library__name">{{ name }}</span>
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .icon-library {
+    padding-block: var(--padding-2xl);
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+  }
+
+  .icon-library__inner {
+    max-width: 1400px;
+    margin-inline: auto;
+    padding-inline: var(--padding-xl);
+  }
+
+  .icon-library__heading {
+    margin-block-end: var(--gap-xl);
+    font-size: 1.5rem;
+  }
+
+  .icon-library__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: var(--gap-md);
+  }
+
+  .icon-library__cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--gap-xs);
+    padding: var(--padding-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-sm);
+  }
+
+  .icon-library__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    color: var(--color-foreground);
+  }
+
+  .icon-library__icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .icon-library__name {
+    font-size: 0.6875rem;
+    text-align: center;
+    word-break: break-all;
+    color: var(--color-foreground);
+    opacity: 0.7;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Icon library",
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:settings.color_scheme",
+      "default": "scheme-1"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Icon library"
+    }
+  ]
+}
+{% endschema %}

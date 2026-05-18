@@ -1,0 +1,162 @@
+{% doc %}
+  Renders a brand-specific inline SVG icon from assets.
+
+  Resolves `icon-{settings.brand}-{name}.svg`. Both brand icon sets must exist
+  in assets. Use string literals for `name` — dynamic values won't be found.
+
+  @param {string} name - Icon name (e.g. 'close', 'search', 'bag')
+
+  @example
+  {%- render 'icon-brand', name: 'close' -%}
+{% enddoc %}
+
+{%- case settings.brand -%}
+  {%- when 'linen-house' -%}
+    {%- case name -%}
+      {%- when 'arrow-down' -%}{{- 'icon-linen-house-arrow-down.svg' | inline_asset_content -}}
+      {%- when 'arrow-left' -%}{{- 'icon-linen-house-arrow-left.svg' | inline_asset_content -}}
+      {%- when 'arrow-return' -%}{{- 'icon-linen-house-arrow-return.svg' | inline_asset_content -}}
+      {%- when 'arrow-right' -%}{{- 'icon-linen-house-arrow-right.svg' | inline_asset_content -}}
+      {%- when 'arrow-sort' -%}{{- 'icon-linen-house-arrow-sort.svg' | inline_asset_content -}}
+      {%- when 'arrow-topright' -%}{{- 'icon-linen-house-arrow-topright.svg' | inline_asset_content -}}
+      {%- when 'arrow-undo' -%}{{- 'icon-linen-house-arrow-undo.svg' | inline_asset_content -}}
+      {%- when 'arrow-up' -%}{{- 'icon-linen-house-arrow-up.svg' | inline_asset_content -}}
+      {%- when 'bag' -%}{{- 'icon-linen-house-bag.svg' | inline_asset_content -}}
+      {%- when 'bed' -%}{{- 'icon-linen-house-bed.svg' | inline_asset_content -}}
+      {%- when 'bin' -%}{{- 'icon-linen-house-bin.svg' | inline_asset_content -}}
+      {%- when 'calendar' -%}{{- 'icon-linen-house-calendar.svg' | inline_asset_content -}}
+      {%- when 'chat-review' -%}{{- 'icon-linen-house-chat-review.svg' | inline_asset_content -}}
+      {%- when 'chat' -%}{{- 'icon-linen-house-chat.svg' | inline_asset_content -}}
+      {%- when 'chevron-down' -%}{{- 'icon-linen-house-chevron-down.svg' | inline_asset_content -}}
+      {%- when 'chevron-left' -%}{{- 'icon-linen-house-chevron-left.svg' | inline_asset_content -}}
+      {%- when 'chevron-right' -%}{{- 'icon-linen-house-chevron-right.svg' | inline_asset_content -}}
+      {%- when 'chevron-up' -%}{{- 'icon-linen-house-chevron-up.svg' | inline_asset_content -}}
+      {%- when 'close' -%}{{- 'icon-linen-house-close.svg' | inline_asset_content -}}
+      {%- when 'cotton' -%}{{- 'icon-linen-house-cotton.svg' | inline_asset_content -}}
+      {%- when 'coupon' -%}{{- 'icon-linen-house-coupon.svg' | inline_asset_content -}}
+      {%- when 'earth' -%}{{- 'icon-linen-house-earth.svg' | inline_asset_content -}}
+      {%- when 'feather' -%}{{- 'icon-linen-house-feather.svg' | inline_asset_content -}}
+      {%- when 'filter' -%}{{- 'icon-linen-house-filter.svg' | inline_asset_content -}}
+      {%- when 'gift' -%}{{- 'icon-linen-house-gift.svg' | inline_asset_content -}}
+      {%- when 'globe' -%}{{- 'icon-linen-house-globe.svg' | inline_asset_content -}}
+      {%- when 'hamburger' -%}{{- 'icon-linen-house-hamburger.svg' | inline_asset_content -}}
+      {%- when 'hanger' -%}{{- 'icon-linen-house-hanger.svg' | inline_asset_content -}}
+      {%- when 'heart-fill' -%}{{- 'icon-linen-house-heart-fill.svg' | inline_asset_content -}}
+      {%- when 'heart' -%}{{- 'icon-linen-house-heart.svg' | inline_asset_content -}}
+      {%- when 'info-circle' -%}{{- 'icon-linen-house-info-circle.svg' | inline_asset_content -}}
+      {%- when 'iron' -%}{{- 'icon-linen-house-iron.svg' | inline_asset_content -}}
+      {%- when 'laundry-basket' -%}{{- 'icon-linen-house-laundry-basket.svg' | inline_asset_content -}}
+      {%- when 'layer' -%}{{- 'icon-linen-house-layer.svg' | inline_asset_content -}}
+      {%- when 'leaf' -%}{{- 'icon-linen-house-leaf.svg' | inline_asset_content -}}
+      {%- when 'location-gps' -%}{{- 'icon-linen-house-location-gps.svg' | inline_asset_content -}}
+      {%- when 'location-pin' -%}{{- 'icon-linen-house-location-pin.svg' | inline_asset_content -}}
+      {%- when 'location-target' -%}{{- 'icon-linen-house-location-target.svg' | inline_asset_content -}}
+      {%- when 'lock' -%}{{- 'icon-linen-house-lock.svg' | inline_asset_content -}}
+      {%- when 'mail' -%}{{- 'icon-linen-house-mail.svg' | inline_asset_content -}}
+      {%- when 'minus' -%}{{- 'icon-linen-house-minus.svg' | inline_asset_content -}}
+      {%- when 'pause' -%}{{- 'icon-linen-house-pause.svg' | inline_asset_content -}}
+      {%- when 'payment' -%}{{- 'icon-linen-house-payment.svg' | inline_asset_content -}}
+      {%- when 'phone' -%}{{- 'icon-linen-house-phone.svg' | inline_asset_content -}}
+      {%- when 'play' -%}{{- 'icon-linen-house-play.svg' | inline_asset_content -}}
+      {%- when 'plus' -%}{{- 'icon-linen-house-plus.svg' | inline_asset_content -}}
+      {%- when 'profile' -%}{{- 'icon-linen-house-profile.svg' | inline_asset_content -}}
+      {%- when 'question-circle' -%}{{- 'icon-linen-house-question-circle.svg' | inline_asset_content -}}
+      {%- when 'returns' -%}{{- 'icon-linen-house-returns.svg' | inline_asset_content -}}
+      {%- when 'ruler' -%}{{- 'icon-linen-house-ruler.svg' | inline_asset_content -}}
+      {%- when 'save' -%}{{- 'icon-linen-house-save.svg' | inline_asset_content -}}
+      {%- when 'search' -%}{{- 'icon-linen-house-search.svg' | inline_asset_content -}}
+      {%- when 'share' -%}{{- 'icon-linen-house-share.svg' | inline_asset_content -}}
+      {%- when 'shipping' -%}{{- 'icon-linen-house-shipping.svg' | inline_asset_content -}}
+      {%- when 'sleep' -%}{{- 'icon-linen-house-sleep.svg' | inline_asset_content -}}
+      {%- when 'star-fill' -%}{{- 'icon-linen-house-star-fill.svg' | inline_asset_content -}}
+      {%- when 'star' -%}{{- 'icon-linen-house-star.svg' | inline_asset_content -}}
+      {%- when 'swatch' -%}{{- 'icon-linen-house-swatch.svg' | inline_asset_content -}}
+      {%- when 'tag' -%}{{- 'icon-linen-house-tag.svg' | inline_asset_content -}}
+      {%- when 'thread' -%}{{- 'icon-linen-house-thread.svg' | inline_asset_content -}}
+      {%- when 'thumb-down' -%}{{- 'icon-linen-house-thumb-down.svg' | inline_asset_content -}}
+      {%- when 'thumb-up' -%}{{- 'icon-linen-house-thumb-up.svg' | inline_asset_content -}}
+      {%- when 'tick-circle' -%}{{- 'icon-linen-house-tick-circle.svg' | inline_asset_content -}}
+      {%- when 'tick' -%}{{- 'icon-linen-house-tick.svg' | inline_asset_content -}}
+      {%- when 'towel' -%}{{- 'icon-linen-house-towel.svg' | inline_asset_content -}}
+      {%- when 'volume-off' -%}{{- 'icon-linen-house-volume-off.svg' | inline_asset_content -}}
+      {%- when 'volume-on' -%}{{- 'icon-linen-house-volume-on.svg' | inline_asset_content -}}
+      {%- when 'warning-circle' -%}{{- 'icon-linen-house-warning-circle.svg' | inline_asset_content -}}
+      {%- when 'wrench' -%}{{- 'icon-linen-house-wrench.svg' | inline_asset_content -}}
+    {%- endcase -%}
+  {%- when 'aura-home' -%}
+    {%- case name -%}
+      {%- when 'arrow-down' -%}{{- 'icon-aura-home-arrow-down.svg' | inline_asset_content -}}
+      {%- when 'arrow-left' -%}{{- 'icon-aura-home-arrow-left.svg' | inline_asset_content -}}
+      {%- when 'arrow-return' -%}{{- 'icon-aura-home-arrow-return.svg' | inline_asset_content -}}
+      {%- when 'arrow-right' -%}{{- 'icon-aura-home-arrow-right.svg' | inline_asset_content -}}
+      {%- when 'arrow-sort' -%}{{- 'icon-aura-home-arrow-sort.svg' | inline_asset_content -}}
+      {%- when 'arrow-topright' -%}{{- 'icon-aura-home-arrow-topright.svg' | inline_asset_content -}}
+      {%- when 'arrow-undo' -%}{{- 'icon-aura-home-arrow-undo.svg' | inline_asset_content -}}
+      {%- when 'arrow-up' -%}{{- 'icon-aura-home-arrow-up.svg' | inline_asset_content -}}
+      {%- when 'bag' -%}{{- 'icon-aura-home-bag.svg' | inline_asset_content -}}
+      {%- when 'bed' -%}{{- 'icon-aura-home-bed.svg' | inline_asset_content -}}
+      {%- when 'bin' -%}{{- 'icon-aura-home-bin.svg' | inline_asset_content -}}
+      {%- when 'calendar' -%}{{- 'icon-aura-home-calendar.svg' | inline_asset_content -}}
+      {%- when 'chat-review' -%}{{- 'icon-aura-home-chat-review.svg' | inline_asset_content -}}
+      {%- when 'chat' -%}{{- 'icon-aura-home-chat.svg' | inline_asset_content -}}
+      {%- when 'chevron-down' -%}{{- 'icon-aura-home-chevron-down.svg' | inline_asset_content -}}
+      {%- when 'chevron-left' -%}{{- 'icon-aura-home-chevron-left.svg' | inline_asset_content -}}
+      {%- when 'chevron-right' -%}{{- 'icon-aura-home-chevron-right.svg' | inline_asset_content -}}
+      {%- when 'chevron-up' -%}{{- 'icon-aura-home-chevron-up.svg' | inline_asset_content -}}
+      {%- when 'cog' -%}{{- 'icon-aura-home-cog.svg' | inline_asset_content -}}
+      {%- when 'cotton' -%}{{- 'icon-aura-home-cotton.svg' | inline_asset_content -}}
+      {%- when 'coupon' -%}{{- 'icon-aura-home-coupon.svg' | inline_asset_content -}}
+      {%- when 'cross' -%}{{- 'icon-aura-home-cross.svg' | inline_asset_content -}}
+      {%- when 'earth' -%}{{- 'icon-aura-home-earth.svg' | inline_asset_content -}}
+      {%- when 'feather' -%}{{- 'icon-aura-home-feather.svg' | inline_asset_content -}}
+      {%- when 'filter' -%}{{- 'icon-aura-home-filter.svg' | inline_asset_content -}}
+      {%- when 'gift' -%}{{- 'icon-aura-home-gift.svg' | inline_asset_content -}}
+      {%- when 'globe' -%}{{- 'icon-aura-home-globe.svg' | inline_asset_content -}}
+      {%- when 'gps' -%}{{- 'icon-aura-home-gps.svg' | inline_asset_content -}}
+      {%- when 'hamburger' -%}{{- 'icon-aura-home-hamburger.svg' | inline_asset_content -}}
+      {%- when 'hanger' -%}{{- 'icon-aura-home-hanger.svg' | inline_asset_content -}}
+      {%- when 'heart-fill' -%}{{- 'icon-aura-home-heart-fill.svg' | inline_asset_content -}}
+      {%- when 'heart' -%}{{- 'icon-aura-home-heart.svg' | inline_asset_content -}}
+      {%- when 'info-square' -%}{{- 'icon-aura-home-info-square.svg' | inline_asset_content -}}
+      {%- when 'iron' -%}{{- 'icon-aura-home-iron.svg' | inline_asset_content -}}
+      {%- when 'laundry' -%}{{- 'icon-aura-home-laundry.svg' | inline_asset_content -}}
+      {%- when 'layer' -%}{{- 'icon-aura-home-layer.svg' | inline_asset_content -}}
+      {%- when 'leaf' -%}{{- 'icon-aura-home-leaf.svg' | inline_asset_content -}}
+      {%- when 'location-pin' -%}{{- 'icon-aura-home-location-pin.svg' | inline_asset_content -}}
+      {%- when 'location-target' -%}{{- 'icon-aura-home-location-target.svg' | inline_asset_content -}}
+      {%- when 'lock' -%}{{- 'icon-aura-home-lock.svg' | inline_asset_content -}}
+      {%- when 'mail' -%}{{- 'icon-aura-home-mail.svg' | inline_asset_content -}}
+      {%- when 'minus' -%}{{- 'icon-aura-home-minus.svg' | inline_asset_content -}}
+      {%- when 'pause' -%}{{- 'icon-aura-home-pause.svg' | inline_asset_content -}}
+      {%- when 'payment' -%}{{- 'icon-aura-home-payment.svg' | inline_asset_content -}}
+      {%- when 'phone' -%}{{- 'icon-aura-home-phone.svg' | inline_asset_content -}}
+      {%- when 'play' -%}{{- 'icon-aura-home-play.svg' | inline_asset_content -}}
+      {%- when 'plus' -%}{{- 'icon-aura-home-plus.svg' | inline_asset_content -}}
+      {%- when 'profile' -%}{{- 'icon-aura-home-profile.svg' | inline_asset_content -}}
+      {%- when 'question-square' -%}{{- 'icon-aura-home-question-square.svg' | inline_asset_content -}}
+      {%- when 'returns' -%}{{- 'icon-aura-home-returns.svg' | inline_asset_content -}}
+      {%- when 'ruler' -%}{{- 'icon-aura-home-ruler.svg' | inline_asset_content -}}
+      {%- when 'save' -%}{{- 'icon-aura-home-save.svg' | inline_asset_content -}}
+      {%- when 'search' -%}{{- 'icon-aura-home-search.svg' | inline_asset_content -}}
+      {%- when 'share' -%}{{- 'icon-aura-home-share.svg' | inline_asset_content -}}
+      {%- when 'shipping' -%}{{- 'icon-aura-home-shipping.svg' | inline_asset_content -}}
+      {%- when 'sleep' -%}{{- 'icon-aura-home-sleep.svg' | inline_asset_content -}}
+      {%- when 'star-fill' -%}{{- 'icon-aura-home-star-fill.svg' | inline_asset_content -}}
+      {%- when 'star' -%}{{- 'icon-aura-home-star.svg' | inline_asset_content -}}
+      {%- when 'swatches' -%}{{- 'icon-aura-home-swatches.svg' | inline_asset_content -}}
+      {%- when 'tag' -%}{{- 'icon-aura-home-tag.svg' | inline_asset_content -}}
+      {%- when 'thread' -%}{{- 'icon-aura-home-thread.svg' | inline_asset_content -}}
+      {%- when 'thumbs-down' -%}{{- 'icon-aura-home-thumbs-down.svg' | inline_asset_content -}}
+      {%- when 'thumbs-up' -%}{{- 'icon-aura-home-thumbs-up.svg' | inline_asset_content -}}
+      {%- when 'tick-square' -%}{{- 'icon-aura-home-tick-square.svg' | inline_asset_content -}}
+      {%- when 'tick' -%}{{- 'icon-aura-home-tick.svg' | inline_asset_content -}}
+      {%- when 'towel' -%}{{- 'icon-aura-home-towel.svg' | inline_asset_content -}}
+      {%- when 'volume-off' -%}{{- 'icon-aura-home-volume-off.svg' | inline_asset_content -}}
+      {%- when 'volume-on' -%}{{- 'icon-aura-home-volume-on.svg' | inline_asset_content -}}
+      {%- when 'warning-square' -%}{{- 'icon-aura-home-warning-square.svg' | inline_asset_content -}}
+      {%- when 'close' -%}{{- 'icon-aura-home-cross.svg' | inline_asset_content -}}
+      {%- when 'tick-circle' -%}{{- 'icon-aura-home-tick-square.svg' | inline_asset_content -}}
+      {%- when 'warning-circle' -%}{{- 'icon-aura-home-warning-square.svg' | inline_asset_content -}}
+      {%- when 'info-circle' -%}{{- 'icon-aura-home-info-square.svg' | inline_asset_content -}}
+    {%- endcase -%}
+{%- endcase -%}

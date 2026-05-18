@@ -296,7 +296,7 @@
           type="button"
         >
           <span class="svg-wrapper">
-            {{ 'icon-filter.svg' | inline_asset_content }}
+            {%- render 'icon-brand', name: 'filter' -%}
           </span>
 
           {{ 'actions.show_filters' | t }}
@@ -419,7 +419,7 @@
                 class="svg-wrapper svg-wrapper--small"
                 title="{{ 'actions.close' | t }}"
               >
-                {{ 'icon-close.svg' | inline_asset_content }}
+                {%- render 'icon-brand', name: 'close' -%}
               </span>
             </button>
           </div>
@@ -464,6 +464,10 @@
                       render 'list-filter', filter: filter, filter_style: 'vertical', active_value_count: active_value_count, should_render_clear: false, autofocus: should_autofocus, in_drawer: true, sectionId: section.id, is_first_filter: forloop.first, show_filter_status: block_settings.show_filter_status, show_swatch_label: true
                     %}
                 {% endcase %}
+              {%- else -%}
+                <p class="facets-drawer__empty-filters" role="status">
+                  {{ 'content.no_filters_available' | t }}
+                </p>
               {%- endfor -%}
             </div>
           {% endif %}
@@ -1137,6 +1141,13 @@
     }
   }
 
+  .facets-drawer__empty-filters {
+    margin: 0;
+    padding-block: var(--padding-md);
+    color: var(--color-foreground);
+    font-size: var(--font-paragraph--size);
+  }
+
   .facets-drawer__close {
     /* @media screen and (max-width: 749px) {
       background-color: var(--color-header-hover);
@@ -1298,6 +1309,11 @@
       width: var(--custom-spacing-lg);
       height: var(--custom-spacing-lg);
       color: var(--button-dark-content-inverse);
+
+      svg {
+        width: 12px;
+        height: 12px;
+      }
     }
   }
 

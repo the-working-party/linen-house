@@ -19,10 +19,10 @@
       %}
       {{ block_settings.heading }}
       <span class="svg-wrapper icon-caret icon-animated">
-        {{- 'icon-caret.svg' | inline_asset_content -}}
+        {%- render 'icon-brand', name: 'chevron-down' -%}
       </span>
       <span class="svg-wrapper icon-plus">
-        {{- 'icon-plus.svg' | inline_asset_content -}}
+        {%- render 'icon-brand', name: 'plus' -%}
       </span>
     </summary>
 

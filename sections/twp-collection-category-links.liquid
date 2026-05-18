@@ -1,0 +1,433 @@
+{%- comment -%}
+  Collection sub-category link strip (image + label).
+
+  Data: collection.metafields.custom.sub_category_links — list of
+  sub_category_link metaobjects (list.metaobject_reference).
+
+  Layout: collection.metafields.custom.sub_category_links_layout — choice list
+  (Chip | Image). Blank defaults to Chip.
+
+  Metaobject fields (first non-blank wins per column):
+  - Label: title, label, or name (single-line text).
+  - Image: image or cover_image (file / image).
+  - URL: collection, page, product, link, or url (required — rows without a URL are omitted).
+
+  Renders nothing when the metafield is empty or has no list entries.
+
+  Intended for collection templates; resolves collection via closest.collection, then collection.
+
+  Mobile (<750px): both layouts use a horizontal scroll strip with ~2.5 image tiles or ~4.8 chips
+  visible and a right-edge fade into the section background (see Figma Sub Categories/Images).
+  Fixed horizontal gutters in CSS: 24px inline-start only on mobile; 24px inline-start and inline-end
+  from 750px up (set section padding L/R to 0 if the scroll strip should meet the viewport on the end side on mobile).
+{%- endcomment -%}
+
+{%- liquid
+  comment
+    Match twp-collection-heading: closest.collection is reliable on collection JSON templates.
+  endcomment
+  assign collection_for_links = closest.collection
+  if collection_for_links == blank
+    assign collection_for_links = collection
+  endif
+
+  assign sub_category_links = null
+  if collection_for_links
+    assign sub_category_links = collection_for_links.metafields.custom.sub_category_links.value
+  endif
+
+  assign has_links = false
+  if sub_category_links != blank and sub_category_links.size > 0
+    assign has_links = true
+  endif
+
+  assign links_layout = 'chip'
+  if collection_for_links and collection_for_links.metafields.custom.sub_category_links_layout.value != blank
+    assign layout_choice = collection_for_links.metafields.custom.sub_category_links_layout.value | strip | downcase
+    if layout_choice == 'image'
+      assign links_layout = 'image'
+    endif
+  endif
+
+  assign nav_aria = 'twp_collection_category_links.nav_label' | t
+-%}
+
+{%- if has_links -%}
+  <div class="section-background color-{{ section.settings.color_scheme }}"></div>
+  <div
+    class="section section--full-width color-{{ section.settings.color_scheme }} spacing-style twp-collection-category-links twp-collection-category-links--layout-{{ links_layout }}"
+    style="{% render 'spacing-style', settings: section.settings %}"
+  >
+    <nav class="twp-collection-category-links__nav" aria-label="{{ nav_aria | escape }}">
+      <div class="twp-collection-category-links__scroll-wrap">
+        <ul class="twp-collection-category-links__list" role="list">
+          {%- for entry in sub_category_links -%}
+            {%- liquid
+              assign card_label = blank
+              if entry.title != blank and entry.title.value != blank
+                assign card_label = entry.title.value
+              elsif entry.label != blank and entry.label.value != blank
+                assign card_label = entry.label.value
+              elsif entry.name != blank and entry.name.value != blank
+                assign card_label = entry.name.value
+              endif
+
+              assign card_url = blank
+              if entry.collection != blank and entry.collection.value != blank
+                assign card_url = entry.collection.value.url
+              elsif entry.page != blank and entry.page.value != blank
+                assign card_url = entry.page.value.url
+              elsif entry.product != blank and entry.product.value != blank
+                assign card_url = entry.product.value.url
+              elsif entry.link != blank and entry.link.value != blank
+                assign link_field = entry.link.value
+                if link_field.url != blank
+                  assign card_url = link_field.url
+                else
+                  assign card_url = link_field
+                endif
+              elsif entry.url != blank and entry.url.value != blank
+                assign card_url = entry.url.value
+              endif
+
+              assign card_image = null
+              if entry.image != blank and entry.image.value != blank
+                assign card_image = entry.image.value
+              elsif entry.cover_image != blank and entry.cover_image.value != blank
+                assign card_image = entry.cover_image.value
+              endif
+
+              assign card_has_content = false
+              if card_url != blank
+                if links_layout == 'image'
+                  if card_label != blank or card_image != blank
+                    assign card_has_content = true
+                  endif
+                else
+                  if card_label != blank
+                    assign card_has_content = true
+                  endif
+                endif
+              endif
+            -%}
+
+            {%- unless card_has_content -%}
+              {%- continue -%}
+            {%- endunless -%}
+
+            <li class="twp-collection-category-links__item">
+              {%- if links_layout == 'image' -%}
+                <a href="{{ card_url }}" class="twp-collection-category-links__card">
+                  <span class="twp-collection-category-links__media">
+                    {%- if card_image != blank -%}
+                      {%- assign img_alt = card_label | default: '' | escape -%}
+                      {{
+                        card_image
+                        | image_url: width: 720
+                        | image_tag:
+                          loading: 'lazy',
+                          class: 'twp-collection-category-links__image',
+                          widths: '180, 360, 540, 720',
+                          sizes: '(min-width: 990px) 16vw, (min-width: 750px) 22vw, 45vw',
+                          alt: img_alt
+                      }}
+                    {%- else -%}
+                      <span class="twp-collection-category-links__image-placeholder" aria-hidden="true"></span>
+                    {%- endif -%}
+                  </span>
+
+                  {%- if card_label != blank -%}
+                    <span class="twp-collection-category-links__label">{{ card_label }}</span>
+                  {%- endif -%}
+                </a>
+              {%- else -%}
+                <a href="{{ card_url }}" class="twp-collection-category-links__chip">
+                  <span class="twp-collection-category-links__chip-text">{{ card_label }}</span>
+                </a>
+              {%- endif -%}
+            </li>
+          {%- endfor -%}
+        </ul>
+        <div class="twp-collection-category-links__scroll-edge" aria-hidden="true"></div>
+      </div>
+    </nav>
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  .twp-collection-category-links {
+    --twp-category-links-gap: 8px;
+    --twp-category-links-label-gap: 16px;
+    --twp-category-links-image-radius: 12px;
+    --twp-category-links-chip-gap: 12px;
+    --twp-category-links-mobile-image-slots: 2.5;
+    --twp-category-links-mobile-chip-slots: 4.8;
+    --twp-category-links-mobile-image-scroll-gaps: 2;
+    --twp-category-links-mobile-chip-scroll-gaps: 4;
+    --twp-category-links-scroll-fade-width: 40px;
+    --twp-category-links-gutter-inline: 24px;
+  }
+
+  /*
+    Fixed horizontal gutters (independent of section padding-inline theme settings).
+    Mobile: inline-start only so horizontal scroll can run flush to the viewport on the end side.
+    Tablet/desktop: gutters on both inline sides.
+  */
+  .section.section--full-width.twp-collection-category-links.spacing-style {
+    padding-inline-start: var(--twp-category-links-gutter-inline);
+    padding-inline-end: 0;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section.section--full-width.twp-collection-category-links.spacing-style {
+      padding-inline-end: var(--twp-category-links-gutter-inline);
+    }
+  }
+
+  .twp-collection-category-links__nav {
+    width: 100%;
+  }
+
+  .twp-collection-category-links__scroll-wrap {
+    position: relative;
+    width: 100%;
+  }
+
+  .twp-collection-category-links__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .twp-collection-category-links--layout-image .twp-collection-category-links__list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 7.5rem), 1fr));
+    gap: var(--twp-category-links-gap);
+    justify-content: center;
+  }
+
+  @media screen and (min-width: 750px) {
+    .twp-collection-category-links--layout-image .twp-collection-category-links__list {
+      grid-template-columns: repeat(auto-fill, minmax(8.75rem, 1fr));
+    }
+  }
+
+  @media screen and (min-width: 990px) {
+    .twp-collection-category-links--layout-image .twp-collection-category-links__list {
+      grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+    }
+  }
+
+  .twp-collection-category-links--layout-chip .twp-collection-category-links__list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: var(--twp-category-links-chip-gap);
+  }
+
+  .twp-collection-category-links--layout-chip .twp-collection-category-links__item {
+    flex: 0 0 auto;
+  }
+
+  /* Mobile: horizontal scroll + right fade (both layouts). <750px matches theme `screen and (min-width: 750px)` tablet split. */
+  @media screen and (max-width: 749px) {
+    .twp-collection-category-links__scroll-wrap .twp-collection-category-links__list {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      justify-content: flex-start;
+      align-items: flex-start;
+      gap: var(--twp-category-links-gap);
+      overflow-x: auto;
+      overflow-y: hidden;
+      overscroll-behavior-x: contain;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    .twp-collection-category-links__scroll-wrap .twp-collection-category-links__list::-webkit-scrollbar {
+      display: none;
+    }
+
+    .twp-collection-category-links--layout-chip
+      .twp-collection-category-links__scroll-wrap
+      .twp-collection-category-links__list {
+      gap: var(--twp-category-links-chip-gap);
+      align-items: center;
+    }
+
+    .twp-collection-category-links--layout-image .twp-collection-category-links__item {
+      flex: 0 0
+        calc(
+          (100% - var(--twp-category-links-mobile-image-scroll-gaps) * var(--twp-category-links-gap)) /
+            var(--twp-category-links-mobile-image-slots)
+        );
+      min-width: 0;
+    }
+
+    .twp-collection-category-links--layout-chip .twp-collection-category-links__item {
+      flex: 0 0
+        calc(
+          (100% - var(--twp-category-links-mobile-chip-scroll-gaps) * var(--twp-category-links-chip-gap)) /
+            var(--twp-category-links-mobile-chip-slots)
+        );
+      min-width: 0;
+    }
+
+    .twp-collection-category-links--layout-image .twp-collection-category-links__card {
+      width: 100%;
+    }
+
+    .twp-collection-category-links--layout-chip .twp-collection-category-links__chip {
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .twp-collection-category-links__scroll-edge {
+      position: absolute;
+      inset-block: 0;
+      inset-inline-end: 0;
+      width: var(--twp-category-links-scroll-fade-width);
+      pointer-events: none;
+      z-index: 1;
+      background: linear-gradient(to right, rgb(var(--color-background-rgb) / 0), var(--color-background));
+    }
+  }
+
+  @media screen and (min-width: 750px) {
+    .twp-collection-category-links__scroll-edge {
+      display: none;
+    }
+  }
+
+  .twp-collection-category-links__card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--twp-category-links-label-gap);
+    height: 100%;
+    text-decoration: none;
+    color: var(--color-foreground);
+    text-align: center;
+  }
+
+  .twp-collection-category-links__card:focus-visible {
+    outline: var(--focus-outline-width) solid var(--color-foreground);
+    outline-offset: var(--focus-outline-offset);
+    border-radius: var(--twp-category-links-image-radius);
+  }
+
+  .twp-collection-category-links__media {
+    display: block;
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    border-radius: var(--section-radius);
+    overflow: hidden;
+    background: rgb(var(--color-foreground-rgb) / var(--opacity-5));
+  }
+
+  .twp-collection-category-links__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .twp-collection-category-links__image-placeholder {
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-height: 4rem;
+  }
+
+  .twp-collection-category-links__label {
+    color: var(--button-dark-content-inverse);
+    font-size: var(--navigation-base);
+    font-weight: var(--navigation-strong);
+    letter-spacing: var(--navigation-spacing);
+  }
+
+  .twp-collection-category-links__chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 32px;
+    padding: 6px 12px;
+    border-radius: var(--badge-radius);
+    text-decoration: none;
+    color: var(--button-light-content-default);
+    background: var(--background-secondary);
+    font-family: var(--font-paragraph--family);
+    font-size: var(--paragraph-small);
+    font-weight: var(--paragraph-weight);
+    line-height: 18px;
+    letter-spacing: var(--paragraph-spacing);
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .twp-collection-category-links__chip:focus-visible {
+    outline: var(--focus-outline-width) solid var(--color-foreground);
+    outline-offset: var(--focus-outline-offset);
+  }
+
+  .twp-collection-category-links__chip-text {
+    display: block;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:names.twp_collection_category_links",
+  "class": "section-wrapper twp-collection-category-links-section",
+  "enabled_on": {
+    "templates": ["collection"]
+  },
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:settings.color_scheme",
+      "default": "scheme-9"
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:names.twp_collection_category_links",
+      "settings": {
+        "color_scheme": "scheme-9",
+        "padding-block-start": 24,
+        "padding-block-end": 16
+      }
+    }
+  ]
+}
+{% endschema %}

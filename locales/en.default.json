@@ -207,6 +207,7 @@
     "duties_included_taxes_at_checkout_shipping_at_checkout_without_policy_without_discounts": "Duties included. Shipping is calculated at checkout.",
     "featured_products": "Featured products",
     "filters": "Filters",
+    "no_filters_available": "No filters available",
     "grid_view": {
       "default_view": "Default",
       "grid_fieldset": "Column grid",
@@ -366,6 +367,9 @@
     "blog_post_author": "Author",
     "blog_post_date": "Date",
     "blog_post_description": "An excerpt of your blog post's content"
+  },
+  "twp_collection_category_links": {
+    "nav_label": "Sub-categories"
   },
   "products": {
     "product": {

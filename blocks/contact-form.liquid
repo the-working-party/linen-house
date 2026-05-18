@@ -30,7 +30,7 @@
         tabindex="-1"
         autofocus
       >
-        {{- 'icon-error.svg' | inline_asset_content -}}
+        {%- render 'icon-brand', name: 'warning-circle' -%}
 
         {{- form.errors.translated_fields.email | capitalize }}
         {{ form.errors.messages.email -}}
@@ -43,7 +43,7 @@
         tabindex="-1"
         autofocus
       >
-        {{- 'icon-checkmark.svg' | inline_asset_content -}}
+        {%- render 'icon-brand', name: 'tick' -%}
         {{- 'blocks.contact_form.post_success' | t -}}
       </div>
     {%- endif -%}

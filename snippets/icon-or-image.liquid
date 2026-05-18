@@ -9,20 +9,16 @@
 {%- enddoc -%}
 
 {%- if icon != 'none' and image_upload == blank -%}
-  <svg
+  <span
     class="{{ class_name | append: ' icon-default' | strip }}"
+    style="width: {{ width }}px; height: {{ width }}px; display: inline-flex;"
     aria-hidden="true"
-    focusable="false"
-    xmlns="http://www.w3.org/2000/svg"
-    width="{{ width }}"
-    height="{{ width }}"
-    viewBox="0 0 20 20"
     {% if attributes %}
       {{ attributes }}
     {% endif %}
   >
-    {%- render 'icon', icon: icon -%}
-  </svg>
+    {%- render 'icon-brand', name: icon -%}
+  </span>
 {%- elsif image_upload != blank -%}
   {% liquid
     assign media_width_desktop = '100vw'
