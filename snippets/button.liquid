@@ -39,7 +39,7 @@
   <span>{{ block_settings.label }}</span>
   {%- if show_icon -%}
     <span class="button__icon svg-wrapper" aria-hidden="true">
-      {{- 'icon-arrow.svg' | inline_asset_content -}}
+      {%- render 'icon-brand', name: 'arrow-right' -%}
     </span>
   {%- endif -%}
 </a>

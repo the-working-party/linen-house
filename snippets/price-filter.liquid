@@ -60,8 +60,8 @@
         </span>
       </facet-status-component>
       <span class="svg-wrapper facets__icon-toggle">
-        <span class="facets__icon-open">{{- 'icon-plus.svg' | inline_asset_content -}}</span>
-        <span class="facets__icon-close">{{- 'icon-minus.svg' | inline_asset_content -}}</span>
+        <span class="facets__icon-open">{%- render 'icon-brand', name: 'plus' -%}</span>
+        <span class="facets__icon-close">{%- render 'icon-brand', name: 'minus' -%}</span>
       </span>
     </summary>
     <floating-panel-component

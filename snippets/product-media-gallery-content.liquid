@@ -510,7 +510,7 @@
             on:click="/close"
           >
             <span class="visually-hidden">{{ 'actions.close' | t }}</span>
-            {{ 'icon-close.svg' | inline_asset_content }}
+            {%- render 'icon-brand', name: 'close' -%}
           </button>
           <div class="dialog-thumbnails-list-container">
             <scroll-hint

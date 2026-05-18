@@ -84,7 +84,7 @@
               value="last"
             >
             <span class="svg-wrapper predictive-search__icon">
-              {{ 'icon-search.svg' | inline_asset_content }}
+              {%- render 'icon-brand', name: 'search' -%}
             </span>
             <button
               type="button"
@@ -104,7 +104,7 @@
             ref="closeModalButton"
           >
             <span class="svg-wrapper">
-              {{ 'icon-close.svg' | inline_asset_content }}
+              {%- render 'icon-brand', name: 'close' -%}
             </span>
           </button>
         </div>

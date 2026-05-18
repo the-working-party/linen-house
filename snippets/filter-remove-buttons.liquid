@@ -42,9 +42,6 @@
           –
           {{- filter.max_value.value | money -}}
         {%- endif -%}
-        <span class="svg-wrapper svg-wrapper--smaller">
-          {{- 'icon-filters-close.svg' | inline_asset_content -}}
-        </span>
         <span class="visually-hidden">{{ 'actions.remove' | t }}</span>
       </facet-remove-component>
     {% else %}
@@ -75,9 +72,6 @@
             {{ value.label | escape }}
           {% endif %}
 
-          <span class="svg-wrapper svg-wrapper--smaller">
-            {{- 'icon-filters-close.svg' | inline_asset_content -}}
-          </span>
           <span class="visually-hidden">{{ 'actions.remove' | t }}</span>
         </facet-remove-component>
       {%- endfor -%}

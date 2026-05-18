@@ -80,7 +80,7 @@
         ref="emailError"
         class="recipient-form__message{% unless form.errors contains 'email' %} hidden{% endunless %}"
       >
-        {{- 'icon-error.svg' | inline_asset_content -}}
+        {%- render 'icon-brand', name: 'warning-circle' -%}
         <span>
           {%- if form.errors contains 'email' -%}
             {{ form.errors.messages.email }}.
@@ -112,7 +112,7 @@
         ref="nameError"
         class="recipient-form__message{% unless form.errors contains 'name' %} hidden{% endunless %}"
       >
-        {{- 'icon-error.svg' | inline_asset_content -}}
+        {%- render 'icon-brand', name: 'warning-circle' -%}
         <span>
           {%- if form.errors contains 'name' -%}
             {{ form.errors.messages.name }}.
@@ -162,7 +162,7 @@
         ref="messageError"
         class="recipient-form__message{% unless form.errors contains 'message' %} hidden{% endunless %}"
       >
-        {{- 'icon-error.svg' | inline_asset_content -}}
+        {%- render 'icon-brand', name: 'warning-circle' -%}
         <span>
           {%- if form.errors contains 'message' -%}
             {{ form.errors.messages.message }}.
@@ -196,7 +196,7 @@
         ref="sendOnError"
         class="recipient-form__message{% unless form.errors contains 'send_on' %} hidden{% endunless %}"
       >
-        {{- 'icon-error.svg' | inline_asset_content -}}
+        {%- render 'icon-brand', name: 'warning-circle' -%}
         <span>
           {%- if form.errors contains 'send_on' -%}
             {{ form.errors.messages.send_on }}.

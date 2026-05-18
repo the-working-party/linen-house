@@ -17,7 +17,7 @@
     style="{% render 'spacing-style', settings: block_settings %}"
   >
     {{- block_settings.heading }}
-    {{- 'icon-external.svg' | inline_asset_content -}}
+    {%- render 'icon-brand', name: 'arrow-topright' -%}
   </button>
 
   <dialog
@@ -41,7 +41,7 @@
       class="button button-unstyled close-button popup-link__close"
       aria-label="{{ 'accessibility.close_dialog' | t }}"
     >
-      {{- 'icon-close.svg' | inline_asset_content -}}
+      {%- render 'icon-brand', name: 'close' -%}
     </button>
   </dialog>
 </dialog-component>

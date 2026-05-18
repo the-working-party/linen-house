@@ -426,6 +426,7 @@ actions:
       - Consider adding aria-live regions for dynamic filter results
       - Maintain proper focus management when filters toggle
       - Ensure grid layout buttons have clear visual and screen reader indicators
+      - When the filter drawer has no storefront filters (`filters` empty), show a single translated empty message in a `role="status"` element so assistive technology announces the state (see `blocks/twp-filters.liquid` and `content.no_filters_available`).
 
       **Testing Requirements:**
       - Test keyboard navigation through all filter controls

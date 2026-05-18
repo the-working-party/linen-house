@@ -1,0 +1,11 @@
+{
+  "sections": {
+    "icon-library": {
+      "type": "twp-icon-library",
+      "settings": {
+        "color_scheme": "scheme-1"
+      }
+    }
+  },
+  "order": ["icon-library"]
+}

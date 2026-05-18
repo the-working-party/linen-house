@@ -35,10 +35,10 @@
         data-label-pause="{{ 'accessibility.pause_video' | t | escape }}"
       >
         <span class="hero__video-control-icon" data-hero-video-state="playing" aria-hidden="true">
-          {{- 'icon-pause.svg' | inline_asset_content -}}
+          {%- render 'icon-brand', name: 'pause' -%}
         </span>
         <span class="hero__video-control-icon hero__video-control-icon--hidden" data-hero-video-state="paused" aria-hidden="true">
-          {{- 'icon-play.svg' | inline_asset_content -}}
+          {%- render 'icon-brand', name: 'play' -%}
         </span>
       </button>
       <button
@@ -50,10 +50,10 @@
         data-label-unmute="{{ 'accessibility.unmute_video' | t | escape }}"
       >
         <span class="hero__video-control-icon" data-hero-video-state="muted" aria-hidden="true">
-          {{- 'icon-volume-muted.svg' | inline_asset_content -}}
+          {%- render 'icon-brand', name: 'volume-off' -%}
         </span>
         <span class="hero__video-control-icon hero__video-control-icon--hidden" data-hero-video-state="unmuted" aria-hidden="true">
-          {{- 'icon-volume.svg' | inline_asset_content -}}
+          {%- render 'icon-brand', name: 'volume-on' -%}
         </span>
       </button>
     </div>

@@ -101,8 +101,8 @@
           </facet-status-component>
         {% endif %}
         <span class="svg-wrapper facets__icon-toggle">
-          <span class="facets__icon-open">{{- 'icon-plus.svg' | inline_asset_content -}}</span>
-          <span class="facets__icon-close">{{- 'icon-minus.svg' | inline_asset_content -}}</span>
+          <span class="facets__icon-open">{%- render 'icon-brand', name: 'plus' -%}</span>
+          <span class="facets__icon-close">{%- render 'icon-brand', name: 'minus' -%}</span>
         </span>
       </div>
     </summary>
@@ -391,7 +391,7 @@
             aria-controls="filters-list-{{ sectionId }}-{{ filter.param_name | escape | replace: '.', '-' }}"
           >
             <span class="svg-wrapper icon-plus">
-              {{- 'icon-plus.svg' | inline_asset_content -}}
+              {%- render 'icon-brand', name: 'plus' -%}
             </span>
             <span class="show-more__label show-more__label--more">
               {{- 'actions.show_more' | t -}}

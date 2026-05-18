@@ -299,7 +299,7 @@
                         hidden
                       {% endif %}
                     >
-                      {{- 'icon-delete.svg' | inline_asset_content -}}
+                      {%- render 'icon-brand', name: 'bin' -%}
                       <span class="visually-hidden">{{ 'accessibility.remove' | t }}</span>
                     </button>
                   </div>
@@ -315,7 +315,7 @@
                     role="alert"
                   >
                     <span class="svg-wrapper">
-                      {{- 'icon-error.svg' | inline_asset_content -}}
+                      {%- render 'icon-brand', name: 'warning-circle' -%}
                     </span>
                     <small
                       class="cart-item__error-text cart-primary-typography"
@@ -616,6 +616,11 @@
     justify-content: center;
     box-shadow: none;
     padding: 0;
+
+    svg {
+      width: var(--icon-size-sm);
+      height: var(--icon-size-sm);
+    }
   }
 
   .cart-items__media {
