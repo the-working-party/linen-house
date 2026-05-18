@@ -46,6 +46,14 @@
         "padding-inline-end": 24
       }
     },
+    "collection_category_links": {
+      "type": "twp-collection-category-links",
+      "settings": {
+        "color_scheme": "scheme-1",
+        "padding-block-start": 64,
+        "padding-block-end": 24
+      }
+    },
     "main": {
       "type": "main-collection",
       "blocks": {
@@ -221,5 +229,5 @@
       }
     }
   },
-  "order": ["collection_heading", "main"]
+  "order": ["collection_heading", "collection_category_links", "main"]
 }

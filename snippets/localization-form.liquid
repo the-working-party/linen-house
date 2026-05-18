@@ -58,7 +58,7 @@
           <div class="field">
             <div class="country-filter__search-icon field__button">
               <span class="svg-wrapper">
-                {{ 'icon-search.svg' | inline_asset_content }}
+                {%- render 'icon-brand', name: 'search' -%}
               </span>
             </div>
             <input
@@ -96,7 +96,7 @@
               on:click="/resetCountriesFilter"
             >
               <span class="svg-wrapper">
-                {{ 'icon-reset.svg' | inline_asset_content }}
+                {%- render 'icon-brand', name: 'arrow-undo' -%}
               </span>
             </button>
           </div>
@@ -156,7 +156,7 @@
                   on:click="/selectCountry/{{ country.iso_code }}"
                 >
                   <span class="svg-wrapper icon-checkmark">
-                    {{- 'icon-checkmark.svg' | inline_asset_content -}}
+                    {%- render 'icon-brand', name: 'tick' -%}
                   </span>
                   <span class="country">{{- country.name }}</span>
                   <span
@@ -211,7 +211,7 @@
                 on:click="/selectCountry/{{ country.iso_code }}"
               >
                 <span class="svg-wrapper icon-checkmark">
-                  {{- 'icon-checkmark.svg' | inline_asset_content -}}
+                  {%- render 'icon-brand', name: 'tick' -%}
                 </span>
                 <span class="country">{{- country.name }}</span>
                 <span
@@ -269,7 +269,7 @@
           {%- endfor -%}
         </select>
         <span class="svg-wrapper icon-caret">
-          {{- 'icon-caret.svg' | inline_asset_content -}}
+          {%- render 'icon-brand', name: 'chevron-down' -%}
         </span>
       </div>
     {% endif %}

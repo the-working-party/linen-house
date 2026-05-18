@@ -89,7 +89,7 @@
         tabindex="-1"
       >
         <span class="svg-wrapper icon-success">
-          {{ 'icon-checkmark.svg' | inline_asset_content }}
+          {%- render 'icon-brand', name: 'tick' -%}
         </span>
         <p class="email-signup__message-text">{{ 'blocks.email_signup.success' | t }}</p>
       </div>

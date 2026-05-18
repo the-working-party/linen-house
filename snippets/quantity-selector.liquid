@@ -56,7 +56,7 @@
     >
       <span class="visually-hidden">{{ 'accessibility.decrease_quantity' | t }}</span
       ><span class="svg-wrapper icon-plus">
-        {{- 'icon-minus.svg' | inline_asset_content -}}
+        {%- render 'icon-brand', name: 'minus' -%}
       </span>
     </button>
     <input
@@ -94,7 +94,7 @@
     >
       <span class="visually-hidden">{{ 'accessibility.increase_quantity' | t }}</span
       ><span class="svg-wrapper icon-plus">
-        {{- 'icon-plus.svg' | inline_asset_content -}}
+        {%- render 'icon-brand', name: 'plus' -%}
       </span>
     </button>
   </{{ component_name }}>

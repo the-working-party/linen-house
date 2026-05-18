@@ -60,10 +60,10 @@
       on:click="/toggle"
     >
       <span class="svg-wrapper header-drawer-icon header-drawer-icon--open">
-        {{- 'icon-menu.svg' | inline_asset_content -}}
+        {%- render 'icon-brand', name: 'hamburger' -%}
       </span>
       <span class="svg-wrapper header-drawer-icon header-drawer-icon--close">
-        {{- 'icon-close.svg' | inline_asset_content -}}
+        {%- render 'icon-brand', name: 'close' -%}
       </span>
     </summary>
     <div
@@ -80,7 +80,7 @@
         on:click="/close"
       >
         <span class="svg-wrapper header-drawer-icon header-drawer-icon--close">
-          {{- 'icon-close.svg' | inline_asset_content -}}
+          {%- render 'icon-brand', name: 'close' -%}
         </span>
       </button>
       <nav
@@ -128,7 +128,7 @@
                       >
                         <span class="menu-drawer__menu-item-text wrap-text">{{ link.title | escape }}</span>
                         <span class="svg-wrapper icon-plus">
-                          {{- 'icon-plus.svg' | inline_asset_content -}}
+                          {%- render 'icon-brand', name: 'plus' -%}
                         </span>
                       </summary>
                       {% liquid
@@ -275,7 +275,7 @@
                     >
                       <span class="menu-drawer__menu-item-text wrap-text">{{ link.title | escape }}</span>
                       <span class="svg-wrapper icon-caret icon-caret--forward">
-                        {{- 'icon-caret.svg' | inline_asset_content -}}
+                        {%- render 'icon-brand', name: 'chevron-down' -%}
                       </span>
                     </summary>
                     <div
@@ -292,7 +292,7 @@
                             aria-label="{{ 'actions.back_to' | t: title: link.title }}"
                           >
                             <span class="svg-wrapper icon-caret icon-caret--backward">
-                              {{- 'icon-caret.svg' | inline_asset_content -}}
+                              {%- render 'icon-brand', name: 'chevron-down' -%}
                             </span>
                             <span class="menu-drawer__menu-item-text wrap-text">{{ link.title | escape }}</span>
                           </button>
@@ -303,7 +303,7 @@
                             on:click="header-drawer/close"
                           >
                             <span class="svg-wrapper header-drawer-icon header-drawer-icon--close">
-                              {{- 'icon-close.svg' | inline_asset_content -}}
+                              {%- render 'icon-brand', name: 'close' -%}
                             </span>
                           </button>
                         </div>
@@ -382,7 +382,7 @@
                                           {{- childlink.title | escape -}}
                                         </span>
                                         <span class="svg-wrapper icon-plus">
-                                          {{- 'icon-plus.svg' | inline_asset_content -}}
+                                          {%- render 'icon-brand', name: 'plus' -%}
                                         </span>
                                       </summary>
                                       {% liquid
@@ -656,7 +656,7 @@
                     {%- endif -%}
                   </div>
                   <span class="svg-wrapper icon-caret icon-caret--forward">
-                    {{- 'icon-caret.svg' | inline_asset_content -}}
+                    {%- render 'icon-brand', name: 'chevron-down' -%}
                   </span>
                 </summary>
 
@@ -673,7 +673,7 @@
                       on:click="header-drawer/back"
                     >
                       <span class="svg-wrapper icon-caret icon-caret--backward">
-                        {{- 'icon-caret.svg' | inline_asset_content -}}
+                        {%- render 'icon-brand', name: 'chevron-down' -%}
                       </span>
                       {{ 'content.localization_region_and_language' | t }}
                     </button>
@@ -684,7 +684,7 @@
                       on:click="header-drawer/close"
                     >
                       <span class="svg-wrapper header-drawer-icon header-drawer-icon--close">
-                        {{- 'icon-close.svg' | inline_asset_content -}}
+                        {%- render 'icon-brand', name: 'close' -%}
                       </span>
                     </button>
                   </div>
@@ -1049,6 +1049,7 @@
     text-transform: var(--menu-top-level-font-case);
     color: var(--menu-top-level-font-color);
     justify-content: space-between !important;
+    gap: 12px;
 
     &:hover {
       color: var(--menu-top-level-font-color);

@@ -23,9 +23,7 @@
           aria-label="{{ 'content.grid_view.single_item' | t }}"
           on:change="results-list/updateLayout"
         >
-        <span class="column-picker column-picker-mobile--single">
-          {{- 'icon-one-col-mobile.svg' | inline_asset_content -}}
-        </span>
+        <span class="column-picker column-picker-mobile--single"></span>
       </label>
 
       <label class="column-options__option">
@@ -39,9 +37,7 @@
           data-grid-layout="mobile-option"
           on:change="results-list/updateLayout"
         >
-        <span class="column-picker column-picker-mobile--double">
-          {{- 'icon-grid-default.svg' | inline_asset_content -}}
-        </span>
+        <span class="column-picker column-picker-mobile--double"></span>
       </label>
 
     {% elsif viewport == 'desktop' %}
@@ -57,9 +53,7 @@
           on:change="results-list/updateLayout"
           data-skip-node-update
         >
-        <span class="column-picker column-picker--default">
-          {{- 'icon-grid-default.svg' | inline_asset_content -}}
-        </span>
+        <span class="column-picker column-picker--default"></span>
       </label>
 
       <label class="column-options__option">
@@ -72,9 +66,7 @@
           on:change="results-list/updateLayout"
           data-skip-node-update
         >
-        <span class="column-picker column-picker--zoom-out">
-          {{- 'icon-grid-dense.svg' | inline_asset_content -}}
-        </span>
+        <span class="column-picker column-picker--zoom-out"></span>
       </label>
     {% endif %}
   </fieldset>

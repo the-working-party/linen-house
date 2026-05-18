@@ -145,7 +145,7 @@
 
         <span class="deferred-media__poster-icon icon-play">
           <span class="visually-hidden">{{ 'accessibility.play_video' | t }}</span>
-          {{- 'icon-play.svg' | inline_asset_content -}}
+          {%- render 'icon-brand', name: 'play' -%}
         </span>
       </button>
     {% endif %}
@@ -159,11 +159,11 @@
       >
         <span class="deferred-media__poster-icon icon-play hidden">
           <span class="visually-hidden">{{ 'accessibility.play_video' | t }}</span>
-          {{- 'icon-play.svg' | inline_asset_content -}}
+          {%- render 'icon-brand', name: 'play' -%}
         </span>
         <span class="deferred-media__poster-icon icon-pause hidden">
           <span class="visually-hidden">{{ 'accessibility.pause_video' | t }}</span>
-          {{- 'icon-pause.svg' | inline_asset_content -}}
+          {%- render 'icon-brand', name: 'pause' -%}
         </span>
       </button>
     {% endif %}
@@ -197,7 +197,7 @@
     {% endif %}
     <span class="video-placeholder-wrapper__poster-icon icon-play">
       <span class="visually-hidden">{{ 'accessibility.play_video' | t }}</span>
-      {{- 'icon-play.svg' | inline_asset_content -}}
+      {%- render 'icon-brand', name: 'play' -%}
     </span>
   </div>
 {% endif %}

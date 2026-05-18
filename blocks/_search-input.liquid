@@ -29,7 +29,7 @@
       {{ 'content.search_input_label' | t }}
     </label>
     <span class="svg-wrapper search__icon{{ color_scheme }}">
-      {{ 'icon-search.svg' | inline_asset_content }}
+      {%- render 'icon-brand', name: 'search' -%}
     </span>
     <input
       name="type"
@@ -52,7 +52,7 @@
       aria-label="{{ 'accessibility.reset_search' | t }}"
     >
       <span class="svg-wrapper search__reset-button-icon">
-        {{ 'icon-reset.svg' | inline_asset_content }}
+        {%- render 'icon-brand', name: 'arrow-undo' -%}
       </span>
       <span class="search__reset-button-text">
         {{ 'actions.clear' | t }}

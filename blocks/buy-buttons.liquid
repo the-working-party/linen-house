@@ -78,7 +78,7 @@
               ref="addToCartTextError"
             >
               <span class="svg-wrapper">
-                {{- 'icon-error.svg' | inline_asset_content -}}
+                {%- render 'icon-brand', name: 'warning-circle' -%}
               </span>
             </span>
           {%- endunless -%}
@@ -277,9 +277,8 @@
           <div class="pickup-availability__column">
             <span class="svg-wrapper">
               {% if pick_up_availabilities.first.available %}
-                {{- 'icon-available.svg' | inline_asset_content -}}
+                {%- render 'icon-brand', name: 'tick-circle' -%}
               {% else %}
-                {{- 'icon-unavailable.svg' | inline_asset_content -}}
               {% endif %}
             </span>
           </div>
@@ -333,7 +332,7 @@
               aria-label="{{ 'actions.close_dialog' | t }}"
             >
               <span class="svg-wrapper">
-                {{- 'icon-close.svg' | inline_asset_content -}}
+                {%- render 'icon-brand', name: 'close' -%}
               </span>
             </button>
           </div>
@@ -343,11 +342,10 @@
               <div class="pickup-location__address-wrapper">
                 <span class="pickup-location__availability-wrapper">
                   {% if pick_up_availability.available %}
-                    {{- 'icon-available.svg' | inline_asset_content -}}
+                    {%- render 'icon-brand', name: 'tick-circle' -%}
                     {% assign pickup_time = pick_up_availability.pick_up_time | downcase %}
                     {{ 'content.pickup_available_in' | t: pickup_time: pickup_time }}
                   {% else %}
-                    {{- 'icon-unavailable.svg' | inline_asset_content -}}
                     {{ 'content.pickup_not_available' | t }}
                   {% endif %}
                 </span>

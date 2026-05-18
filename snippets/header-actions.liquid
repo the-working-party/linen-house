@@ -34,7 +34,7 @@
       class="svg-wrapper {% if display_style != 'icon' %}desktop:hidden{% endif %}"
       aria-hidden="true"
     >
-      {{ 'icon-cart.svg' | inline_asset_content }}
+      {%- render 'icon-brand', name: 'bag' -%}
     </span>
 
     {% render 'cart-bubble', limit: 100, for_header: true %}
@@ -55,7 +55,7 @@
       class="svg-wrapper {% if display_style != 'icon' %}desktop:hidden{% endif %}"
       aria-hidden="true"
     >
-      {{ 'icon-cart.svg' | inline_asset_content }}
+      {%- render 'icon-brand', name: 'bag' -%}
     </span>
 
     {% render 'cart-bubble', limit: 100, for_header: true %}
@@ -65,8 +65,6 @@
 {% capture account_icon %}
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width="15"
-    height="17"
     viewBox="0 0 15 17"
     fill="none"
     slot="signed-out-avatar"
@@ -153,7 +151,7 @@
           aria-label="{{ 'actions.close_dialog' | t }}"
         >
           <span class="svg-wrapper">
-            {{- 'icon-close.svg' | inline_asset_content -}}
+            {%- render 'icon-brand', name: 'close' -%}
           </span>
         </button>
       </div>
@@ -236,7 +234,7 @@
                   aria-label="{{ 'actions.close_dialog' | t }}"
                 >
                   <span class="svg-wrapper">
-                    {{- 'icon-close.svg' | inline_asset_content -}}
+                    {%- render 'icon-brand', name: 'close' -%}
                   </span>
                 </button>
               </div>
