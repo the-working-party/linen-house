@@ -1,0 +1,105 @@
+{%- doc -%}
+  Tagalys Predictive Search mount.
+
+  Renders a sibling container next to Horizon's native predictive-search
+  results inside the search modal. Outputs nothing when Tagalys or
+  predictive search is disabled — meaning the search modal falls back
+  to the native predictive flow.
+
+  The `<tagalys-predictive-search>` web component (assets/tagalys-predictive-search.js)
+  initialises `Tagalys.UIWidgets.ShopifySearchSuggestions` once on first input
+  and binds it to the modal's existing `<input ref="searchInput">`. On SDK
+  ready or post-interaction init timeout it flips `data-search-provider` on the search
+  modal element to swap between Tagalys and native results via the CSS
+  gate below.
+
+  @example
+  {% render 'tagalys-predictive-search' %}
+{%- enddoc -%}
+
+{%- comment -%}
+  Storefront access token is required: ShopifySearchSuggestions calls the
+  Storefront GraphQL predictiveSearch API — without a token the SDK rejects
+  with Uncaught (in promise) reading 'predictiveSearch' on undefined data.
+{%- endcomment -%}
+{%- if settings.tagalys_enabled
+  and settings.tagalys_predictive_search_enabled
+  and settings.tagalys_server_url != blank
+  and settings.tagalys_api_key != blank
+  and settings.tagalys_storefront_access_token != blank
+-%}
+  <script
+    src="{{ 'tagalys-predictive-search.js' | asset_url }}"
+    type="module"
+    fetchpriority="low"
+  ></script>
+
+  <tagalys-predictive-search
+    class="tagalys-predictive-search"
+    data-search-input-selector="#search-modal input[data-tagalys-modal-search-input]"
+    data-min-chars="{{ settings.tagalys_predictive_min_chars | default: 2 }}"
+    data-init-timeout-ms="2000"
+    role="region"
+    aria-label="{{ 'content.search' | t }}"
+  >
+    <div
+      class="tagalys-predictive-search__results"
+      data-tagalys-predictive-mount
+      ref="mount"
+      role="listbox"
+      aria-live="polite"
+      aria-busy="false"
+    ></div>
+  </tagalys-predictive-search>
+{%- endif -%}
+
+{%- comment -%}
+  The {% stylesheet %} tag must be at the top level of the snippet — Shopify's
+  parser rejects it nested inside {% if %}. Shopify deduplicates stylesheet
+  contents in <head>, so emitting them unconditionally costs nothing when
+  Tagalys is disabled. The selectors target `.search-modal[data-search-provider="..."]`
+  which only exists when Tagalys is on, so the rules are no-ops on Aura Home.
+{%- endcomment -%}
+{% stylesheet %}
+  /* Tagalys predictive search visibility gate.
+     Search modal carries data-search-provider on the dialog-component:
+       "loading" — hide native pane only (Tagalys mount must stay visible:
+         SDK may not fire afterInitialRender consistently; hiding both kept
+         injected suggestions invisible while network returned 200).
+       "tagalys" — hide native results (display), Tagalys mount visible
+       "native"  — show native results, hide Tagalys mount */
+  .search-modal[data-search-provider='loading'] .predictive-search-form__content {
+    visibility: hidden;
+  }
+
+  .search-modal[data-search-provider='tagalys'] .predictive-search-form__content {
+    display: none;
+  }
+
+  .search-modal[data-search-provider='native'] tagalys-predictive-search,
+  .search-modal:not([data-search-provider]) tagalys-predictive-search {
+    display: none;
+  }
+
+  tagalys-predictive-search {
+    display: block;
+  }
+
+  /* Native pane is display:none — give Tagalys the flex space in the dropdown column */
+  .search-modal[data-search-provider='tagalys'] tagalys-predictive-search {
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+  }
+
+  .tagalys-predictive-search__results {
+    min-height: 1px;
+  }
+
+  /* Tagalys emits .search-suggestions inside the mount — defensive against theme
+     rules that inherit visibility:hidden from ancestors during widget init. */
+  .search-modal[data-search-provider] .search-suggestions {
+    visibility: visible;
+    opacity: 1;
+  }
+{% endstylesheet %}

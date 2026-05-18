@@ -1,0 +1,57 @@
+{%- doc -%}
+  Tagalys Manual Analytics Tracking.
+
+  Tracks product views, collection views, and add-to-cart events at the
+  page level. Search and recommendation events are tracked automatically
+  by the SDK when their widgets are present, so this snippet only handles
+  the manual page-level events.
+
+  Render once before </body> in theme.liquid.
+
+  @example
+  {% render 'tagalys-analytics' %}
+{%- enddoc -%}
+
+{%- if settings.tagalys_enabled -%}
+  <script>
+    // Guard against onTagalysReady being undefined when the SDK config snippet
+    // bails (credentials blank). Theme remains functional; analytics no-op.
+    if (typeof onTagalysReady === 'function') onTagalysReady(function() {
+      {%- if request.page_type == 'product' -%}
+        Tagalys.Analytics.trackProductView('{{ product.id }}');
+      {%- endif -%}
+
+      {%- if request.page_type == 'collection' -%}
+        {%- comment -%} SDK v3.0.12+: `trackProductListingPageView` removed; use `trackCollectionView`. {%- endcomment -%}
+        if (
+          window.Tagalys &&
+          Tagalys.Analytics &&
+          typeof Tagalys.Analytics.trackCollectionView === 'function'
+        ) {
+          Tagalys.Analytics.trackCollectionView('{{ collection.id }}');
+        }
+      {%- endif -%}
+
+      document.addEventListener('click', function(event) {
+        var addToCartButton = event.target.closest('[type="submit"][name="add"], form[action*="/cart/add"] [type="submit"]');
+        if (!addToCartButton) return;
+
+        var form = addToCartButton.closest('form[action*="/cart/add"]');
+        if (!form) return;
+
+        var productIdInput = form.querySelector('[name="product-id"], [data-product-id]');
+        var productId = productIdInput
+          ? (productIdInput.value || productIdInput.getAttribute('data-product-id'))
+          : null;
+
+        var quantityInput = form.querySelector('[name="quantity"]');
+        var quantity = quantityInput ? parseInt(quantityInput.value, 10) : 1;
+
+        if (productId) {
+          Tagalys.Analytics.trackAddToCart(productId, quantity || 1);
+        }
+      });
+    });
+  </script>
+{%- endif -%}
+

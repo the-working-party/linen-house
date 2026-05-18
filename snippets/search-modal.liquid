@@ -16,9 +16,31 @@
   fetchpriority="low"
 ></script>
 
+{%- comment -%}
+  data-search-provider state machine for the Tagalys predictive search hijack:
+    - SET HERE (Liquid) to "loading" when Tagalys predictive is enabled, the
+      Tagalys API key and server URL are set, and the Storefront access token is set
+      (required for the Storefront GraphQL predictive API). Otherwise unset, and
+      the native predictive component handles input as today.
+    - WRITTEN by `assets/tagalys-predictive-search.js` (the Tagalys mount
+      Component) which flips it to "tagalys" on SDK afterInitialRender, or
+      to "native" on init failure / 2s timeout / safety timeout.
+    - READ by `assets/predictive-search.js` (#search method) to bail when
+      Tagalys is the active provider, and by the CSS gate in
+      `snippets/tagalys-predictive-search.liquid` to show/hide the right pane.
+{%- endcomment -%}
 <dialog-component
   id="search-modal"
   class="search-modal"
+  {%- comment -%} Keep in sync with snippets/tagalys-predictive-search.liquid — Tagalys predictive needs a Storefront API token. {%- endcomment -%}
+  {%- if settings.tagalys_enabled
+    and settings.tagalys_predictive_search_enabled
+    and settings.tagalys_server_url != blank
+    and settings.tagalys_api_key != blank
+    and settings.tagalys_storefront_access_token != blank
+  -%}
+    data-search-provider="loading"
+  {%- endif -%}
   {{ block.shopify_attributes }}
 >
   <dialog
@@ -75,6 +97,7 @@
               autocomplete="off"
               placeholder="{{ 'content.search_input_placeholder' | t }}"
               ref="searchInput"
+              data-tagalys-modal-search-input
               on:input="/search"
               on:keydown="/onSearchKeyDown"
             >
@@ -122,6 +145,9 @@
             %}
           </div>
 
+          {%- comment -%} Tagalys predictive-search mount (sibling) — hidden by CSS unless data-search-provider="tagalys" on the search modal {%- endcomment -%}
+          {% render 'tagalys-predictive-search' %}
+
           <div class="predictive-search-form__footer">
             <button
               class="button predictive-search__search-button"
@@ -141,6 +167,14 @@
   .search-modal {
     --search-border-radius: var(--style-border-radius-popover);
     --search-border-width: var(--style-border-width);
+  }
+
+  /* Tagalys predictive: suggestions extend past the dialog box; desktop
+     overflow:hidden on the dialog would clip them entirely. */
+  dialog-component.search-modal[data-search-provider] .search-modal__content {
+    @media screen and (min-width: 750px) {
+      overflow: visible;
+    }
   }
 
   .search-modal__content {
@@ -302,6 +336,12 @@
     @media screen and (min-width: 750px) {
       max-height: var(--modal-max-height);
     }
+  }
+
+  /* Tagalys (and loading handoff): wrapper used overflow:hidden — clips in-flow
+     suggestions. Native-only modals omit data-search-provider (see Liquid). */
+  .search-modal[data-search-provider] .predictive-search-form__content-wrapper {
+    overflow: visible;
   }
 
   /* Add new rule to apply bottom padding only when search button exists */

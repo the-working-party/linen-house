@@ -1,0 +1,49 @@
+{%- doc -%}
+  Standalone Tagalys collection grid (SDK).
+
+  Intended for custom collection templates that replace `main-collection` or
+  stack an extra Tagalys surface. The default `collection.json` uses
+  `sections/main-collection.liquid`, which renders `snippets/tagalys-collection`
+  when Theme settings > Tagalys > Collection mode is **API**.
+
+  Do not add this section on the same page as a Tagalys-active `main-collection`
+  unless you use distinct `mount_suffix` values (avoid duplicate mount ids).
+{%- enddoc -%}
+
+{%- if collection != blank -%}
+  {% render 'tagalys-collection',
+    collection: collection,
+    page_size: section.settings.products_per_page,
+    mount_suffix: section.id
+  %}
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:names.tagalys_collection",
+  "class": "section-wrapper tagalys-collection-section",
+  "enabled_on": {
+    "templates": ["collection"]
+  },
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "t:content.tagalys_collection_section"
+    },
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "label": "t:settings.products_per_page",
+      "min": 8,
+      "max": 48,
+      "step": 4,
+      "default": 24
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:names.tagalys_collection"
+    }
+  ]
+}
+{% endschema %}

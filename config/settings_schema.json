@@ -2606,5 +2606,181 @@
         "default": "linen-house"
       }
     ]
+  },
+  {
+    "name": "t:names.tagalys",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "tagalys_enabled",
+        "label": "t:settings.tagalys_enabled",
+        "default": false,
+        "info": "t:info.tagalys_enabled"
+      },
+      {
+        "type": "text",
+        "id": "tagalys_sdk_url",
+        "label": "t:settings.tagalys_sdk_url",
+        "default": "https://storage.googleapis.com/tagalys-public-assets/tagalys-ui-widgets-3.0.8.min.js",
+        "info": "t:info.tagalys_sdk_url"
+      },
+      {
+        "type": "text",
+        "id": "tagalys_server_url",
+        "label": "t:settings.tagalys_server_url",
+        "info": "t:info.tagalys_server_url"
+      },
+      {
+        "type": "text",
+        "id": "tagalys_api_key",
+        "label": "t:settings.tagalys_api_key",
+        "info": "t:info.tagalys_api_key"
+      },
+      {
+        "type": "text",
+        "id": "tagalys_storefront_access_token",
+        "label": "t:settings.tagalys_storefront_access_token",
+        "info": "t:info.tagalys_storefront_access_token"
+      },
+      {
+        "type": "header",
+        "content": "t:content.search"
+      },
+      {
+        "type": "checkbox",
+        "id": "tagalys_search_enabled",
+        "label": "t:settings.tagalys_search_enabled",
+        "default": false,
+        "info": "t:info.tagalys_search_enabled"
+      },
+      {
+        "type": "text",
+        "id": "tagalys_no_results_widget_id",
+        "label": "t:settings.tagalys_no_results_widget_id",
+        "info": "t:info.tagalys_no_results_widget_id"
+      },
+      {
+        "type": "range",
+        "id": "tagalys_no_results_limit",
+        "label": "t:settings.tagalys_no_results_limit",
+        "min": 4,
+        "max": 16,
+        "step": 1,
+        "default": 8
+      },
+      {
+        "type": "checkbox",
+        "id": "tagalys_predictive_search_enabled",
+        "label": "t:settings.tagalys_predictive_search_enabled",
+        "default": false,
+        "info": "t:info.tagalys_predictive_search_enabled"
+      },
+      {
+        "type": "range",
+        "id": "tagalys_predictive_min_chars",
+        "label": "t:settings.tagalys_predictive_min_chars",
+        "min": 1,
+        "max": 5,
+        "step": 1,
+        "default": 2,
+        "info": "t:info.tagalys_predictive_min_chars"
+      },
+      {
+        "type": "header",
+        "content": "t:content.tagalys_collections"
+      },
+      {
+        "type": "select",
+        "id": "tagalys_collections_mode",
+        "label": "t:settings.tagalys_collections_mode",
+        "options": [
+          {
+            "value": "native",
+            "label": "t:options.tagalys_native"
+          },
+          {
+            "value": "api",
+            "label": "t:options.tagalys_api"
+          }
+        ],
+        "default": "native",
+        "info": "t:info.tagalys_collections_mode"
+      },
+      {
+        "type": "header",
+        "content": "t:content.tagalys_ab_testing"
+      },
+      {
+        "type": "checkbox",
+        "id": "tagalys_ab_testing_enabled",
+        "label": "t:settings.tagalys_ab_testing_enabled",
+        "default": false,
+        "info": "t:info.tagalys_ab_testing_enabled"
+      },
+      {
+        "type": "text",
+        "id": "tagalys_ab_testing_namespace",
+        "label": "t:settings.tagalys_ab_testing_namespace",
+        "default": "app--3369055--tagalys",
+        "info": "t:info.tagalys_ab_testing_namespace"
+      },
+      {
+        "type": "header",
+        "content": "t:content.tagalys_markets"
+      },
+      {
+        "type": "checkbox",
+        "id": "tagalys_markets_enabled",
+        "label": "t:settings.tagalys_markets_enabled",
+        "default": false,
+        "info": "t:info.tagalys_markets_enabled"
+      },
+      {
+        "type": "header",
+        "content": "t:content.tagalys_recommendations_header"
+      },
+      {
+        "type": "checkbox",
+        "id": "tagalys_cart_upsell_enabled",
+        "label": "t:settings.tagalys_cart_upsell_enabled",
+        "default": false,
+        "info": "t:info.tagalys_cart_upsell_enabled"
+      },
+      {
+        "type": "select",
+        "id": "tagalys_cart_upsell_widget_type",
+        "label": "t:settings.tagalys_cart_upsell_widget_type",
+        "options": [
+          {
+            "value": "bought_also_bought",
+            "label": "t:options.tagalys_bought_also_bought"
+          },
+          {
+            "value": "smart_widget",
+            "label": "t:options.tagalys_smart_widget"
+          },
+          {
+            "value": "recommendations",
+            "label": "t:options.tagalys_recommendations"
+          }
+        ],
+        "default": "bought_also_bought"
+      },
+      {
+        "type": "text",
+        "id": "tagalys_cart_upsell_widget_id",
+        "label": "t:settings.tagalys_cart_upsell_widget_id",
+        "info": "t:info.tagalys_cart_upsell_widget_id"
+      },
+      {
+        "type": "range",
+        "id": "tagalys_cart_upsell_limit",
+        "label": "t:settings.tagalys_cart_upsell_limit",
+        "min": 4,
+        "max": 12,
+        "step": 1,
+        "default": 4
+      }
+    ]
   }
 ]

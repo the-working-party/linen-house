@@ -21,52 +21,82 @@
 {% endjavascript %}
 
 {% comment %} We always render this full-width, as the child blocks have width: page/full settings {% endcomment %}
+{%- liquid
+  assign tagalys_collection_active = false
+  if collection
+    if settings.tagalys_enabled
+      if settings.tagalys_collections_mode == 'api'
+        if settings.tagalys_sdk_url != blank
+          if settings.tagalys_server_url != blank
+            if settings.tagalys_api_key != blank
+              assign tagalys_collection_active = true
+            endif
+          endif
+        endif
+      endif
+    endif
+  endif
+-%}
 <div class="section-background color-{{ section.settings.color_scheme }}"></div>
 <results-list
   class="section product-grid-container color-{{ section.settings.color_scheme }}"
   style="--padding-block-start: {{ section.settings.padding-block-start }}px; --padding-block-end: {{ section.settings.padding-block-end }}px;"
   section-id="{{ section.id }}"
-  infinite-scroll="{% if section.settings.pagination_type == 'infinite_scroll' %}true{% else %}false{% endif %}"
+  infinite-scroll="{% if tagalys_collection_active %}false{% elsif section.settings.pagination_type == 'infinite_scroll' %}true{% else %}false{% endif %}"
 >
   {% render 'skip-to-content-link', href: '#ResultsList', text: 'accessibility.skip_to_results_list' %}
 
   <div
-    class="collection-wrapper grid gap-style{% if section.settings.product_grid_width == 'full-width' %} collection-wrapper--grid-full-width{% endif %}"
+    {% if tagalys_collection_active %}
+      class="tagalys-collection-results-wrapper"
+    {% else %}
+      class="collection-wrapper grid gap-style{% if section.settings.product_grid_width == 'full-width' %} collection-wrapper--grid-full-width{% endif %}"
+    {% endif %}
   >
-    {% content_for 'block',
-      type: 'twp-filters',
-      id: 'filters',
-      results: collection,
-      results_size: collection.products_count
-    %}
+    {% unless tagalys_collection_active %}
+      {% content_for 'block',
+        type: 'twp-filters',
+        id: 'filters',
+        results: collection,
+        results_size: collection.products_count
+      %}
+    {% endunless %}
 
     {% assign products_per_page = section.settings.products_per_page %}
 
-    {% paginate collection.products by products_per_page %}
-      {% capture children %}
-        {% for product in collection.products %}
-          <li
-            id="{{ section.id }}-{{ product.id }}"
-            class="product-grid__item product-grid__item--{{ forloop.index0 }}"
-            data-page="{{ paginate.current_page }}"
-            data-product-id="{{ product.id }}"
-            ref="cards[]"
-          >
-            {% # theme-check-disable %}
-            {% content_for 'block', type: '_product-card', id: 'product-card', closest.product: product %}
-            {% # theme-check-enable %}
-          </li>
-        {% endfor %}
-      {% endcapture %}
-
-      {% render 'product-grid',
-        section: section,
-        children: children,
-        products: collection.products,
-        paginate: paginate,
-        pagination_type: section.settings.pagination_type
+    {% if tagalys_collection_active %}
+      {% render 'tagalys-collection',
+        collection: collection,
+        page_size: products_per_page,
+        mount_suffix: section.id
       %}
-    {% endpaginate %}
+    {% else %}
+      {% paginate collection.products by products_per_page %}
+        {% capture children %}
+          {% for product in collection.products %}
+            <li
+              id="{{ section.id }}-{{ product.id }}"
+              class="product-grid__item product-grid__item--{{ forloop.index0 }}"
+              data-page="{{ paginate.current_page }}"
+              data-product-id="{{ product.id }}"
+              ref="cards[]"
+            >
+              {% # theme-check-disable %}
+              {% content_for 'block', type: '_product-card', id: 'product-card', closest.product: product %}
+              {% # theme-check-enable %}
+            </li>
+          {% endfor %}
+        {% endcapture %}
+
+        {% render 'product-grid',
+          section: section,
+          children: children,
+          products: collection.products,
+          paginate: paginate,
+          pagination_type: section.settings.pagination_type
+        %}
+      {% endpaginate %}
+    {% endif %}
   </div>
 </results-list>
 

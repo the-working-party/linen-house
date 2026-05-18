@@ -1,0 +1,285 @@
+/* =============================================================================
+ * tagalys-skin.css
+ * =============================================================================
+ *
+ * Visual parity layer for Tagalys SDK v3-rendered Preact tiles.
+ *
+ * The Tagalys SDK has no template hook, no Nosto-style dynamic-card mechanism,
+ * and no per-tile HTML fetch — the v3 widget renders its own Preact-emitted
+ * markup into containers like `.tagalys-search-results`, `.tagalys-widget`,
+ * `.tagalys-cart-upsell`, and `.tagalys-search-suggestions`.
+ *
+ * This stylesheet maps Tagalys's emitted DOM to the visual language of the
+ * Linen House Horizon product card using the theme's existing CSS custom
+ * properties (color schemes, spacing tokens, typography, border radius).
+ * Brand differentiation between Linen House and Aura Home is automatic via
+ * Horizon's `color-scheme-*` parent classes — no per-brand selectors needed.
+ *
+ * IMPLEMENTATION STATE: surface-specific selectors require runtime DevTools
+ * inspection of Tagalys's emitted DOM in the dev store. The base scope rules
+ * and token vocabulary below are ready; per-element selectors are stubbed
+ * with documented TODO markers for the implementation pass.
+ *
+ * Pre-flight workflow (per docs/plans/2026-04-29-001-feat-tagalys-integration-plan.md):
+ *   1. Push to linen-house-dev with tagalys_enabled = true and credentials set.
+ *   2. Add a Tagalys Recommendations section to a non-production page.
+ *   3. Open DevTools, inspect rendered tile DOM, enumerate class names below.
+ *   4. Add per-class rules using the token vocabulary in the LEGEND section.
+ *   5. Validate cascade against Tagalys's own injected stylesheets per
+ *      KB ~/business/claude-code-kb/learnings/shopify-style-block-source-order.md
+ *      — inject test <style> tags into the live page mix and confirm overrides hold.
+ *
+ * SDK pinned: tagalys-ui-widgets-3.0.8.min.js. Re-enumerate class names on upgrade.
+ * ============================================================================= */
+
+/* -----------------------------------------------------------------------------
+ * LEGEND — Horizon CSS custom property vocabulary
+ *
+ * Use these tokens in every Tagalys override rule. They inherit from the
+ * nearest `color-scheme-*` ancestor automatically.
+ *
+ * Color (scheme-scoped):
+ *   var(--color-foreground)         — primary text
+ *   var(--color-background)         — background
+ *   var(--color-primary)            — accent / link / active
+ *   var(--color-secondary)          — muted text
+ *   var(--color-border)             — borders / dividers
+ *
+ * Border / radius:
+ *   var(--style-border-radius-popover)
+ *   var(--style-border-width)
+ *   var(--style-border-popover)
+ *
+ * Spacing (sample — refer to Horizon settings_data.json for full set):
+ *   var(--padding-xs / sm / md / lg)
+ *   var(--gap-xs / sm / md / lg)
+ *
+ * Typography:
+ *   var(--font-primary--family)
+ *   var(--font-size--xs / sm / md / lg)
+ *   font weights are scheme-scoped via Horizon's typography system
+ *
+ * Container scope:
+ *   .tagalys-widget                  — recommendation widgets
+ *   .tagalys-search-results-wrapper  — /search outer wrapper (replaces
+ *                                      .collection-wrapper.grid when SDK path)
+ *   .tagalys-search-results          — /search results page mount
+ *   .tagalys-collection-results-wrapper — collection outer wrapper (API mode;
+ *                                      replaces .collection-wrapper.grid)
+ *   .tagalys-collection-results      — collection page SDK mount
+ *   .tagalys-cart-upsell             — cart upsell mount
+ *   .tagalys-predictive-search__results  — predictive dropdown mount (theme-owned)
+ *
+ * The class names emitted INSIDE these containers (tile, image, title,
+ * price, badge, swatch, etc.) are NOT in any Tagalys public doc. Enumerate
+ * them at runtime — see header notes.
+ * ----------------------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------------------
+ * BASE SCOPE — applies to every Tagalys-rendered surface.
+ * Inherits color-scheme tokens from the nearest ancestor color-scheme-* class.
+ * ----------------------------------------------------------------------------- */
+.tagalys-widget,
+.tagalys-search-results-wrapper,
+.tagalys-search-results,
+.tagalys-collection-results-wrapper,
+.tagalys-collection-results,
+.tagalys-cart-upsell,
+.tagalys-predictive-search__results,
+.tagalys-search-suggestions {
+  color: var(--color-foreground);
+  background: var(--color-background);
+  font-family: var(--font-primary--family, inherit);
+}
+
+/* `/search` when Tagalys owns results — replaces collection-wrapper + grid + gap-style. */
+.tagalys-search-results-wrapper {
+  width: 100%;
+  min-width: 0;
+}
+
+/* Collection template when Theme settings use Tagalys API collection mode. */
+.tagalys-collection-results-wrapper {
+  width: 100%;
+  min-width: 0;
+}
+
+/* -----------------------------------------------------------------------------
+ * GRID LAYOUT — match Horizon's product-grid spacing.
+ * Tagalys's tile container varies by widget type; once the actual grid wrapper
+ * class is enumerated, replace the placeholder selector.
+ * ----------------------------------------------------------------------------- */
+.tagalys-widget [class*="product-grid"],
+.tagalys-widget [class*="tile-grid"],
+.tagalys-search-results [class*="product-grid"],
+.tagalys-search-results [class*="tile-grid"],
+.tagalys-collection-results [class*="product-grid"],
+.tagalys-collection-results [class*="tile-grid"] {
+  /* TODO[runtime-class]: confirm Tagalys's grid container class and pin selector.
+     Horizon product grids use grid + gap-style — match column behaviour. */
+  display: grid;
+  gap: var(--gap-md, 1rem);
+}
+
+/* -----------------------------------------------------------------------------
+ * TILE — match Horizon's <product-card> visual language.
+ *
+ * Horizon product card structure (snippets/product-card.liquid + dependent
+ * style snippets) defines: card-corner-radius, product-corner-radius,
+ * media aspect ratio, badge placement, swatch row, title/price typography,
+ * and hover/focus states. Map Tagalys's emitted classes onto these.
+ *
+ * RUNTIME TODO checklist (replace each placeholder selector with the actual
+ * class enumerated in DevTools, prefixed with the surface scope):
+ *
+ *   - Tile root           e.g. .tagalys-tile, .tagalys-product-tile
+ *   - Tile media wrapper  e.g. .tagalys-tile__image-wrapper
+ *   - Tile media img      e.g. .tagalys-tile__image
+ *   - Tile title          e.g. .tagalys-tile__title
+ *   - Tile price          e.g. .tagalys-tile__price
+ *   - Tile compare price  e.g. .tagalys-tile__compare-price
+ *   - Badge container     e.g. .tagalys-tile__badges
+ *   - Badge label         e.g. .tagalys-tile__badge
+ *   - Swatch row          e.g. .tagalys-tile__swatches
+ *   - Quick-add CTA       e.g. .tagalys-tile__quick-add
+ *
+ * The block below is a starting template — pin selectors and tune values
+ * once the actual DOM is captured.
+ * ----------------------------------------------------------------------------- */
+
+/* Tile container — corner radius + clip media overflow */
+/* TODO[runtime-class]:
+.tagalys-widget .tagalys-tile,
+.tagalys-search-results .tagalys-tile {
+  border-radius: var(--card-corner-radius, var(--style-border-radius-popover));
+  overflow: hidden;
+}
+*/
+
+/* Tile media — aspect ratio + cover crop */
+/* TODO[runtime-class]:
+.tagalys-widget .tagalys-tile__image-wrapper {
+  border-radius: var(--product-corner-radius, var(--style-border-radius-popover));
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+}
+.tagalys-widget .tagalys-tile__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+*/
+
+/* Tile typography — title + price match Horizon scale */
+/* TODO[runtime-class]:
+.tagalys-widget .tagalys-tile__title {
+  margin-block: var(--padding-xs, 0.5rem) 0;
+  font-size: var(--font-size--sm);
+  color: var(--color-foreground);
+  text-decoration: none;
+}
+.tagalys-widget .tagalys-tile__title:hover {
+  text-decoration: underline;
+}
+.tagalys-widget .tagalys-tile__price {
+  margin-block-start: var(--padding-xs, 0.5rem);
+  font-size: var(--font-size--sm);
+  color: var(--color-foreground);
+}
+.tagalys-widget .tagalys-tile__compare-price {
+  margin-inline-start: 0.5rem;
+  color: var(--color-secondary);
+  text-decoration: line-through;
+}
+*/
+
+/* Badges — match Horizon product-badges-styles */
+/* TODO[runtime-class]:
+.tagalys-widget .tagalys-tile__badges {
+  position: absolute;
+  inset-block-start: 0.5rem;
+  inset-inline-start: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+.tagalys-widget .tagalys-tile__badge {
+  padding: 0.25rem 0.5rem;
+  background: var(--color-primary);
+  color: var(--color-background);
+  font-size: var(--font-size--xs);
+  border-radius: var(--style-border-radius-popover);
+}
+*/
+
+/* -----------------------------------------------------------------------------
+ * QUICK-ADD BUTTON — Tagalys product tiles
+ *
+ * The native `.quick-add` overlay + `.quick-add__button` styles in
+ * snippets/quick-add-styles.liquid handle all positioning, sizing, and
+ * animation. The only native rule that cannot apply here is the hover gate:
+ *
+ *   product-card:is(:hover, :focus-within) .quick-add__button { opacity: 1; }
+ *
+ * …because Tagalys tiles have no `<product-card>` ancestor. The rules below
+ * provide the equivalent, plus `position: relative` so the `inset: 0`
+ * `.quick-add` overlay positions correctly inside the tile.
+ * ----------------------------------------------------------------------------- */
+
+/* Tagalys tile must be a positioning context for the absolute .quick-add overlay */
+.tagalys-product-tile {
+  position: relative;
+}
+
+/* Reveal the quick-add button on hover / keyboard-focus within the tile */
+.tagalys-product-tile:is(:hover, :focus-within) .quick-add__button {
+  opacity: 1;
+}
+
+/* The overlay itself carries pointer-events:none; only the button is interactive */
+.tagalys-quick-add {
+  pointer-events: none;
+}
+
+/* -----------------------------------------------------------------------------
+ * PREDICTIVE SEARCH MOUNT (theme-owned wrapper)
+ * The wrapper class .tagalys-predictive-search__results is owned by
+ * snippets/tagalys-predictive-search.liquid; Tagalys's emitted children
+ * inside it follow the same TODO[runtime-class] pattern as widget tiles.
+ * ----------------------------------------------------------------------------- */
+.tagalys-predictive-search__results {
+  display: block;
+  /* No matching Horizon variable for the search modal header offset.
+     200px is a hardcoded approximation per CLAUDE.md token rule —
+     flagged explicitly rather than silently. Replace with a Horizon
+     spacing token if one is added for modal-header dimensions. */
+  max-height: calc(100dvh - 200px);
+  overflow-y: auto;
+}
+
+/* -----------------------------------------------------------------------------
+ * EMPTY / LOADING / ERROR STATES
+ * Tagalys emits its own empty/no-results/error templates; once the class
+ * names are enumerated, mirror Horizon's predictive-search-empty-state typography.
+ * ----------------------------------------------------------------------------- */
+/* TODO[runtime-class]:
+.tagalys-widget .tagalys-empty,
+.tagalys-search-results .tagalys-empty {
+  padding: var(--padding-md, 1rem);
+  text-align: center;
+  color: var(--color-secondary);
+}
+*/
+
+/* -----------------------------------------------------------------------------
+ * CART UPSELL — same tile rules as recommendations; size-tune for narrow cart pane
+ * ----------------------------------------------------------------------------- */
+.tagalys-cart-upsell {
+  margin-block-start: var(--padding-md, 1rem);
+}
+
+/* TODO[runtime-class]: cart upsell tile sizing override
+.tagalys-cart-upsell .tagalys-tile__title {
+  font-size: var(--font-size--xs);
+}
+*/

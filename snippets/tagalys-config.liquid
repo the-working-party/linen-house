@@ -1,0 +1,241 @@
+{%- doc -%}
+  Tagalys SDK Configuration & Loader.
+
+  Renders the Tagalys SDK script tag and global configuration functions.
+  Must be included ONCE in theme.liquid before </head>.
+
+  Outputs nothing when Tagalys is disabled or required credentials are blank.
+  Sets `window.tagalysDisableLegacyScript = true` to prevent the legacy
+  jQuery template script from loading — v3 uses Preact internally.
+
+  Loads `tagalys-shared-templates.js` (sync) before the deferred SDK so
+  `TagalysCustomisations.getSharedFiltersTemplate` is defined for collection
+  and search widgets without a deferred-script race.
+
+  @example
+  {% render 'tagalys-config' %}
+{%- enddoc -%}
+
+{%- liquid
+  assign tagalys_enabled = settings.tagalys_enabled
+  assign sdk_url = settings.tagalys_sdk_url
+  assign server_url = settings.tagalys_server_url
+  assign api_key = settings.tagalys_api_key
+  assign storefront_access_token = settings.tagalys_storefront_access_token
+  assign markets_enabled = settings.tagalys_markets_enabled
+
+  assign cart_currency_code = cart.currency.iso_code
+  assign cart_currency_symbol = cart.currency.symbol
+  assign country_iso = localization.country.iso_code | default: cart_currency_code
+-%}
+
+{%- if tagalys_enabled
+  and sdk_url != blank
+  and server_url != blank
+  and api_key != blank
+-%}
+  {{ 'tagalys-skin.css' | asset_url | stylesheet_tag }}
+
+  <script>
+    {%- comment -%}
+      The Storefront Access Token is intentionally a public read-only credential
+      (Shopify Storefront API design). It is rendered into page HTML by Tagalys's
+      v3 SDK requirements and is NOT an Admin API secret. Do not flag in security
+      review without considering this distinction.
+    {%- endcomment -%}
+    window.tagalysDisableLegacyScript = true;
+
+    window.__tagalysThemeConfig = {
+      enabled: true,
+      serverUrl: {{ server_url | json }},
+      apiKey: {{ api_key | json }},
+      storefrontAccessToken: {{ storefront_access_token | json }},
+      shopDomain: {{ shop.permanent_domain | json }},
+      countryCode: {{ country_iso | json }},
+      currencyCode: {{ cart_currency_code | json }},
+      currencySymbol: {{ cart_currency_symbol | json }},
+      locale: {{ request.locale.iso_code | json }},
+      marketsEnabled: {{ markets_enabled | json }},
+      searchEnabled: {{ settings.tagalys_search_enabled | json }},
+      predictiveSearch: {
+        enabled: {{ settings.tagalys_predictive_search_enabled | json }},
+        minimumCharacters: {{ settings.tagalys_predictive_min_chars | default: 2 | json }}
+      },
+      cartUpsellEnabled: {{ settings.tagalys_cart_upsell_enabled | json }},
+      cartUpsellWidgetType: {{ settings.tagalys_cart_upsell_widget_type | json }},
+      cartUpsellWidgetId: {{ settings.tagalys_cart_upsell_widget_id | json }},
+      cartUpsellLimit: {{ settings.tagalys_cart_upsell_limit | json }}
+    };
+  </script>
+
+  {%- if markets_enabled -%}
+    {%- comment -%}
+      Markets translations script. Tagalys's onTagalysReady gate ensures
+      configuration ordering, so deferring the load is safe and avoids
+      blocking the parser on every page.
+    {%- endcomment -%}
+    {% # theme-check-disable RemoteAsset %}
+    <script defer src="https://storage.googleapis.com/tagalys-front-end-components/tagalys-shopify-market-translations.js"></script>
+    {% # theme-check-enable RemoteAsset %}
+  {%- endif -%}
+
+  {%- comment -%}
+    Shared Tagalys template overrides (e.g. filters `render`). Loaded synchronously
+    so `TagalysCustomisations.getSharedFiltersTemplate` exists before any deferred
+    SDK callback runs (avoids a race between consecutive deferred scripts).
+  {%- endcomment -%}
+  {{ 'tagalys-shared-templates.js' | asset_url | script_tag }}
+
+  {%- comment -%}
+    tagalys-quick-add.js — Horizon quick-add bridge for Tagalys product tiles.
+    Loaded as a deferred module (same timing as the SDK). Exposes
+    window.tagalysOpenQuickAdd which tagalys-shared-templates.js calls from
+    tile click handlers. Must load after tagalys-shared-templates.js (which
+    defines TagalysCustomisations) but the deferred/module scheduling ensures
+    template handlers only fire after user interaction, by which time this
+    module is long resolved.
+  {%- endcomment -%}
+  <script
+    src="{{ 'tagalys-quick-add.js' | asset_url }}"
+    type="module"
+    fetchpriority="low"
+  ></script>
+
+  {% # theme-check-disable RemoteAsset %}
+  <script
+    defer
+    src="{{ sdk_url }}"
+  ></script>
+  {% # theme-check-enable RemoteAsset %}
+
+  <script>
+    function setTagalysConfiguration() {
+      Tagalys.setConfiguration({
+        api: {
+          serverUrl: {{ server_url | json }},
+          credentials: {
+            apiKey: {{ api_key | json }}
+          }
+        },
+        locale: {{ request.locale.iso_code | json }},
+        {%- comment -%} ADAPT: currency_format — Change displayFormatter if the store needs a different format, e.g. '{{value}} {{currencyLabel}}' or '{{currencyLabel}}{{value}} AUD' {%- endcomment -%}
+        currency: {
+          displayFormatter: '{% raw %}{{currencyLabel}}{{value}}{% endraw %}',
+          code: {{ cart_currency_code | json }},
+          label: {{ cart_currency_symbol | json }},
+          forceFractionalDigits: true,
+          {%- if markets_enabled -%}
+            exchangeRate: 1.0,
+          {%- endif -%}
+        },
+        {%- comment -%} ADAPT: consent_management — Replace 'return true' with the theme's CMP consent check {%- endcomment -%}
+        analyticsStorageConsentProvided: function() {
+          return true;
+        },
+        track: true,
+        search: {
+          enabled: {{ settings.tagalys_search_enabled | json }},
+          predictiveSearch: {
+            enabled: {{ settings.tagalys_predictive_search_enabled | json }},
+            minimumCharactersToShowSuggestions: {{ settings.tagalys_predictive_min_chars | default: 2 | json }}
+          }
+        }
+      });
+    }
+
+    function setPlatformConfigurationForTagalys() {
+      Tagalys.setPlatformConfiguration({
+        platform: 'Shopify',
+        {%- comment -%}
+          countryCode / languageCode are required for Storefront GraphQL @inContext —
+          the predictiveSearch query embeds them. When they were only set with Markets,
+          merchants with Markets off sent invalid queries (data null → SDK reads
+          undefined.predictiveSearch).
+        {%- endcomment -%}
+        countryCode: {{ country_iso | json }},
+        languageCode: {{ request.locale.iso_code | json }},
+        {%- if markets_enabled -%}
+          baseCountryCode: {{ country_iso | json }},
+          useStorefrontAPIForSecondaryMarkets: true,
+          waitForStorefrontAPI: true,
+        {%- endif -%}
+        storefrontAPI: {
+          accessToken: {{ storefront_access_token | json }},
+          myShopifyDomain: {{ shop.permanent_domain | json }}
+        }
+        {%- comment -%} ADAPT: product_metafields — Add product metafields used by Tagalys SDK tiles to achieve theme-card visual parity (badge labels, swatches, ratings). Example:
+        ,metafields: {
+          products: [
+            { namespace: 'badge', key: 'label' },
+            { namespace: 'custom', key: 'swatch_codes' }
+          ]
+        }
+        Note: list.metaobject_reference metafields silently return blank inside
+        {% raw %}{% render %}{% endraw %} scope. Resolve those in theme.liquid or the calling section
+        and pass primitives in if needed.
+        {%- endcomment -%}
+      });
+    }
+
+    // One-time configuration guard — Tagalys.setConfiguration / setPlatformConfiguration
+    // should run once per page lifetime, even if multiple widgets call onTagalysReady.
+    var __tagalysConfigured = false;
+    function __runTagalysConfigurationOnce() {
+      if (__tagalysConfigured) return;
+      if (!window.Tagalys) return;
+      try {
+        setTagalysConfiguration();
+        setPlatformConfigurationForTagalys();
+        __tagalysConfigured = true;
+      } catch (err) {
+        if (window.console && console.warn) {
+          console.warn('[tagalys] configuration error:', err);
+        }
+      }
+    }
+
+    function onTagalysReady(callback) {
+      if (window.Tagalys) {
+        __runTagalysConfigurationOnce();
+        if (typeof callback === 'function') callback();
+      } else {
+        window.addEventListener('DOMContentLoaded', function() {
+          if (!window.Tagalys) {
+            // SDK never loaded (404, blocked, offline). Skip configuration and
+            // skip the callback — dependent widgets must handle their own
+            // fallback. The predictive search component has a 2s init timeout
+            // that flips to native; analytics and cart upsell silently no-op.
+            if (window.console && console.info) {
+              console.info('[tagalys] SDK not available at DOMContentLoaded; widgets will not initialise');
+            }
+            return;
+          }
+          __runTagalysConfigurationOnce();
+          if (typeof callback === 'function') callback();
+        });
+      }
+    }
+
+    // Returns the polling interval ID so callers can clear it on disconnect
+    // (web-component disconnectedCallback or page navigation in SPA mode).
+    function whenTagalysReady(callback) {
+      if (window.Tagalys) {
+        onTagalysReady(callback);
+        return null;
+      }
+      var pollInterval = setInterval(function() {
+        if (window.Tagalys) {
+          clearInterval(pollInterval);
+          onTagalysReady(callback);
+        }
+      }, 50);
+      setTimeout(function() {
+        clearInterval(pollInterval);
+        if (!window.Tagalys && window.console && console.warn) {
+          console.warn('[tagalys] SDK did not load within 10s; whenTagalysReady aborted');
+        }
+      }, 10000);
+      return pollInterval;
+    }
+  </script>
+{%- endif -%}

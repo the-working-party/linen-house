@@ -8,6 +8,20 @@
 
 <div class="section-background color-{{ section.settings.color_scheme }}"></div>
 
+{%- liquid
+  assign tagalys_search_active = false
+  if settings.tagalys_enabled
+    if settings.tagalys_search_enabled
+      if settings.tagalys_sdk_url != blank
+        if settings.tagalys_server_url != blank
+          if settings.tagalys_api_key != blank
+            assign tagalys_search_active = true
+          endif
+        endif
+      endif
+    endif
+  endif
+-%}
 <results-list
   class="section product-grid-container spacing-style color-{{ section.settings.color_scheme }}"
   style="--padding-block-start: {{ section.settings.padding-block-start }}px; --padding-block-end: {{ section.settings.padding-block-end }}px;"
@@ -17,7 +31,11 @@
   {% render 'skip-to-content-link', href: '#ResultsList', text: 'accessibility.skip_to_results_list' %}
 
   <div
-    class="collection-wrapper grid gap-style"
+    {% if tagalys_search_active %}
+      class="tagalys-search-results-wrapper"
+    {% else %}
+      class="collection-wrapper grid gap-style"
+    {% endif %}
   >
     {% assign products_per_page = 24 %}
 
@@ -25,40 +43,45 @@
       {% assign products_per_page = section.settings.products_per_page %}
     {% endif %}
 
-    {% paginate search.results by products_per_page %}
-      {% if search.results_count > 0 %}
-        {% content_for 'block', type: 'filters', id: 'filters', results: search, results_size: search.results_count %}
-        {% assign products = search.results | where: 'object_type', 'product' %}
-      {% else %}
-        {% assign collection = settings.empty_state_collection | default: collections.all %}
-        {% assign default_title = 'content.search_results_resource_products' | t %}
-        {% assign title = settings.empty_state_collection.title | default: default_title %}
-        {% assign products = collection.products %}
-      {% endif %}
+    {%- comment -%} Same credential gate as `snippets/tagalys-search.liquid` — when credentials are blank, the SDK never loads, so we must fall through to native to avoid an empty mount. {%- endcomment -%}
+    {% if tagalys_search_active %}
+      {% render 'tagalys-search', page_size: products_per_page %}
+    {% else %}
+      {% paginate search.results by products_per_page %}
+        {% if search.results_count > 0 %}
+          {% content_for 'block', type: 'filters', id: 'filters', results: search, results_size: search.results_count %}
+          {% assign products = search.results | where: 'object_type', 'product' %}
+        {% else %}
+          {% assign collection = settings.empty_state_collection | default: collections.all %}
+          {% assign default_title = 'content.search_results_resource_products' | t %}
+          {% assign title = settings.empty_state_collection.title | default: default_title %}
+          {% assign products = collection.products %}
+        {% endif %}
 
-      {% capture children %}
-        {% for product in products %}
-          <li
-            id="{{ section.id }}-{{ product.id }}"
-            class="product-grid__item product-grid__item--{{ forloop.index0 }}"
-            data-page="{{ paginate.current_page }}"
-            data-product-id="{{ product.id }}"
-            ref="cards[]"
-          >
-            {% content_for 'block', type: '_product-card', id: 'product-card', closest.product: product %}
-          </li>
-        {% endfor %}
-      {% endcapture %}
+        {% capture children %}
+          {% for product in products %}
+            <li
+              id="{{ section.id }}-{{ product.id }}"
+              class="product-grid__item product-grid__item--{{ forloop.index0 }}"
+              data-page="{{ paginate.current_page }}"
+              data-product-id="{{ product.id }}"
+              ref="cards[]"
+            >
+              {% content_for 'block', type: '_product-card', id: 'product-card', closest.product: product %}
+            </li>
+          {% endfor %}
+        {% endcapture %}
 
-      {% render 'product-grid',
-        section: section,
-        children: children,
-        products: products,
-        paginate: paginate,
-        enable_infinite_scroll: section.settings.enable_infinite_scroll,
-        title: title
-      %}
-    {% endpaginate %}
+        {% render 'product-grid',
+          section: section,
+          children: children,
+          products: products,
+          paginate: paginate,
+          enable_infinite_scroll: section.settings.enable_infinite_scroll,
+          title: title
+        %}
+      {% endpaginate %}
+    {% endif %}
   </div>
 </results-list>
 

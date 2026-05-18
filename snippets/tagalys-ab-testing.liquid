@@ -1,0 +1,94 @@
+{%- doc -%}
+  Tagalys A/B Testing — collection redirects and canonical URL handling.
+
+  Two render modes via the `call` parameter:
+
+  - `script` — loads A/B testing JS and initialises redirects.
+    MUST render synchronously at the top of <head> to prevent FOUC
+    of the variant collection before the redirect fires.
+  - `canonical_url` — outputs the correct canonical URL for the page.
+    Replaces the theme's existing <link rel="canonical"> tag when Tagalys
+    A/B testing is enabled. Falls back to the standard canonical when
+    A/B testing is off.
+
+  When `settings.tagalys_enabled` or `settings.tagalys_ab_testing_enabled`
+  are false, this snippet emits the standard canonical (canonical_url call)
+  or nothing (script call).
+
+  @param {string} call - 'script' or 'canonical_url'
+
+  @example
+  {% render 'tagalys-ab-testing', call: 'script' %}
+  {% render 'tagalys-ab-testing', call: 'canonical_url' %}
+{%- enddoc -%}
+
+{%- if settings.tagalys_enabled and settings.tagalys_ab_testing_enabled -%}
+  {%- liquid
+    assign tagalys_app_namespace = settings.tagalys_ab_testing_namespace | default: 'app--3369055--tagalys'
+
+    if request.page_type == 'collection'
+      if collection.metafields[tagalys_app_namespace].a_b_test_configuration
+        assign primary_collection = collection
+      else
+        if collection.metafields[tagalys_app_namespace].a_b_test_primary_variant
+          assign primary_collection = collection.metafields[tagalys_app_namespace].a_b_test_primary_variant.value
+        else
+          assign primary_collection = collection
+        endif
+      endif
+    endif
+  -%}
+
+  {%- if call == 'canonical_url' -%}
+    {%- if request.page_type == 'collection' and primary_collection.url != blank and primary_collection != collection -%}
+      <link rel="canonical" href="{{ canonical_url | replace: collection.url, primary_collection.url }}">
+    {%- else -%}
+      <link rel="canonical" href="{{ canonical_url }}">
+    {%- endif -%}
+  {%- endif -%}
+
+  {%- if call == 'script' -%}
+    {%- comment -%}
+      A/B testing script must load synchronously to prevent FOUC of variant
+      collections before the redirect fires. Adding `defer`/`async` defeats
+      the purpose. Remote asset is intentional (Tagalys-hosted CDN).
+    {%- endcomment -%}
+    {% # theme-check-disable RemoteAsset, ParserBlockingScript %}
+    <script src="https://storage.googleapis.com/tagalys-public-assets/tagalys-a-b-testing.min.js"></script>
+    {% # theme-check-enable RemoteAsset, ParserBlockingScript %}
+
+    <script>
+      var TagalysABTestingCustomizations = {
+        collectionPageUrl: function(collection) {
+          return window.location.origin + '{{ routes.collections_url }}/' + collection.handle;
+        }
+      };
+
+      {% if shop.metafields[tagalys_app_namespace].a_b_testing_redirects %}
+        if (window.TagalysABTesting && window.TagalysABTesting.Collections) {
+          TagalysABTesting.Collections.setUpRedirects({
+            redirects: {{ shop.metafields[tagalys_app_namespace].a_b_testing_redirects | json }},
+            collectionPageUrl: TagalysABTestingCustomizations.collectionPageUrl
+          });
+        }
+      {%- endif %}
+    </script>
+
+    {%- if request.page_type == 'collection' -%}
+      {%- if primary_collection.metafields[tagalys_app_namespace].a_b_test_configuration -%}
+        <script>
+          if (window.TagalysABTesting && window.TagalysABTesting.Collections) {
+            TagalysABTesting.Collections.init({
+              configuration: {{ primary_collection.metafields[tagalys_app_namespace].a_b_test_configuration | json }},
+              collectionPageUrl: TagalysABTestingCustomizations.collectionPageUrl
+            });
+          }
+        </script>
+      {%- endif -%}
+    {%- endif -%}
+  {%- endif -%}
+{%- else -%}
+  {%- if call == 'canonical_url' -%}
+    <link rel="canonical" href="{{ canonical_url }}">
+  {%- endif -%}
+{%- endif -%}

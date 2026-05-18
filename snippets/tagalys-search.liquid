@@ -1,0 +1,101 @@
+{%- doc -%}
+  Tagalys Search Results Widget container.
+
+  Renders the mount for `/search` and runs `TagalysCustomisations.initSearchResults`
+  after `whenTagalysReady` (deferred SDK + `setConfiguration`), matching the
+  Tagalys custom integration pattern:
+
+    Tagalys.UIWidgets.SearchResults.init("[data-search-results]", { query: "…", templates: … }).
+    The Tagalys API requires `query`; declarative mounts may infer it, but programmatic
+    `init` does not — we pass `search.terms` / URL `q` as fallback.
+
+  Uses `data-search-results` only (no `data-tagalys-widget="search-results"`) so the
+  SDK does not auto-mount the same surface twice.
+
+  Shares filter templates with collection via `TagalysCustomisations.getSharedFiltersTemplate`
+  (`assets/tagalys-shared-templates.js`).
+
+  @param {number} [page_size] - Optional products-per-page hint (`data-limit`).
+
+  @example
+  {% render 'tagalys-search', page_size: 24 %}
+{%- enddoc -%}
+
+{%- liquid
+  assign tagalys_search_mount_ok = false
+  if settings.tagalys_enabled and settings.tagalys_search_enabled and settings.tagalys_sdk_url != blank and settings.tagalys_server_url != blank and settings.tagalys_api_key != blank
+    assign tagalys_search_mount_ok = true
+  endif
+
+  assign tagalys_search_query = ''
+  if search
+    assign tagalys_search_query = search.terms | default: ''
+  endif
+-%}
+
+{%- if tagalys_search_mount_ok -%}
+  <div
+    class="tagalys-search-results"
+    data-search-results
+    data-limit="{{ page_size | default: 24 }}"
+  ></div>
+
+  {%- comment -%}
+    `whenTagalysReady` polls until `window.Tagalys` exists, then runs
+    `onTagalysReady` so `setConfiguration` / `setPlatformConfiguration` apply
+    before `SearchResults.init`.
+  {%- endcomment -%}
+  <script>
+    (function () {
+      window.TagalysCustomisations = window.TagalysCustomisations || {};
+
+      function initSearchResults() {
+        const SR =
+          window.Tagalys &&
+          window.Tagalys.UIWidgets &&
+          window.Tagalys.UIWidgets.SearchResults;
+        if (!SR || typeof SR.init !== 'function') return;
+
+        let searchQuery = {{ tagalys_search_query | json }};
+        if (searchQuery == null) searchQuery = '';
+        if (!searchQuery && typeof URLSearchParams !== 'undefined') {
+          try {
+            searchQuery = new URLSearchParams(window.location.search).get('q') || '';
+          } catch (_e) {}
+        }
+
+        const config = { query: searchQuery };
+
+        const templates = {};
+        const TC = window.TagalysCustomisations;
+        if (TC && typeof TC.getSharedFiltersTemplate === 'function') {
+          templates.filters = TC.getSharedFiltersTemplate();
+        }
+        if (TC && typeof TC.getSharedProductTemplate === 'function') {
+          templates.product = TC.getSharedProductTemplate();
+        }
+        {%- if settings.tagalys_no_results_widget_id != blank -%}
+        templates.noResults = {
+          options: {
+            widgets: [
+              {
+                recommendationId: {{ settings.tagalys_no_results_widget_id | json }},
+              },
+            ],
+          },
+        };
+        {%- endif -%}
+        if (Object.keys(templates).length) {
+          config.templates = templates;
+        }
+
+        SR.init('[data-search-results]', config);
+      }
+
+      TagalysCustomisations.initSearchResults = initSearchResults;
+
+      if (typeof whenTagalysReady !== 'function') return;
+      whenTagalysReady(initSearchResults);
+    })();
+  </script>
+{%- endif -%}
